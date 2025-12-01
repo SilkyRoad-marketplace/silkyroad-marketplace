@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Product – Silky Road Marketplace</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="icon" href="/favicon.png">
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body class="marketplace-body">
+  <div id="header-root"></div>
+
+  <main class="page product-page">
+    <article class="card">
+      <h1>Sample Product Title</h1>
+      <p class="muted">This is where your full product description will go.</p>
+      <p class="price-tag price-large">$29</p>
+      <button class="btn btn-primary">Add to cart</button>
+    </article>
+  </main>
+
+  <script type="module" src="/js/header-market.js"></script>
+  <script type="module">
+    import { initAuthUI } from "/js/auth.js";
+    initAuthUI();
+  </script>
+</body>
+</html>

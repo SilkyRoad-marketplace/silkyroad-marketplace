@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Your Library – Silky Road Marketplace</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="icon" href="/favicon.png">
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <div id="header-root"></div>
+
+  <main class="page">
+    <section class="page-header">
+      <h1>Your library</h1>
+      <p class="muted">All purchases will appear here once we connect this page to Supabase orders.</p>
+    </section>
+  </main>
+
+  <script type="module" src="/js/header-market.js"></script>
+  <script type="module">
+    import { initAuthUI } from "/js/auth.js";
+    initAuthUI();
+  </script>
+</body>
+</html>

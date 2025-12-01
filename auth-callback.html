@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Signing you in… – Silky Road Marketplace</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body class="auth-callback-body">
+  <main class="page auth-page">
+    <section class="card auth-card">
+      <h1>Signing you in…</h1>
+      <p class="muted">Please wait while we finish connecting your Google account.</p>
+    </section>
+  </main>
+
+  <script type="module">
+    import { supabase } from "/js/auth.js";
+
+    // Supabase will detect the auth redirect and store the session automatically.
+    // We just wait a moment and then redirect based on whether we have a session.
+    const checkSession = async () => {
+      const { data } = await supabase.auth.getSession();
+      if (data.session) {
+        window.location.href = "/dashboard.html";
+      } else {
+        // if still no session after a short delay, send back to login
+        setTimeout(async () => {
+          const again = await supabase.auth.getSession();
+          if (again.data.session) {
+            window.location.href = "/dashboard.html";
+          } else {
+            window.location.href = "/login.html";
+          }
+        }, 1500);
+      }
+    };
+
+    checkSession();
+  </script>
+</body>
+</html>

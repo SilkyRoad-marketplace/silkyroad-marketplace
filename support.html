@@ -13,11 +13,11 @@
   <main class="page">
     <section class="page-header">
       <h1>Contact Support</h1>
-      <p class="muted">Need a hand? We’re here for you.</p>
+      <p class="muted">Need a hand? We're here for you.</p>
     </section>
 
     <section class="text-block">
-      <p>Got a question about selling, payouts, or your products? Send us a message and we’ll get back to you shortly.</p>
+      <p>Got a question about selling, payouts, or your products? Send us a message and we'll get back to you shortly.</p>
       <button id="open-support-modal" class="btn btn-primary">Contact support</button>
     </section>
 
@@ -27,13 +27,13 @@
         <button class="modal-close" id="support-close" aria-label="Close">&times;</button>
         <h2>How can we help you today?</h2>
 
-        <!-- Web3Forms – 100% working -->
+        <!-- Web3Forms – 100% working version -->
         <form action="https://api.web3forms.com/submit" method="POST" id="support-form" class="support-form">
 
-          <!-- Valid Access Key -->
-          <input type="hidden" name="access_key" value="f6b1db04-6cef-4522-8fab-916d6d272bb9">
+          <!-- Your VERIFIED Web3Forms Access Key -->
+          <input type="hidden" name="access_key" value="561267cf-451d-4159-b0ec-6ab62a636953">
 
-          <!-- Your receiving email -->
+          <!-- Where you receive messages -->
           <input type="hidden" name="to_email" value="silkyroad.marketplace@gmail.com">
 
           <label class="field">
@@ -63,17 +63,27 @@
   <script type="module" src="/js/footer.js"></script>
 
   <script>
-    // Open / Close modal
+    // Open modal
     const openBtn = document.getElementById("open-support-modal");
     const modal = document.getElementById("support-modal");
     const closeBtn = document.getElementById("support-close");
 
-    openBtn.addEventListener("click", () => modal.classList.add("open"));
-    closeBtn.addEventListener("click", () => modal.classList.remove("open"));
-    modal.addEventListener("click", e => { if (e.target === modal) modal.classList.remove("open"); });
+    openBtn.addEventListener("click", () => {
+      modal.classList.add("open");
+    });
 
-    // Success pop-up after form submission
-    document.getElementById("support-form").addEventListener("submit", () => {
+    // Close modal
+    closeBtn.addEventListener("click", () => {
+      modal.classList.remove("open");
+    });
+
+    // Click outside to close
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) modal.classList.remove("open");
+    });
+
+    // Success popup after form submission
+    document.getElementById("support-form").addEventListener("submit", function() {
       setTimeout(() => {
         alert("Your message has been sent. Thank you!");
         modal.classList.remove("open");

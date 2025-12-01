@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Log in – Silky Road Marketplace</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="icon" href="/favicon.png">
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <div id="header-root"></div>
+
+  <main class="page auth-page">
+    <section class="card auth-card">
+      <h1>Log in</h1>
+      <p class="muted">Access your dashboard and library.</p>
+
+      <button id="login-google" class="btn btn-primary btn-full">Continue with Google</button>
+
+      <div class="auth-divider"><span>or</span></div>
+
+      <form id="login-email-form" class="auth-form">
+        <label class="field">
+          <span>Email</span>
+          <input type="email" id="login-email" required>
+        </label>
+
+        <label class="field password-field">
+          <span>Password</span>
+          <input type="password" id="login-password" required>
+          <button type="button" class="pw-toggle" data-target="login-password">Show</button>
+        </label>
+
+        <button type="submit" class="btn btn-primary btn-full">Log in</button>
+      </form>
+
+      <button class="link-forgot" id="forgot-toggle">Forgot your password?</button>
+
+      <div id="forgot-panel" class="forgot-panel">
+        <p class="muted small">Enter your email and we&apos;ll send reset instructions.</p>
+        <form id="forgot-form">
+          <label class="field">
+            <span>Email</span>
+            <input type="email" id="forgot-email" required>
+          </label>
+          <button type="submit" class="btn btn-ghost btn-full">Send reset link</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <div id="footer-root"></div>
+
+  <script type="module" src="/js/header-main.js"></script>
+  <script type="module" src="/js/footer.js"></script>
+  <script type="module">
+    import { initAuthUI, googleAuth, emailSignIn, sendPasswordReset } from "/js/auth.js";
+
+    initAuthUI();
+
+    const googleBtn = document.getElementById("login-google");
+    googleBtn?.addEventListener("click", async () => {
+      try {
+        await googleAuth("https://silkyroad.vercel.app/auth-callback.html");
+      } catch (e) {
+        alert("Google login failed. Please try again.");
+        console.error(e);
+      }
+    });
+
+    function wirePasswordToggles() {
+      document.querySelectorAll(".pw-toggle").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const id = btn.getAttribute("data-target");
+          const input = document.getElementById(id);
+          if (!input) return;
+          if (input.type === "password") {
+            input.type = "text";
+            btn.textContent = "Hide";
+          } else {
+            input.type = "password";
+            btn.textContent = "Show";
+          }
+        });
+      });
+    }
+    wirePasswordToggles();
+
+    const loginForm = document.getElementById("login-email-form");
+    loginForm?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("login-email").value.trim();
+      const password = document.getElementById("login-password").value;
+      try {
+        await emailSignIn(email, password);
+        window.location.href = "/dashboard.html";
+      } catch (err) {
+        console.error(err);
+        alert("Login failed. Please check your details.");
+      }
+    });
+
+    const forgotToggle = document.getElementById("forgot-toggle");
+    const forgotPanel = document.getElementById("forgot-panel");
+    forgotToggle?.addEventListener("click", () => {
+      forgotPanel.classList.toggle("open");
+    });
+
+    const forgotForm = document.getElementById("forgot-form");
+    forgotForm?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("forgot-email").value.trim();
+      try {
+        await sendPasswordReset(email);
+        alert("If this email exists, a reset link has been sent.");
+      } catch (err) {
+        console.error(err);
+        alert("Failed to send reset email. Please try again.");
+      }
+    });
+  </script>
+</body>
+</html>

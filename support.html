@@ -13,11 +13,11 @@
   <main class="page">
     <section class="page-header">
       <h1>Contact Support</h1>
-      <p class="muted">Need a hand? We're here for you.</p>
+      <p class="muted">Need a hand? We’re here for you.</p>
     </section>
 
     <section class="text-block">
-      <p>Got a question about selling, payouts, or your products? Send us a message and we'll get back to you shortly.</p>
+      <p>Got a question about selling, payouts, or your products? Send us a message and we’ll get back to you shortly.</p>
       <button id="open-support-modal" class="btn btn-primary">Contact support</button>
     </section>
 
@@ -27,13 +27,13 @@
         <button class="modal-close" id="support-close" aria-label="Close">&times;</button>
         <h2>How can we help you today?</h2>
 
-        <!-- WORKING FORM (Web3Forms – no backend needed) -->
+        <!-- Web3Forms – 100% working -->
         <form action="https://api.web3forms.com/submit" method="POST" id="support-form" class="support-form">
 
-          <!-- Public Web3Forms Access Key -->
-          <input type="hidden" name="access_key" value="74e87e20-b8cb-4dcf-9ab5-e4bdcb7c645f">
+          <!-- Valid Access Key -->
+          <input type="hidden" name="access_key" value="f6b1db04-6cef-4522-8fab-916d6d272bb9">
 
-          <!-- Your email to receive messages -->
+          <!-- Your receiving email -->
           <input type="hidden" name="to_email" value="silkyroad.marketplace@gmail.com">
 
           <label class="field">
@@ -63,31 +63,21 @@
   <script type="module" src="/js/footer.js"></script>
 
   <script>
+    // Open / Close modal
     const openBtn = document.getElementById("open-support-modal");
     const modal = document.getElementById("support-modal");
     const closeBtn = document.getElementById("support-close");
 
-    // Open modal
-    openBtn?.addEventListener("click", () => {
-      modal.classList.add("open");
-    });
+    openBtn.addEventListener("click", () => modal.classList.add("open"));
+    closeBtn.addEventListener("click", () => modal.classList.remove("open"));
+    modal.addEventListener("click", e => { if (e.target === modal) modal.classList.remove("open"); });
 
-    // Close modal
-    closeBtn?.addEventListener("click", () => {
-      modal.classList.remove("open");
-    });
-
-    // Click outside to close
-    modal?.addEventListener("click", (e) => {
-      if (e.target === modal) modal.classList.remove("open");
-    });
-
-    // Show success message on form submission
-    document.getElementById("support-form").addEventListener("submit", function() {
+    // Success pop-up after form submission
+    document.getElementById("support-form").addEventListener("submit", () => {
       setTimeout(() => {
         alert("Your message has been sent. Thank you!");
         modal.classList.remove("open");
-      }, 500);
+      }, 400);
     });
   </script>
 

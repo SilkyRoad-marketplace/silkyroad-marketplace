@@ -122,5 +122,17 @@
       title.textContent = cat + " products";
     }
   </script>
+
+  <script>
+  // highlight selected tag filters so user sees something happen
+  document.querySelectorAll(".filter-block input[type='checkbox']").forEach(cb => {
+    cb.addEventListener("change", () => {
+      const label = cb.closest("label");
+      if (!label) return;
+      if (cb.checked) label.classList.add("active-filter");
+      else label.classList.remove("active-filter");
+    });
+  });
+</script>
 </body>
 </html>

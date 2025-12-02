@@ -1,7 +1,7 @@
 // /js/header-market.js
 
 const CATEGORY_CONFIG = [
-  { id: "all", label: "All", href: "/marketplace.html" },
+  { id: "all", label: "All", href: "/category.html" },
   { id: "design", label: "Design", href: "/category.html?category=Design" },
   { id: "software", label: "Software Development", href: "/category.html?category=Software%20Development" },
   { id: "3d", label: "3D", href: "/category.html?category=3D" },

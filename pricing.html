@@ -6,102 +6,190 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <link rel="icon" href="/favicon.png">
   <link rel="stylesheet" href="/css/styles.css">
+
+  <style>
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #000;
+      margin: 0;
+      padding: 0;
+      color: #fff;
+    }
+
+    .pricing-header {
+      text-align: center;
+      padding: 60px 20px 20px;
+    }
+
+    .pricing-header h1 {
+      font-size: 38px;
+      font-weight: 700;
+      color: #ffe9a5;
+      text-shadow: 0 0 8px rgba(255,200,100,0.6);
+    }
+
+    .pricing-header p {
+      max-width: 620px;
+      margin: 10px auto 40px;
+      color: #d8d8d8;
+      font-size: 17px;
+      line-height: 1.6;
+    }
+
+    /* Cards wrapper */
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 28px;
+      padding: 0 20px 80px;
+      max-width: 1100px;
+      margin: auto;
+    }
+
+    /* Individual card */
+    .plan-card {
+      background: radial-gradient(circle at top, rgba(255,215,120,0.12), rgba(0,0,0,0.95));
+      border: 1px solid rgba(255,215,120,0.25);
+      padding: 28px;
+      border-radius: 14px;
+      box-shadow: 0 0 18px rgba(255,185,80,0.15);
+      transition: 0.25s;
+    }
+
+    .plan-card:hover {
+      box-shadow: 0 0 28px rgba(255,185,80,0.28);
+      transform: translateY(-3px);
+    }
+
+    .plan-card h2 {
+      font-size: 26px;
+      margin-bottom: 6px;
+      color: #ffe5a5;
+      font-weight: 700;
+    }
+
+    .badge-icon {
+      height: 38px;
+      width: 38px;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+
+    .price {
+      font-size: 28px;
+      margin: 10px 0 20px;
+      font-weight: 700;
+      color: #ffd88a;
+    }
+
+    .plan-features {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 25px;
+      color: #e0e0e0;
+      line-height: 1.55;
+    }
+
+    .plan-features li {
+      margin-bottom: 10px;
+    }
+
+    .plan-btn {
+      display: inline-block;
+      padding: 12px 22px;
+      border-radius: 8px;
+      font-weight: 600;
+      text-decoration: none;
+      border: 1px solid #777;
+      color: #e8e8e8;
+      background: #1a1a1a;
+      transition: 0.25s;
+    }
+
+    .plan-btn:hover {
+      background: #ffcc66;
+      color: #000;
+      border-color: #ffcc66;
+      box-shadow: 0 0 12px rgba(255,190,90,0.7);
+    }
+  </style>
 </head>
-<body class="sr-body">
+
+<body>
   <div id="header-root"></div>
 
-  <main class="page pricing-page">
-    <section class="page-header center">
-      <h1>Choose your seller plan</h1>
-      <p class="muted">
-        Start free and upgrade when you’re ready. All plans include instant delivery,
-        buyer library, and seller dashboard.
+  <main>
+    <section class="pricing-header">
+      <h1>Choose your selling plan</h1>
+      <p>
+        Start selling for free — you have nothing to lose.  
+        You only pay when you earn.  
+        Upgrade anytime as your sales grow.  
+        The Ultimate plan is for sellers who want maximum features and the lowest platform fees.
       </p>
     </section>
 
     <section class="pricing-grid">
-      <!-- Free -->
-      <article class="plan-card plan-free">
-        <header>
-          <div class="plan-badge">
-            <!-- small bronze icon on the left -->
-            <img src="/img/free-badge.jpg" alt="Free seller badge" class="plan-badge-icon">
-            <span class="plan-name">Free Seller</span>
-          </div>
-          <p class="plan-price">$0<span class="plan-price-sub"> / month</span></p>
-        </header>
-        <ul class="plan-features">
-          <li><strong>Bronze</strong> status: <span class="plan-label bronze">[ FREE ]</span></li>
-          <li>Sell unlimited digital products</li>
-          <li>Max file size: <strong>10 MB</strong> per file</li>
-          <li>Monthly upload quota: <strong>50 MB</strong></li>
-          <li>Marketplace fee: <strong>20%</strong> (after Stripe fees)</li>
-          <li>7-day payout hold for disputes/refunds</li>
-          <li>Access to basic analytics</li>
-        </ul>
-        <button class="btn btn-outline" id="btn-start-free">
-          Start with Free
-        </button>
-      </article>
 
-      <!-- Pro -->
-      <article class="plan-card plan-pro">
-        <header>
-          <div class="plan-badge">
-            <img src="/img/pro-badge.jpg" alt="Pro seller badge" class="plan-badge-icon">
-            <span class="plan-name">Pro Seller</span>
-          </div>
-          <p class="plan-price">$19.90<span class="plan-price-sub"> / month</span></p>
-        </header>
-        <ul class="plan-features">
-          <li><strong>Silver</strong> status:
-            <span class="plan-label silver">[ ★ PRO ]</span>
-          </li>
-          <li>Sell unlimited digital products</li>
-          <li>Max file size: <strong>25 MB</strong> per file</li>
-          <li>Monthly upload quota: <strong>200 MB</strong></li>
-          <li>Marketplace fee: <strong>6%</strong> (after Stripe fees)</li>
-          <li>7-day payout hold for disputes/refunds</li>
-          <li>Advanced analytics & better placement</li>
-          <li>External links allowed on product pages</li>
-        </ul>
-        <button class="btn btn-primary" id="btn-upgrade-pro">
-          Upgrade to Pro
-        </button>
-      </article>
+      <!-- FREE PLAN -->
+      <div class="plan-card">
+        <h2>
+          <img src="/img/free-badge.jpg" class="badge-icon"> Free Plan
+        </h2>
 
-      <!-- Ultimate -->
-      <article class="plan-card plan-ultimate">
-        <header>
-          <div class="plan-badge">
-            <img src="/img/ultimate-badge.jpg" alt="Ultimate seller badge" class="plan-badge-icon">
-            <span class="plan-name">Ultimate Seller</span>
-          </div>
-          <p class="plan-price">$49.90<span class="plan-price-sub"> / month</span></p>
-        </header>
-        <ul class="plan-features">
-          <li><strong>Gold</strong> status:
-            <span class="plan-label gold">[ 👑 ULTIMATE ]</span>
-          </li>
-          <li>Sell unlimited digital products</li>
-          <li>Max file size: <strong>50 MB</strong> per file</li>
-          <li>Monthly upload quota: <strong>1 GB</strong></li>
-          <li>Marketplace fee: <strong>2%</strong> (after Stripe fees)</li>
-          <li>7-day payout hold for disputes/refunds</li>
-          <li>Top placement in Featured products</li>
-          <li>External links + featured listings</li>
-        </ul>
-        <button class="btn btn-gold" id="btn-upgrade-ultimate">
-          Upgrade to Ultimate
-        </button>
-      </article>
-    </section>
+        <div class="price">$0 / month</div>
 
-    <section class="small center muted">
-      <p>
-        All prices in <strong>USD</strong>. Payouts are made through Stripe. You must be at least 
-        18 years old to receive payouts. We hold payouts for 7 days in case of disputes or refunds.
-      </p>
+        <ul class="plan-features">
+          <li>Platform fee: <strong>25%</strong> (before Stripe fees)</li>
+          <li>Max file size: <strong>10 MB per upload</strong></li>
+          <li>Unlimited products</li>
+          <li>*Get your [ FREE ] seller status listed on your product page</li>
+          <li>*Access to basic analytics</li>
+        </ul>
+
+        <a href="sign_up.html" class="plan-btn">Start for free</a>
+      </div>
+
+      <!-- PRO PLAN -->
+      <div class="plan-card">
+        <h2>
+          <img src="/img/pro-badge.jpg" class="badge-icon"> Pro Plan
+        </h2>
+
+        <div class="price">$19.90 / month</div>
+
+        <ul class="plan-features">
+          <li>Platform fee: <strong>6%</strong> (before Stripe fees)</li>
+          <li>Max file size: <strong>25 MB per upload</strong></li>
+          <li>Unlimited products</li>
+          <li>*Get your [ ★ PRO ] seller status listed on your product page</li>
+          <li>*Advanced analytics & better placement</li>
+        </ul>
+
+        <a href="sign_up.html" class="plan-btn">Upgrade to Pro</a>
+      </div>
+
+      <!-- ULTIMATE PLAN -->
+      <div class="plan-card">
+        <h2>
+          <img src="/img/ultimate-badge.jpg" class="badge-icon"> Ultimate Plan
+        </h2>
+
+        <div class="price">$49.90 / month</div>
+
+        <ul class="plan-features">
+          <li>Platform fee: <strong>2%</strong> (before Stripe fees)</li>
+          <li>Max file size: <strong>50 MB per upload</strong></li>
+          <li>Unlimited products</li>
+          <li>*Get your [ 👑 ULTIMATE ] seller status listed on your product page</li>
+          <li>*Priority top Featured products listing</li>
+          <li>*Allow external file download link</li>
+          <li>*Allow embedded YouTube, Vimeo, Wistia videos</li>
+        </ul>
+
+        <a href="sign_up.html" class="plan-btn">Go Ultimate</a>
+      </div>
+
     </section>
   </main>
 
@@ -109,19 +197,5 @@
 
   <script type="module" src="/js/header-main.js"></script>
   <script type="module" src="/js/footer.js"></script>
-  <script>
-    // Placeholder: later we'll connect these buttons to Stripe Checkout
-    document.getElementById('btn-start-free')?.addEventListener('click', () => {
-      window.location.href = '/sign_up.html';
-    });
-
-    document.getElementById('btn-upgrade-pro')?.addEventListener('click', () => {
-      alert('Stripe Pro subscription link will go here.');
-    });
-
-    document.getElementById('btn-upgrade-ultimate')?.addEventListener('click', () => {
-      alert('Stripe Ultimate subscription link will go here.');
-    });
-  </script>
 </body>
 </html>

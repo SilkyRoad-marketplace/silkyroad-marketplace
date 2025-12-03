@@ -7,43 +7,101 @@
   <link rel="icon" href="/favicon.png">
   <link rel="stylesheet" href="/css/styles.css">
 </head>
-<body>
+<body class="sr-body">
   <div id="header-root"></div>
 
-  <main class="page">
-    <section class="page-header">
-      <h1>Pricing</h1>
-      <p class="muted">Simple revenue-share for creators. No hidden platform fees.</p>
+  <main class="page pricing-page">
+    <section class="page-header center">
+      <h1>Choose your seller plan</h1>
+      <p class="muted">
+        Start free and upgrade when you’re ready. All plans include instant delivery,
+        buyer library, and seller dashboard.
+      </p>
     </section>
 
     <section class="pricing-grid">
-      <article class="card">
-        <h2>Free</h2>
-        <p class="price">$0 / month</p>
-        <ul>
-          <li>Upload digital products</li>
-          <li>Standard marketplace fees</li>
-          <li>Email support</li>
+      <!-- Free -->
+      <article class="plan-card plan-free">
+        <header>
+          <div class="plan-badge">
+            <!-- small bronze icon on the left -->
+            <img src="/img/free-badge.png" alt="Free seller badge" class="plan-badge-icon">
+            <span class="plan-name">Free Seller</span>
+          </div>
+          <p class="plan-price">$0<span class="plan-price-sub"> / month</span></p>
+        </header>
+        <ul class="plan-features">
+          <li><strong>Bronze</strong> status: <span class="plan-label bronze">[ FREE ]</span></li>
+          <li>Sell unlimited digital products</li>
+          <li>Max file size: <strong>10 MB</strong> per file</li>
+          <li>Monthly upload quota: <strong>50 MB</strong></li>
+          <li>Marketplace fee: <strong>20%</strong> (after Stripe fees)</li>
+          <li>7-day payout hold for disputes/refunds</li>
+          <li>Access to basic analytics</li>
         </ul>
+        <button class="btn btn-outline" id="btn-start-free">
+          Start with Free
+        </button>
       </article>
-      <article class="card">
-        <h2>Pro</h2>
-        <p class="price">$19.90 / month</p>
-        <ul>
-          <li>Lower fees</li>
-          <li>Advanced analytics</li>
-          <li>Priority support</li>
+
+      <!-- Pro -->
+      <article class="plan-card plan-pro">
+        <header>
+          <div class="plan-badge">
+            <img src="/img/pro-badge.png" alt="Pro seller badge" class="plan-badge-icon">
+            <span class="plan-name">Pro Seller</span>
+          </div>
+          <p class="plan-price">$19.90<span class="plan-price-sub"> / month</span></p>
+        </header>
+        <ul class="plan-features">
+          <li><strong>Silver</strong> status:
+            <span class="plan-label silver">[ ★ PRO ]</span>
+          </li>
+          <li>Sell unlimited digital products</li>
+          <li>Max file size: <strong>25 MB</strong> per file</li>
+          <li>Monthly upload quota: <strong>200 MB</strong></li>
+          <li>Marketplace fee: <strong>6%</strong> (after Stripe fees)</li>
+          <li>7-day payout hold for disputes/refunds</li>
+          <li>Advanced analytics & better placement</li>
+          <li>External links allowed on product pages</li>
         </ul>
+        <button class="btn btn-primary" id="btn-upgrade-pro">
+          Upgrade to Pro
+        </button>
       </article>
-      <article class="card">
-        <h2>Ultimate</h2>
-        <p class="price">$49.90 / month</p>
-        <ul>
-          <li>Lowest fees</li>
-          <li>Featured listings</li>
-          <li>Invite-only features first</li>
+
+      <!-- Ultimate -->
+      <article class="plan-card plan-ultimate">
+        <header>
+          <div class="plan-badge">
+            <img src="/img/ultimate-badge.png" alt="Ultimate seller badge" class="plan-badge-icon">
+            <span class="plan-name">Ultimate Seller</span>
+          </div>
+          <p class="plan-price">$49.90<span class="plan-price-sub"> / month</span></p>
+        </header>
+        <ul class="plan-features">
+          <li><strong>Gold</strong> status:
+            <span class="plan-label gold">[ 👑 ULTIMATE ]</span>
+          </li>
+          <li>Sell unlimited digital products</li>
+          <li>Max file size: <strong>50 MB</strong> per file</li>
+          <li>Monthly upload quota: <strong>1 GB</strong></li>
+          <li>Marketplace fee: <strong>2%</strong> (after Stripe fees)</li>
+          <li>7-day payout hold for disputes/refunds</li>
+          <li>Top placement in Featured products</li>
+          <li>External links + featured listings</li>
         </ul>
+        <button class="btn btn-gold" id="btn-upgrade-ultimate">
+          Upgrade to Ultimate
+        </button>
       </article>
+    </section>
+
+    <section class="small center muted">
+      <p>
+        All prices in <strong>USD</strong>. Payouts are made through Stripe. You must be at least 
+        18 years old to receive payouts. We hold payouts for 7 days in case of disputes or refunds.
+      </p>
     </section>
   </main>
 
@@ -51,5 +109,19 @@
 
   <script type="module" src="/js/header-main.js"></script>
   <script type="module" src="/js/footer.js"></script>
+  <script>
+    // Placeholder: later we'll connect these buttons to Stripe Checkout
+    document.getElementById('btn-start-free')?.addEventListener('click', () => {
+      window.location.href = '/sign_up.html';
+    });
+
+    document.getElementById('btn-upgrade-pro')?.addEventListener('click', () => {
+      alert('Stripe Pro subscription link will go here.');
+    });
+
+    document.getElementById('btn-upgrade-ultimate')?.addEventListener('click', () => {
+      alert('Stripe Ultimate subscription link will go here.');
+    });
+  </script>
 </body>
 </html>

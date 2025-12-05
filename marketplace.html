@@ -2,139 +2,1036 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Marketplace – Silky Road</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Marketplace – Silky Road</title>
   <link rel="icon" href="/favicon.png">
-  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="styles.css">
+
+  <!-- Supabase JS -->
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+
+  <style>
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f7f7f9;
+      color: #222;
+    }
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    /* ===== Top marketplace nav (Payhip style) ===== */
+    .marketplace-nav {
+      background: #fff;
+      border-bottom: 1px solid #e4e4e8;
+    }
+    .marketplace-nav-inner {
+      display: flex;
+      align-items: center;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .marketplace-nav-inner::-webkit-scrollbar {
+      display: none;
+    }
+    .nav-scroll {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 0;
+      white-space: nowrap;
+      width: 100%;
+    }
+    .nav-pill {
+      border-radius: 999px;
+      padding: 6px 14px;
+      border: 1px solid transparent;
+      background: #f2f2f5;
+      font-size: 14px;
+      text-decoration: none;
+      color: #333;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .nav-pill:hover {
+      background: #e6e6ee;
+    }
+    .nav-pill.active {
+      background: #222;
+      color: #fff;
+    }
+
+    .nav-more {
+      position: relative;
+      flex-shrink: 0;
+    }
+    .nav-more-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .nav-more-dropdown {
+      position: absolute;
+      top: 120%;
+      left: 0;
+      z-index: 50;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+      padding: 12px 16px;
+      display: none;
+      min-width: 260px;
+      max-height: 420px;
+      overflow-y: auto;
+    }
+    .nav-more:hover .nav-more-dropdown,
+    .nav-more-dropdown:hover {
+      display: block;
+    }
+    .more-group {
+      margin-bottom: 12px;
+    }
+    .more-group-title {
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: #555;
+    }
+    .more-link {
+      display: block;
+      font-size: 13px;
+      text-decoration: none;
+      color: #333;
+      padding: 2px 0;
+    }
+    .more-link:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 768px) {
+      .marketplace-nav-inner {
+        padding-inline: 8px;
+      }
+    }
+
+    /* ===== Main 2-column layout ===== */
+    .marketplace-layout {
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1fr);
+      gap: 16px;
+      margin-top: 16px;
+    }
+    @media (max-width: 960px) {
+      .marketplace-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ===== Filters sidebar ===== */
+    .filters-column {
+      background: #fff;
+      border-radius: 12px;
+      border: 1px solid #e4e4e8;
+      padding: 12px 14px;
+      align-self: flex-start;
+    }
+    .filters-title-main {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .filters-block {
+      margin-bottom: 14px;
+    }
+    .filters-block-title {
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: #555;
+    }
+    .filter-tag,
+    .filter-filetype {
+      display: inline-block;
+      margin: 2px 4px 4px 0;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid #ddd;
+      background: #f5f5f8;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .filter-tag.active,
+    .filter-filetype.active {
+      background: #222;
+      color: #fff;
+      border-color: #222;
+    }
+    .filters-input-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+    .filters-input-row label {
+      font-size: 12px;
+      color: #555;
+      min-width: 90px;
+    }
+    .filters-input-row input {
+      flex: 1;
+      padding: 4px 6px;
+      font-size: 12px;
+    }
+    .filters-rating label {
+      display: block;
+      font-size: 12px;
+      margin-bottom: 4px;
+      cursor: pointer;
+    }
+    .filters-rating input {
+      margin-right: 4px;
+    }
+    .filters-footer {
+      margin-top: 10px;
+      display: flex;
+      justify-content: flex-end;
+    }
+    .filters-clear-btn {
+      font-size: 12px;
+      border-radius: 999px;
+      border: 1px solid #ccc;
+      padding: 4px 8px;
+      background: #f5f5f7;
+      cursor: pointer;
+    }
+
+    /* ===== Content column ===== */
+    .content-column { }
+
+    /* ===== Featured slider ===== */
+    .featured-section {
+      background: #fff;
+      border-radius: 12px;
+      border: 1px solid #e4e4e8;
+      padding: 16px;
+      overflow: hidden;
+    }
+    .featured-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    .featured-title {
+      font-size: 18px;
+      font-weight: 700;
+    }
+    .featured-controls {
+      display: flex;
+      gap: 6px;
+    }
+    .featured-btn {
+      border-radius: 999px;
+      border: 1px solid #ccc;
+      background: #f5f5f7;
+      padding: 4px 8px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .featured-track {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      scrollbar-width: thin;
+      padding-bottom: 4px;
+    }
+    .featured-track::-webkit-scrollbar {
+      height: 6px;
+    }
+    .featured-track::-webkit-scrollbar-thumb {
+      border-radius: 999px;
+      background: #ccc;
+    }
+    .featured-card {
+      flex: 0 0 210px;
+      max-width: 210px;
+      border-radius: 10px;
+      border: 1px solid #e4e4e8;
+      background: #fafafa;
+      overflow: hidden;
+      text-decoration: none;
+      color: inherit;
+    }
+    .featured-thumb {
+      position: relative;
+      width: 100%;
+      padding-top: 100%;
+      overflow: hidden;
+      background: #ddd;
+    }
+    .featured-thumb img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .featured-body {
+      padding: 8px 10px 10px;
+    }
+    .featured-title-text {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      max-height: 36px;
+      overflow: hidden;
+    }
+    .featured-meta {
+      font-size: 12px;
+      color: #555;
+      margin-bottom: 4px;
+    }
+    .featured-price {
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    /* ===== Explore categories (Payhip style boxes) ===== */
+    .explore-section {
+      margin-top: 16px;
+    }
+    .explore-header-title {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .explore-header-sub {
+      font-size: 14px;
+      color: #555;
+      margin-bottom: 10px;
+    }
+    .explore-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+    @media (max-width: 960px) {
+      .explore-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+    @media (max-width: 640px) {
+      .explore-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .explore-card {
+      background: #fff;
+      border-radius: 10px;
+      border: 1px solid #e4e4e8;
+      padding: 10px;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+    .explore-card-title {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .explore-card-text {
+      font-size: 12px;
+      color: #555;
+    }
+
+    /* ===== Products grid ===== */
+    .products-section {
+      margin-top: 16px;
+    }
+    .products-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    .products-title {
+      font-size: 18px;
+      font-weight: 700;
+    }
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+    @media (max-width: 960px) {
+      .products-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+    @media (max-width: 640px) {
+      .products-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .product-card {
+      border-radius: 10px;
+      border: 1px solid #e4e4e8;
+      background: #fff;
+      overflow: hidden;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+    }
+    .product-thumb {
+      position: relative;
+      width: 100%;
+      padding-top: 100%;
+      overflow: hidden;
+      background: #ddd;
+    }
+    .product-thumb img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .product-body {
+      padding: 8px 10px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      flex-grow: 1;
+    }
+    .product-title {
+      font-size: 14px;
+      font-weight: 600;
+      max-height: 36px;
+      overflow: hidden;
+    }
+    .product-seller {
+      font-size: 12px;
+      color: #555;
+    }
+    .seller-badge-pro {
+      font-weight: 700;
+      color: #e67e22;
+    }
+    .seller-badge-ultimate {
+      font-weight: 700;
+      color: #9b59b6;
+    }
+    .product-rating {
+      font-size: 12px;
+      color: #444;
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+    }
+    .product-rating .star {
+      color: #f1c40f;
+      font-size: 12px;
+    }
+    .product-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 4px;
+    }
+    .product-price {
+      font-size: 14px;
+      font-weight: 700;
+    }
+    .product-cta {
+      font-size: 12px;
+      color: #555;
+    }
+    .empty-text {
+      font-size: 14px;
+      color: #777;
+      margin-top: 8px;
+    }
+  </style>
 </head>
-<body class="marketplace-body">
-  <div id="header-root"></div>
+<body>
 
-  <main class="page marketplace-page">
-    <section class="section">
-      <div class="section-header">
-        <h1>Featured products</h1>
-        <p class="muted">A rotating selection of standout digital products on Silky Road.</p>
-      </div>
-      <div class="product-grid product-grid-4">
-        <article class="product-card">
-          <h2>Author Launch Kit</h2>
-          <p class="muted small">Ebook templates, launch emails and marketing assets.</p>
-          <p class="price-tag">$29</p>
-        </article>
-        <article class="product-card">
-          <h2>VRChat Avatar Pack</h2>
-          <p class="muted small">High quality 3D avatars ready for VRChat.</p>
-          <p class="price-tag">$45</p>
-        </article>
-        <article class="product-card">
-          <h2>Producer Sample Bundle</h2>
-          <p class="muted small">Drums, loops and FX for modern producers.</p>
-          <p class="price-tag">$35</p>
-        </article>
-        <article class="product-card">
-          <h2>Indie Game Starter Kit</h2>
-          <p class="muted small">Sprites, UI and code snippets for your first game.</p>
-          <p class="price-tag">$39</p>
-        </article>
-      </div>
-      <div class="pagination">
-        <button class="page-btn page-btn-active">1</button>
-        <button class="page-btn">2</button>
-        <button class="page-btn">3</button>
-      </div>
-    </section>
+  <!-- keep your global site header here if you have one -->
 
-    <section class="section">
-      <div class="section-header">
-        <h2>Explore categories</h2>
-        <p class="muted">Find your niche and discover digital products tailored to you.</p>
-      </div>
+  <!-- Top category nav -->
+  <div class="marketplace-nav">
+    <div class="marketplace-nav-inner container">
+      <div class="nav-scroll">
+        <a href="/marketplace" class="nav-pill" data-cat="all">All</a>
+        <a href="/marketplace/3d" class="nav-pill" data-cat="3d">3D</a>
+        <a href="/marketplace/roblox" class="nav-pill" data-cat="roblox">Roblox</a>
+        <a href="/marketplace/crafts" class="nav-pill" data-cat="crafts">Crafts</a>
+        <a href="/marketplace/design" class="nav-pill" data-cat="design">Design</a>
+        <a href="/marketplace/drawing-and-painting" class="nav-pill" data-cat="drawing-and-painting">Drawing &amp; Painting</a>
+        <a href="/marketplace/music-and-sound-design" class="nav-pill" data-cat="music-and-sound-design">Music &amp; Sound Design</a>
+        <a href="/marketplace/films" class="nav-pill" data-cat="films">Films</a>
 
-      <div class="category-explore-grid">
-        <article class="category-explore-card">
-          <h3>3D</h3>
-          <p>Discover exceptional 3D avatars, assets and more for VRChat and other platforms.</p>
-        </article>
-        <article class="category-explore-card">
-          <h3>Roblox</h3>
-          <p>Build the perfect Roblox game with high quality assets, vehicles, scripts, VFX and more.</p>
-        </article>
-        <article class="category-explore-card">
-          <h3>Crafts</h3>
-          <p>Crochet, sewing, knitting, quilting, stitching patterns and much more for crafters.</p>
-        </article>
-        <article class="category-explore-card">
-          <h3>Music &amp; Sound Design</h3>
-          <p>Sample packs, loops, beats, sound kits and more from creative producers and engineers.</p>
-        </article>
-        <article class="category-explore-card">
-          <h3>Design</h3>
-          <p>Level up your designs with creative design assets that you&apos;ll fall in love with.</p>
-        </article>
-        <article class="category-explore-card">
-          <h3>Drawing &amp; Painting</h3>
-          <p>Procreate brushes, illustrations and art from the most talented creators in the world.</p>
-        </article>
-        <article class="category-explore-card">
-          <h3>Fiction Books</h3>
-          <p>Explore a universe of spellbinding, special and unique books.</p>
-        </article>
-        <article class="category-explore-card">
-          <h3>Fitness &amp; Health</h3>
-          <p>From the gym to the kitchen – fun and inspiring ways to change your lifestyle.</p>
-        </article>
-        <article class="category-explore-card">
-          <h3>Photography</h3>
-          <p>All things presets, Lightroom and Photoshop to help your photography projects.</p>
-        </article>
-        <article class="category-explore-card">
-          <h3>Writing &amp; Publishing</h3>
-          <p>Resources to help craft your stories – from guides, inspiration and more.</p>
-        </article>
-        <article class="category-explore-card">
-          <h3>Business &amp; Money</h3>
-          <p>From making a dollar to making a lot more – learn the ins and outs here.</p>
-        </article>
-        <article class="category-explore-card">
-          <h3>Films</h3>
-          <p>LUTs packs and resources for Adobe Premiere Pro and Final Cut Pro.</p>
-        </article>
-        <article class="category-explore-card">
-          <h3>Comics &amp; Graphic Novels</h3>
-          <p>Stories and art from acclaimed creators that will keep you hooked.</p>
-        </article>
-        <article class="category-explore-card">
-          <h3>Audio</h3>
-          <p>Meditation music, healing and subliminal audio that nourishes the soul.</p>
-        </article>
-        <article class="category-explore-card">
-          <h3>Recorded Music</h3>
-          <p>Albums and tracks from incredible musicians and artists.</p>
-        </article>
-        <article class="category-explore-card">
-          <h3>Education</h3>
-          <p>The perfect place to learn new skills and level up your existing ones.</p>
-        </article>
-        <article class="category-explore-card">
-          <h3>Gaming</h3>
-          <p>Discover upcoming indie developers and their amazing work.</p>
-        </article>
-        <article class="category-explore-card">
-          <h3>Software Development</h3>
-          <p>Learning to code and improving your skills has never been easier.</p>
-        </article>
+        <div class="nav-more">
+          <button class="nav-pill nav-more-toggle">More ▾</button>
+          <div class="nav-more-dropdown">
+            <div class="more-group">
+              <div class="more-group-title">Fiction Books</div>
+              <a class="more-link" href="/marketplace/fiction-books/mystery">Mystery</a>
+              <a class="more-link" href="/marketplace/fiction-books/thriller">Thriller</a>
+              <a class="more-link" href="/marketplace/fiction-books/romance">Romance</a>
+              <a class="more-link" href="/marketplace/fiction-books/fantasy">Fantasy</a>
+            </div>
+
+            <div class="more-group">
+              <div class="more-group-title">Business &amp; Money</div>
+              <a class="more-link" href="/marketplace/business-and-money/investing">Investing</a>
+              <a class="more-link" href="/marketplace/business-and-money/personal-finance">Personal Finance</a>
+              <a class="more-link" href="/marketplace/business-and-money/entrepreneurship">Entrepreneurship</a>
+            </div>
+
+            <div class="more-group">
+              <div class="more-group-title">Education</div>
+              <a class="more-link" href="/marketplace/education/ebooks">eBooks</a>
+              <a class="more-link" href="/marketplace/education/worksheets">Worksheets</a>
+              <a class="more-link" href="/marketplace/education/online-courses">Online Courses</a>
+            </div>
+
+            <!-- Add any more cat/subcat groups here -->
+          </div>
+        </div>
       </div>
-    </section>
+    </div>
+  </div>
+
+  <!-- Main content -->
+  <main class="container">
+    <div class="marketplace-layout">
+
+      <!-- ===== Filters Sidebar ===== -->
+      <aside class="filters-column">
+        <div class="filters-title-main">Filters</div>
+
+        <div class="filters-block">
+          <div class="filters-block-title">Tags</div>
+          <button class="filter-tag" data-tag="vrchat">vrchat</button>
+          <button class="filter-tag" data-tag="notion template">notion template</button>
+          <button class="filter-tag" data-tag="vrchat asset">vrchat asset</button>
+          <button class="filter-tag" data-tag="free">free</button>
+          <button class="filter-tag" data-tag="blender">blender</button>
+          <!-- "Show more" can later open a modal with full tag list -->
+          <button class="filter-tag" data-tag="" id="tags-show-more">Show more</button>
+        </div>
+
+        <div class="filters-block">
+          <div class="filters-block-title">Contains</div>
+          <button class="filter-filetype" data-type="pdf">pdf</button>
+          <button class="filter-filetype" data-type="zip">zip</button>
+          <button class="filter-filetype" data-type="mp4">mp4</button>
+          <button class="filter-filetype" data-type="rar">rar</button>
+          <button class="filter-filetype" data-type="mp3">mp3</button>
+          <!-- Again, you can later expand this list -->
+        </div>
+
+        <div class="filters-block">
+          <div class="filters-block-title">Price</div>
+          <div class="filters-input-row">
+            <label for="price-min">Minimum price</label>
+            <input id="price-min" type="number" min="0" step="0.01" placeholder="0">
+          </div>
+          <div class="filters-input-row">
+            <label for="price-max">Maximum price</label>
+            <input id="price-max" type="number" min="0" step="0.01" placeholder="∞">
+          </div>
+        </div>
+
+        <div class="filters-block filters-rating">
+          <div class="filters-block-title">Rating</div>
+          <label><input type="radio" name="rating-min" value="4"> ★★★★☆ and up</label>
+          <label><input type="radio" name="rating-min" value="3"> ★★★☆☆ and up</label>
+          <label><input type="radio" name="rating-min" value="2"> ★★☆☆☆ and up</label>
+          <label><input type="radio" name="rating-min" value="1"> ★☆☆☆☆ and up</label>
+          <label><input type="radio" name="rating-min" value=""> Any rating</label>
+        </div>
+
+        <div class="filters-footer">
+          <button class="filters-clear-btn" id="filters-clear">Clear filters</button>
+        </div>
+      </aside>
+
+      <!-- ===== Right Content Column ===== -->
+      <div class="content-column">
+        <!-- Featured -->
+        <section class="featured-section" id="featured-section">
+          <div class="featured-header">
+            <div class="featured-title" id="featured-title">Featured products</div>
+            <div class="featured-controls">
+              <button class="featured-btn" data-dir="left">‹</button>
+              <button class="featured-btn" data-dir="right">›</button>
+            </div>
+          </div>
+          <div class="featured-track" id="featured-track"></div>
+          <div class="empty-text" id="featured-empty" style="display:none;">
+            No featured products yet.
+          </div>
+        </section>
+
+        <!-- Explore categories boxes -->
+        <section class="explore-section" id="explore-section">
+          <div class="explore-header-title">Explore categories</div>
+          <div class="explore-header-sub">
+            Find your niche and discover digital products tailored to you.
+          </div>
+          <div class="explore-grid">
+            <a href="/marketplace/3d" class="explore-card">
+              <div class="explore-card-title">3D</div>
+              <div class="explore-card-text">
+                Discover exceptional 3D avatars, assets and more for VRChat and other platforms.
+              </div>
+            </a>
+            <a href="/marketplace/roblox" class="explore-card">
+              <div class="explore-card-title">Roblox</div>
+              <div class="explore-card-text">
+                Build the perfect Roblox game with high quality assets, vehicles, scripts, VFX and more.
+              </div>
+            </a>
+            <a href="/marketplace/crafts" class="explore-card">
+              <div class="explore-card-title">Crafts</div>
+              <div class="explore-card-text">
+                Crochet, sewing, knitting, quilting, stitching patterns and much more for crafters.
+              </div>
+            </a>
+            <a href="/marketplace/music-and-sound-design" class="explore-card">
+              <div class="explore-card-title">Music &amp; Sound Design</div>
+              <div class="explore-card-text">
+                Sample packs, loops, beats, sound kits and more from creative producers and engineers.
+              </div>
+            </a>
+            <a href="/marketplace/design" class="explore-card">
+              <div class="explore-card-title">Design</div>
+              <div class="explore-card-text">
+                Level up your designs with creative design assets that you'll fall in love with.
+              </div>
+            </a>
+            <a href="/marketplace/drawing-and-painting" class="explore-card">
+              <div class="explore-card-title">Drawing &amp; Painting</div>
+              <div class="explore-card-text">
+                Procreate brushes, illustrations and art from the most talented creators in the world.
+              </div>
+            </a>
+            <a href="/marketplace/fiction-books" class="explore-card">
+              <div class="explore-card-title">Fiction Books</div>
+              <div class="explore-card-text">
+                Explore a universe of spellbinding, special and unique books.
+              </div>
+            </a>
+            <a href="/marketplace/fitness-and-health" class="explore-card">
+              <div class="explore-card-title">Fitness &amp; Health</div>
+              <div class="explore-card-text">
+                From the gym to the kitchen – fun and inspiring ways to change your lifestyle.
+              </div>
+            </a>
+            <a href="/marketplace/photography" class="explore-card">
+              <div class="explore-card-title">Photography</div>
+              <div class="explore-card-text">
+                All things presets, Lightroom and Photoshop to help your photography projects.
+              </div>
+            </a>
+            <a href="/marketplace/writing-and-publishing" class="explore-card">
+              <div class="explore-card-title">Writing &amp; Publishing</div>
+              <div class="explore-card-text">
+                Resources to help craft your stories – from guides, inspiration and more.
+              </div>
+            </a>
+            <a href="/marketplace/business-and-money" class="explore-card">
+              <div class="explore-card-title">Business &amp; Money</div>
+              <div class="explore-card-text">
+                From making a dollar to making a lot more – learn the ins and outs here.
+              </div>
+            </a>
+            <a href="/marketplace/films" class="explore-card">
+              <div class="explore-card-title">Films</div>
+              <div class="explore-card-text">
+                LUTs packs and resources for Adobe Premiere Pro and Final Cut Pro.
+              </div>
+            </a>
+            <a href="/marketplace/comics-and-graphic-novels" class="explore-card">
+              <div class="explore-card-title">Comics &amp; Graphic Novels</div>
+              <div class="explore-card-text">
+                Stories and art from acclaimed creators that will keep you hooked.
+              </div>
+            </a>
+            <a href="/marketplace/audio" class="explore-card">
+              <div class="explore-card-title">Audio</div>
+              <div class="explore-card-text">
+                Meditation music, healing and subliminal audio that nourishes the soul.
+              </div>
+            </a>
+            <a href="/marketplace/recorded-music" class="explore-card">
+              <div class="explore-card-title">Recorded Music</div>
+              <div class="explore-card-text">
+                Albums and tracks from incredible musicians and artists.
+              </div>
+            </a>
+            <a href="/marketplace/education" class="explore-card">
+              <div class="explore-card-title">Education</div>
+              <div class="explore-card-text">
+                The perfect place to learn new skills and level up your existing ones.
+              </div>
+            </a>
+            <a href="/marketplace/gaming" class="explore-card">
+              <div class="explore-card-title">Gaming</div>
+              <div class="explore-card-text">
+                Discover upcoming indie developers and their amazing work.
+              </div>
+            </a>
+            <a href="/marketplace/software-development" class="explore-card">
+              <div class="explore-card-title">Software Development</div>
+              <div class="explore-card-text">
+                Learning to code and improving your skills has never been easier.
+              </div>
+            </a>
+          </div>
+        </section>
+
+        <!-- Products grid -->
+        <section class="products-section">
+          <div class="products-header">
+            <div class="products-title" id="products-title">All products</div>
+          </div>
+          <div class="products-grid" id="products-grid"></div>
+          <div class="empty-text" id="products-empty" style="display:none;">
+            No products found in this category yet.
+          </div>
+        </section>
+      </div>
+    </div>
   </main>
 
-  <div id="footer-root"></div>
+  <script>
+    const SUPABASE_URL = "https://paqvgsruppgadgguynde.supabase.co"; // TODO
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBhcXZnc3J1cHBnYWRnZ3V5bmRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIzNTg3NTMsImV4cCI6MjA3NzkzNDc1M30.pwEE4WLFu2-tHkmH1fFYYwcEPmLPyavN7ykXdPGQ3AY";        // TODO
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  <script type="module" src="/js/header-market.js"></script>
-  <script type="module" src="/js/footer.js"></script>
-  <script type="module">
-    import { initAuthUI } from "/js/auth.js";
-    initAuthUI();
+    const filterState = {
+      tag: null,
+      fileType: null,
+      priceMin: null,
+      priceMax: null,
+      ratingMin: null
+    };
+
+    function getCategoryFromUrl() {
+      const path = window.location.pathname;
+      const segments = path.split("/").filter(Boolean);
+      let catSlug = null;
+      let subSlug = null;
+      const idx = segments.indexOf("marketplace");
+      if (idx !== -1) {
+        catSlug = segments[idx + 1] || null;
+        subSlug = segments[idx + 2] || null;
+      }
+      const params = new URLSearchParams(window.location.search);
+      const qCat = params.get("cat");
+      const qSub = params.get("sub");
+      if (!catSlug && qCat) catSlug = qCat;
+      if (!subSlug && qSub) subSlug = qSub;
+      if (catSlug === "all") catSlug = null;
+      return { catSlug, subSlug };
+    }
+
+    function formatHeading(catSlug, subSlug) {
+      if (!catSlug && !subSlug) return "All products";
+      const unslug = (s) => s.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      if (catSlug && !subSlug) return unslug(catSlug);
+      if (catSlug && subSlug) return unslug(catSlug) + " / " + unslug(subSlug);
+      return "Products";
+    }
+
+    function updateNavActive(catSlug) {
+      const pills = document.querySelectorAll(".nav-pill[data-cat]");
+      pills.forEach(pill => {
+        const pillCat = pill.getAttribute("data-cat");
+        if ((!catSlug && pillCat === "all") || (catSlug && pillCat === catSlug)) {
+          pill.classList.add("active");
+        } else {
+          pill.classList.remove("active");
+        }
+      });
+    }
+
+    function formatSellerDisplay(name, plan) {
+      if (!name) name = "Unknown seller";
+      if (plan === "PRO") {
+        return `${name} <span class="seller-badge-pro">[ ★ PRO ]</span>`;
+      }
+      if (plan === "ULTIMATE") {
+        return `${name} <span class="seller-badge-ultimate">[ 👑 ULTIMATE ]</span>`;
+      }
+      return name;
+    }
+
+    function buildRatingHtml(avg, count) {
+      if (!avg || !count || count <= 0) return "";
+      const score = Number(avg).toFixed(1);
+      return `
+        <div class="product-rating">
+          <span class="star">★</span>
+          <span>${score}</span>
+          <span>(${count})</span>
+        </div>
+      `;
+    }
+
+    function formatPrice(price) {
+      if (typeof price === "number") {
+        return "US$" + price.toFixed(2);
+      }
+      if (price === null || price === undefined) return "US$0.00";
+      const n = Number(price);
+      if (isNaN(n)) return "US$0.00";
+      return "US$" + n.toFixed(2);
+    }
+
+    function buildProductCard(product) {
+      const ratingHtml = buildRatingHtml(product.rating_avg, product.rating_count);
+      const sellerHtml = formatSellerDisplay(product.seller_name, product.seller_plan);
+      const priceText = formatPrice(product.price);
+      const cover = product.cover_url || "/placeholder-product.png";
+      const productUrl = `/product/${product.slug || product.id}`;
+      return `
+        <a href="${productUrl}" class="product-card">
+          <div class="product-thumb">
+            <img src="${cover}" alt="${product.title || "Product"}">
+          </div>
+          <div class="product-body">
+            <div class="product-title">${product.title || "Untitled product"}</div>
+            <div class="product-seller">${sellerHtml}</div>
+            ${ratingHtml}
+            <div class="product-footer">
+              <div class="product-price">${priceText}</div>
+              <div class="product-cta">View</div>
+            </div>
+          </div>
+        </a>
+      `;
+    }
+
+    function buildFeaturedCard(product) {
+      const priceText = formatPrice(product.price);
+      const sellerHtml = formatSellerDisplay(product.seller_name, product.seller_plan);
+      const cover = product.cover_url || "/placeholder-product.png";
+      const productUrl = `/product/${product.slug || product.id}`;
+      return `
+        <a href="${productUrl}" class="featured-card">
+          <div class="featured-thumb">
+            <img src="${cover}" alt="${product.title || "Product"}">
+          </div>
+          <div class="featured-body">
+            <div class="featured-title-text">${product.title || "Untitled product"}</div>
+            <div class="featured-meta">${sellerHtml}</div>
+            <div class="featured-price">${priceText}</div>
+          </div>
+        </a>
+      `;
+    }
+
+    function applyFiltersToQuery(query) {
+      if (filterState.tag) {
+        query = query.contains("tags", [filterState.tag]);
+      }
+      if (filterState.fileType) {
+        query = query.contains("file_types", [filterState.fileType]);
+      }
+      if (filterState.priceMin !== null && filterState.priceMin !== "") {
+        query = query.gte("price", filterState.priceMin);
+      }
+      if (filterState.priceMax !== null && filterState.priceMax !== "") {
+        query = query.lte("price", filterState.priceMax);
+      }
+      if (filterState.ratingMin !== null && filterState.ratingMin !== "") {
+        query = query.gte("rating_avg", filterState.ratingMin);
+      }
+      return query;
+    }
+
+    async function loadFeaturedProducts(catSlug, subSlug) {
+      const track = document.getElementById("featured-track");
+      const empty = document.getElementById("featured-empty");
+      track.innerHTML = "";
+      empty.style.display = "none";
+
+      let query = supabase
+        .from("products")
+        .select("id, slug, title, price, cover_url, seller_name, seller_plan, rating_avg, rating_count, category_slug, subcategory_slug, is_featured, is_active")
+        .eq("is_active", true)
+        .eq("is_featured", true)
+        .limit(10);
+
+      if (catSlug) query = query.eq("category_slug", catSlug);
+      if (subSlug) query = query.eq("subcategory_slug", subSlug);
+
+      query = applyFiltersToQuery(query);
+
+      const { data, error } = await query;
+      if (error) {
+        console.error("Error loading featured products", error);
+        empty.textContent = "Failed to load featured products.";
+        empty.style.display = "block";
+        return;
+      }
+
+      if (!data || data.length === 0) {
+        empty.style.display = "block";
+        return;
+      }
+
+      data.forEach(p => {
+        track.insertAdjacentHTML("beforeend", buildFeaturedCard(p));
+      });
+    }
+
+    async function loadProductsGrid(catSlug, subSlug) {
+      const grid = document.getElementById("products-grid");
+      const empty = document.getElementById("products-empty");
+      grid.innerHTML = "";
+      empty.style.display = "none";
+
+      let query = supabase
+        .from("products")
+        .select("id, slug, title, price, cover_url, seller_name, seller_plan, rating_avg, rating_count, category_slug, subcategory_slug, is_active")
+        .eq("is_active", true);
+
+      if (catSlug) query = query.eq("category_slug", catSlug);
+      if (subSlug) query = query.eq("subcategory_slug", subSlug);
+
+      query = applyFiltersToQuery(query);
+
+      const { data, error } = await query;
+      if (error) {
+        console.error("Error loading products", error);
+        empty.textContent = "Failed to load products.";
+        empty.style.display = "block";
+        return;
+      }
+
+      if (!data || data.length === 0) {
+        empty.style.display = "block";
+        return;
+      }
+
+      data.forEach(p => {
+        grid.insertAdjacentHTML("beforeend", buildProductCard(p));
+      });
+    }
+
+    function initFeaturedSlider() {
+      const track = document.getElementById("featured-track");
+      if (!track) return;
+      const buttons = document.querySelectorAll(".featured-btn");
+      buttons.forEach(btn => {
+        btn.addEventListener("click", () => {
+          const dir = btn.getAttribute("data-dir");
+          const amount = 220;
+          track.scrollBy({
+            left: dir === "left" ? -amount : amount,
+            behavior: "smooth"
+          });
+        });
+      });
+    }
+
+    function initFilterEvents(reloadFn) {
+      document.querySelectorAll(".filter-tag").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const tag = btn.getAttribute("data-tag");
+          if (!tag) return;
+          if (filterState.tag === tag) {
+            filterState.tag = null;
+            btn.classList.remove("active");
+          } else {
+            filterState.tag = tag;
+            document.querySelectorAll(".filter-tag").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+          }
+          reloadFn();
+        });
+      });
+
+      document.querySelectorAll(".filter-filetype").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const t = btn.getAttribute("data-type");
+          if (filterState.fileType === t) {
+            filterState.fileType = null;
+            btn.classList.remove("active");
+          } else {
+            filterState.fileType = t;
+            document.querySelectorAll(".filter-filetype").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+          }
+          reloadFn();
+        });
+      });
+
+      const priceMinInput = document.getElementById("price-min");
+      const priceMaxInput = document.getElementById("price-max");
+      priceMinInput.addEventListener("change", () => {
+        filterState.priceMin = priceMinInput.value !== "" ? parseFloat(priceMinInput.value) : null;
+        reloadFn();
+      });
+      priceMaxInput.addEventListener("change", () => {
+        filterState.priceMax = priceMaxInput.value !== "" ? parseFloat(priceMaxInput.value) : null;
+        reloadFn();
+      });
+
+      document.querySelectorAll("input[name='rating-min']").forEach(radio => {
+        radio.addEventListener("change", () => {
+          const v = radio.value;
+          filterState.ratingMin = v === "" ? null : parseFloat(v);
+          reloadFn();
+        });
+      });
+
+      document.getElementById("filters-clear").addEventListener("click", () => {
+        filterState.tag = null;
+        filterState.fileType = null;
+        filterState.priceMin = null;
+        filterState.priceMax = null;
+        filterState.ratingMin = null;
+        document.querySelectorAll(".filter-tag, .filter-filetype").forEach(b => b.classList.remove("active"));
+        priceMinInput.value = "";
+        priceMaxInput.value = "";
+        document.querySelectorAll("input[name='rating-min']").forEach(r => r.checked = false);
+        reloadFn();
+      });
+    }
+
+    async function initMarketplace() {
+      const { catSlug, subSlug } = getCategoryFromUrl();
+      const heading = formatHeading(catSlug, subSlug);
+      document.getElementById("products-title").textContent = heading;
+      if (catSlug || subSlug) {
+        document.getElementById("featured-title").textContent = "Featured in " + heading;
+      } else {
+        document.getElementById("featured-title").textContent = "Featured products";
+      }
+      updateNavActive(catSlug);
+      initFeaturedSlider();
+
+      const reloadAll = () => {
+        loadFeaturedProducts(catSlug, subSlug);
+        loadProductsGrid(catSlug, subSlug);
+      };
+
+      initFilterEvents(reloadAll);
+      reloadAll();
+    }
+
+    document.addEventListener("DOMContentLoaded", initMarketplace);
   </script>
+
 </body>
 </html>

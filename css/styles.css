@@ -974,3 +974,176 @@ body{
     grid-template-columns:repeat(2,minmax(0,1fr));
   }
 }
+/* ===========================
+   MARKETPLACE HEADER + NAV
+   (Safe to merge – no conflict)
+============================ */
+
+.marketplace-nav {
+  background: #0b0b12;
+  border-bottom: 1px solid rgba(244,197,106,0.3);
+  position: sticky;
+  top: 0;
+  z-index: 30;
+}
+
+.marketplace-nav-inner {
+  display: flex;
+  align-items: center;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 10px 0;
+}
+
+.marketplace-nav-inner::-webkit-scrollbar {
+  display: none;
+}
+
+.nav-pill {
+  border-radius: 999px;
+  padding: 6px 14px;
+  background: rgba(12,10,20,0.8);
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  border: 1px solid rgba(244,197,106,0.25);
+  margin-right: 8px;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: 0.18s;
+}
+
+.nav-pill:hover {
+  background: radial-gradient(circle at top, rgba(244,197,106,0.18), transparent 70%);
+  color: var(--accent-gold);
+  border-color: var(--accent-gold-soft);
+}
+
+.nav-pill.active {
+  background: radial-gradient(circle at top, #ffe9b7 0, #f4c56a 55%);
+  color: #1b1105;
+  border-color: var(--border-gold);
+  font-weight: 600;
+}
+
+.nav-more {
+  position: relative;
+}
+.nav-more-dropdown {
+  position: absolute;
+  top: 120%;
+  left: 0;
+  background: radial-gradient(circle at top,#1c1828 0,#050509 75%);
+  border: 1px solid rgba(244,197,106,0.45);
+  border-radius: 14px;
+  padding: 12px;
+  display: none;
+  min-width: 220px;
+  box-shadow: 0 22px 60px rgba(0,0,0,0.82);
+  z-index: 50;
+}
+
+.nav-more:hover .nav-more-dropdown {
+  display: block;
+}
+
+.more-link {
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  text-decoration: none;
+  padding: 4px 0;
+  display: block;
+}
+
+.more-link:hover {
+  color: var(--accent-gold);
+}
+
+/* ===========================
+   MARKETPLACE LAYOUT
+============================ */
+
+.marketplace-layout {
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr);
+  gap: 20px;
+  margin-top: 20px;
+}
+
+@media (max-width: 960px) {
+  .marketplace-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ===========================
+   FILTERS SIDEBAR
+============================ */
+
+.filters-column {
+  background: radial-gradient(circle at top,#171322 0,#050509 75%);
+  border-radius: 16px;
+  border: 1px solid rgba(244,197,106,0.45);
+  padding: 16px;
+  box-shadow: var(--shadow-soft);
+}
+
+.filter-tag,
+.filter-filetype {
+  border-radius: 999px;
+  padding: 4px 10px;
+  background: rgba(8,7,14,0.9);
+  border: 1px solid rgba(244,197,106,0.3);
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  margin: 3px;
+  cursor: pointer;
+}
+
+.filter-tag.active,
+.filter-filetype.active {
+  background: radial-gradient(circle at top,#ffe9b7 0,#f4c56a 55%);
+  color: #1b1105;
+  border-color: var(--accent-gold);
+}
+
+/* ===========================
+   PRODUCT GRID
+============================ */
+
+.product-card {
+  background: radial-gradient(circle at top,#171322 0,#050509 75%);
+  border-radius: 18px;
+  border: 1px solid rgba(244,197,106,0.45);
+  box-shadow: var(--shadow-soft);
+  overflow: hidden;
+  text-decoration: none;
+}
+
+.product-thumb {
+  position: relative;
+  width: 100%;
+  padding-top: 100%;
+  background: #222;
+}
+
+.product-thumb img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ===========================
+   FEATURED SLIDER
+============================ */
+
+.featured-section {
+  background: radial-gradient(circle at top,#171322 0,#050509 75%);
+  border-radius: 18px;
+  border: 1px solid rgba(244,197,106,0.45);
+  padding: 16px;
+  box-shadow: var(--shadow-soft);
+}
+
+/* (More sections can be added if needed) */

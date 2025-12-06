@@ -7,514 +7,118 @@
   <link rel="icon" href="/favicon.png">
   <link rel="stylesheet" href="css/styles.css">
 
-  <!-- Supabase JS -->
+  <!-- Supabase JS v2 -->
   <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-
-  <style>
-    body {
-      font-family: Arial, Helvetica, sans-serif;
-      margin: 0;
-      padding: 0;
-      background: #f7f7f9;
-      color: #222;
-    }
-    .container {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 16px;
-    }
-
-    /* ===== Top marketplace nav (Payhip style) ===== */
-    .marketplace-nav {
-      background: #fff;
-      border-bottom: 1px solid #e4e4e8;
-    }
-    .marketplace-nav-inner {
-      display: flex;
-      align-items: center;
-      overflow-x: auto;
-      scrollbar-width: none;
-    }
-    .marketplace-nav-inner::-webkit-scrollbar {
-      display: none;
-    }
-    .nav-scroll {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 0;
-      white-space: nowrap;
-      width: 100%;
-    }
-    .nav-pill {
-      border-radius: 999px;
-      padding: 6px 14px;
-      border: 1px solid transparent;
-      background: #f2f2f5;
-      font-size: 14px;
-      text-decoration: none;
-      color: #333;
-      cursor: pointer;
-      flex-shrink: 0;
-    }
-    .nav-pill:hover {
-      background: #e6e6ee;
-    }
-    .nav-pill.active {
-      background: #222;
-      color: #fff;
-    }
-
-    .nav-more {
-      position: relative;
-      flex-shrink: 0;
-    }
-    .nav-more-toggle {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-    }
-    .nav-more-dropdown {
-      position: absolute;
-      top: 120%;
-      left: 0;
-      z-index: 50;
-      background: #fff;
-      border-radius: 8px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.12);
-      padding: 12px 16px;
-      display: none;
-      min-width: 260px;
-      max-height: 420px;
-      overflow-y: auto;
-    }
-    .nav-more:hover .nav-more-dropdown,
-    .nav-more-dropdown:hover {
-      display: block;
-    }
-    .more-group {
-      margin-bottom: 12px;
-    }
-    .more-group-title {
-      font-size: 13px;
-      font-weight: 700;
-      margin-bottom: 6px;
-      color: #555;
-    }
-    .more-link {
-      display: block;
-      font-size: 13px;
-      text-decoration: none;
-      color: #333;
-      padding: 2px 0;
-    }
-    .more-link:hover {
-      text-decoration: underline;
-    }
-
-    @media (max-width: 768px) {
-      .marketplace-nav-inner {
-        padding-inline: 8px;
-      }
-    }
-
-    /* ===== Main 2-column layout ===== */
-    .marketplace-layout {
-      display: grid;
-      grid-template-columns: 260px minmax(0, 1fr);
-      gap: 16px;
-      margin-top: 16px;
-    }
-    @media (max-width: 960px) {
-      .marketplace-layout {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    /* ===== Filters sidebar ===== */
-    .filters-column {
-      background: #fff;
-      border-radius: 12px;
-      border: 1px solid #e4e4e8;
-      padding: 12px 14px;
-      align-self: flex-start;
-    }
-    .filters-title-main {
-      font-size: 16px;
-      font-weight: 700;
-      margin-bottom: 8px;
-    }
-    .filters-block {
-      margin-bottom: 14px;
-    }
-    .filters-block-title {
-      font-size: 13px;
-      font-weight: 700;
-      margin-bottom: 6px;
-      color: #555;
-    }
-    .filter-tag,
-    .filter-filetype {
-      display: inline-block;
-      margin: 2px 4px 4px 0;
-      padding: 3px 8px;
-      border-radius: 999px;
-      border: 1px solid #ddd;
-      background: #f5f5f8;
-      font-size: 12px;
-      cursor: pointer;
-    }
-    .filter-tag.active,
-    .filter-filetype.active {
-      background: #222;
-      color: #fff;
-      border-color: #222;
-    }
-    .filters-input-row {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      margin-bottom: 4px;
-    }
-    .filters-input-row label {
-      font-size: 12px;
-      color: #555;
-      min-width: 90px;
-    }
-    .filters-input-row input {
-      flex: 1;
-      padding: 4px 6px;
-      font-size: 12px;
-    }
-    .filters-rating label {
-      display: block;
-      font-size: 12px;
-      margin-bottom: 4px;
-      cursor: pointer;
-    }
-    .filters-rating input {
-      margin-right: 4px;
-    }
-    .filters-footer {
-      margin-top: 10px;
-      display: flex;
-      justify-content: flex-end;
-    }
-    .filters-clear-btn {
-      font-size: 12px;
-      border-radius: 999px;
-      border: 1px solid #ccc;
-      padding: 4px 8px;
-      background: #f5f5f7;
-      cursor: pointer;
-    }
-
-    /* ===== Content column ===== */
-    .content-column { }
-
-    /* ===== Featured slider ===== */
-    .featured-section {
-      background: #fff;
-      border-radius: 12px;
-      border: 1px solid #e4e4e8;
-      padding: 16px;
-      overflow: hidden;
-    }
-    .featured-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 8px;
-    }
-    .featured-title {
-      font-size: 18px;
-      font-weight: 700;
-    }
-    .featured-controls {
-      display: flex;
-      gap: 6px;
-    }
-    .featured-btn {
-      border-radius: 999px;
-      border: 1px solid #ccc;
-      background: #f5f5f7;
-      padding: 4px 8px;
-      cursor: pointer;
-      font-size: 14px;
-    }
-    .featured-track {
-      display: flex;
-      gap: 12px;
-      overflow-x: auto;
-      scrollbar-width: thin;
-      padding-bottom: 4px;
-    }
-    .featured-track::-webkit-scrollbar {
-      height: 6px;
-    }
-    .featured-track::-webkit-scrollbar-thumb {
-      border-radius: 999px;
-      background: #ccc;
-    }
-    .featured-card {
-      flex: 0 0 210px;
-      max-width: 210px;
-      border-radius: 10px;
-      border: 1px solid #e4e4e8;
-      background: #fafafa;
-      overflow: hidden;
-      text-decoration: none;
-      color: inherit;
-    }
-    .featured-thumb {
-      position: relative;
-      width: 100%;
-      padding-top: 100%;
-      overflow: hidden;
-      background: #ddd;
-    }
-    .featured-thumb img {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-    .featured-body {
-      padding: 8px 10px 10px;
-    }
-    .featured-title-text {
-      font-size: 14px;
-      font-weight: 600;
-      margin-bottom: 4px;
-      max-height: 36px;
-      overflow: hidden;
-    }
-    .featured-meta {
-      font-size: 12px;
-      color: #555;
-      margin-bottom: 4px;
-    }
-    .featured-price {
-      font-weight: 700;
-      font-size: 14px;
-    }
-
-    /* ===== Explore categories (Payhip style boxes) ===== */
-    .explore-section {
-      margin-top: 16px;
-    }
-    .explore-header-title {
-      font-size: 20px;
-      font-weight: 700;
-      margin-bottom: 4px;
-    }
-    .explore-header-sub {
-      font-size: 14px;
-      color: #555;
-      margin-bottom: 10px;
-    }
-    .explore-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 10px;
-    }
-    @media (max-width: 960px) {
-      .explore-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-    }
-    @media (max-width: 640px) {
-      .explore-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-    .explore-card {
-      background: #fff;
-      border-radius: 10px;
-      border: 1px solid #e4e4e8;
-      padding: 10px;
-      text-decoration: none;
-      color: inherit;
-      display: block;
-    }
-    .explore-card-title {
-      font-size: 14px;
-      font-weight: 700;
-      margin-bottom: 4px;
-    }
-    .explore-card-text {
-      font-size: 12px;
-      color: #555;
-    }
-
-    /* ===== Products grid ===== */
-    .products-section {
-      margin-top: 16px;
-    }
-    .products-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 8px;
-    }
-    .products-title {
-      font-size: 18px;
-      font-weight: 700;
-    }
-    .products-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 14px;
-    }
-    @media (max-width: 960px) {
-      .products-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-    }
-    @media (max-width: 640px) {
-      .products-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-    .product-card {
-      border-radius: 10px;
-      border: 1px solid #e4e4e8;
-      background: #fff;
-      overflow: hidden;
-      text-decoration: none;
-      color: inherit;
-      display: flex;
-      flex-direction: column;
-    }
-    .product-thumb {
-      position: relative;
-      width: 100%;
-      padding-top: 100%;
-      overflow: hidden;
-      background: #ddd;
-    }
-    .product-thumb img {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-    .product-body {
-      padding: 8px 10px 10px;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      flex-grow: 1;
-    }
-    .product-title {
-      font-size: 14px;
-      font-weight: 600;
-      max-height: 36px;
-      overflow: hidden;
-    }
-    .product-seller {
-      font-size: 12px;
-      color: #555;
-    }
-    .seller-badge-pro {
-      font-weight: 700;
-      color: #e67e22;
-    }
-    .seller-badge-ultimate {
-      font-weight: 700;
-      color: #9b59b6;
-    }
-    .product-rating {
-      font-size: 12px;
-      color: #444;
-      display: inline-flex;
-      align-items: center;
-      gap: 2px;
-    }
-    .product-rating .star {
-      color: #f1c40f;
-      font-size: 12px;
-    }
-    .product-footer {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-top: 4px;
-    }
-    .product-price {
-      font-size: 14px;
-      font-weight: 700;
-    }
-    .product-cta {
-      font-size: 12px;
-      color: #555;
-    }
-    .empty-text {
-      font-size: 14px;
-      color: #777;
-      margin-top: 8px;
-    }
-  </style>
 </head>
-<body>
+<body class="marketplace-page">
 
-  <!-- keep your global site header here if you have one -->
+  <!-- =========================
+       SILKY ROAD MARKETPLACE HEADER (2 ROWS)
+  ========================== -->
+  <header class="sr-header">
+    <div class="sr-container">
+      <div class="sr-header-inner">
+        <!-- Left: Logo -->
+        <a href="/index.html" class="logo-link">
+          <img src="/logo.png" alt="Silky Road" class="logo-img">
+        </a>
 
-  <!-- Top category nav -->
-  <div class="marketplace-nav">
-    <div class="marketplace-nav-inner container">
-      <div class="nav-scroll">
-        <a href="/marketplace" class="nav-pill" data-cat="all">All</a>
-        <a href="/marketplace/3d" class="nav-pill" data-cat="3d">3D</a>
-        <a href="/marketplace/roblox" class="nav-pill" data-cat="roblox">Roblox</a>
-        <a href="/marketplace/crafts" class="nav-pill" data-cat="crafts">Crafts</a>
-        <a href="/marketplace/design" class="nav-pill" data-cat="design">Design</a>
-        <a href="/marketplace/drawing-and-painting" class="nav-pill" data-cat="drawing-and-painting">Drawing &amp; Painting</a>
-        <a href="/marketplace/music-and-sound-design" class="nav-pill" data-cat="music-and-sound-design">Music &amp; Sound Design</a>
-        <a href="/marketplace/films" class="nav-pill" data-cat="films">Films</a>
+        <!-- Center: Search products -->
+        <div class="market-search">
+          <input id="market-search-input" type="text" placeholder="Search products...">
+        </div>
 
-        <div class="nav-more">
-          <button class="nav-pill nav-more-toggle">More ▾</button>
-          <div class="nav-more-dropdown">
-            <div class="more-group">
-              <div class="more-group-title">Fiction Books</div>
-              <a class="more-link" href="/marketplace/fiction-books/mystery">Mystery</a>
-              <a class="more-link" href="/marketplace/fiction-books/thriller">Thriller</a>
-              <a class="more-link" href="/marketplace/fiction-books/romance">Romance</a>
-              <a class="more-link" href="/marketplace/fiction-books/fantasy">Fantasy</a>
-            </div>
+        <!-- Right: Actions (login / start selling OR library / dashboard) -->
+        <div class="nav-actions nav-actions-market">
+          <a href="/login.html" class="btn btn-ghost" id="btn-login">Login</a>
+          <a href="/signup.html" class="btn btn-primary" id="btn-start-selling">Start selling</a>
 
-            <div class="more-group">
-              <div class="more-group-title">Business &amp; Money</div>
-              <a class="more-link" href="/marketplace/business-and-money/investing">Investing</a>
-              <a class="more-link" href="/marketplace/business-and-money/personal-finance">Personal Finance</a>
-              <a class="more-link" href="/marketplace/business-and-money/entrepreneurship">Entrepreneurship</a>
-            </div>
+          <a href="/library.html" class="btn btn-ghost" id="btn-library" style="display:none;">Library</a>
+          <a href="/dashboard.html" class="btn btn-ghost" id="btn-dashboard" style="display:none;">Dashboard</a>
 
-            <div class="more-group">
-              <div class="more-group-title">Education</div>
-              <a class="more-link" href="/marketplace/education/ebooks">eBooks</a>
-              <a class="more-link" href="/marketplace/education/worksheets">Worksheets</a>
-              <a class="more-link" href="/marketplace/education/online-courses">Online Courses</a>
-            </div>
+          <a href="/checkout.html" class="cart-link">
+            <span class="cart-icon">🛒</span>
+          </a>
+        </div>
 
-            <!-- Add any more cat/subcat groups here -->
-          </div>
+        <!-- Mobile menu toggle -->
+        <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+
+      <!-- Mobile panel (simple for now) -->
+      <div class="nav-mobile-panel" id="nav-mobile-panel">
+        <div class="nav-mobile-section">
+          <strong>Account</strong>
+          <a href="/login.html" class="nav-link nav-link-small">Login</a>
+          <a href="/signup.html" class="nav-link nav-link-small">Start selling</a>
+          <a href="/library.html" class="nav-link nav-link-small">Library</a>
+          <a href="/dashboard.html" class="nav-link nav-link-small">Dashboard</a>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- Main content -->
-  <main class="container">
+    <!-- Row 2: Category nav (Payhip style, scrollable on mobile) -->
+    <nav class="marketplace-nav">
+      <div class="sr-container">
+        <div class="marketplace-nav-inner">
+          <div class="nav-scroll">
+            <a href="/marketplace" class="nav-pill" data-cat="all">All</a>
+            <a href="/marketplace/3d" class="nav-pill" data-cat="3d">3D</a>
+            <a href="/marketplace/roblox" class="nav-pill" data-cat="roblox">Roblox</a>
+            <a href="/marketplace/crafts" class="nav-pill" data-cat="crafts">Crafts</a>
+            <a href="/marketplace/design" class="nav-pill" data-cat="design">Design</a>
+            <a href="/marketplace/drawing-and-painting" class="nav-pill" data-cat="drawing-and-painting">Drawing &amp; Painting</a>
+            <a href="/marketplace/music-and-sound-design" class="nav-pill" data-cat="music-and-sound-design">Music &amp; Sound Design</a>
+            <a href="/marketplace/films" class="nav-pill" data-cat="films">Films</a>
+
+            <!-- More ▾ with subcategories -->
+            <div class="nav-more">
+              <button class="nav-pill">More ▾</button>
+              <div class="nav-more-dropdown">
+                <div class="more-group">
+                  <div class="more-group-title">Fiction Books</div>
+                  <a class="more-link" href="/marketplace/fiction-books/mystery">Mystery</a>
+                  <a class="more-link" href="/marketplace/fiction-books/thriller">Thriller</a>
+                  <a class="more-link" href="/marketplace/fiction-books/romance">Romance</a>
+                  <a class="more-link" href="/marketplace/fiction-books/fantasy">Fantasy</a>
+                </div>
+
+                <div class="more-group">
+                  <div class="more-group-title">Business &amp; Money</div>
+                  <a class="more-link" href="/marketplace/business-and-money/investing">Investing</a>
+                  <a class="more-link" href="/marketplace/business-and-money/personal-finance">Personal Finance</a>
+                  <a class="more-link" href="/marketplace/business-and-money/entrepreneurship">Entrepreneurship</a>
+                </div>
+
+                <div class="more-group">
+                  <div class="more-group-title">Education</div>
+                  <a class="more-link" href="/marketplace/education/ebooks">eBooks</a>
+                  <a class="more-link" href="/marketplace/education/worksheets">Worksheets</a>
+                  <a class="more-link" href="/marketplace/education/online-courses">Online Courses</a>
+                </div>
+
+                <!-- Add more groups if you want -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <!-- =========================
+       MAIN MARKETPLACE CONTENT
+  ========================== -->
+  <main class="page marketplace-page">
     <div class="marketplace-layout">
 
-      <!-- ===== Filters Sidebar ===== -->
+      <!-- LEFT: FILTERS -->
       <aside class="filters-column">
         <div class="filters-title-main">Filters</div>
 
+        <!-- Tags -->
         <div class="filters-block">
           <div class="filters-block-title">Tags</div>
           <button class="filter-tag" data-tag="vrchat">vrchat</button>
@@ -522,10 +126,10 @@
           <button class="filter-tag" data-tag="vrchat asset">vrchat asset</button>
           <button class="filter-tag" data-tag="free">free</button>
           <button class="filter-tag" data-tag="blender">blender</button>
-          <!-- "Show more" can later open a modal with full tag list -->
           <button class="filter-tag" data-tag="" id="tags-show-more">Show more</button>
         </div>
 
+        <!-- File types -->
         <div class="filters-block">
           <div class="filters-block-title">Contains</div>
           <button class="filter-filetype" data-type="pdf">pdf</button>
@@ -533,9 +137,9 @@
           <button class="filter-filetype" data-type="mp4">mp4</button>
           <button class="filter-filetype" data-type="rar">rar</button>
           <button class="filter-filetype" data-type="mp3">mp3</button>
-          <!-- Again, you can later expand this list -->
         </div>
 
+        <!-- Price -->
         <div class="filters-block">
           <div class="filters-block-title">Price</div>
           <div class="filters-input-row">
@@ -548,6 +152,7 @@
           </div>
         </div>
 
+        <!-- Rating -->
         <div class="filters-block filters-rating">
           <div class="filters-block-title">Rating</div>
           <label><input type="radio" name="rating-min" value="4"> ★★★★☆ and up</label>
@@ -557,14 +162,16 @@
           <label><input type="radio" name="rating-min" value=""> Any rating</label>
         </div>
 
+        <!-- Clear filters -->
         <div class="filters-footer">
           <button class="filters-clear-btn" id="filters-clear">Clear filters</button>
         </div>
       </aside>
 
-      <!-- ===== Right Content Column ===== -->
-      <div class="content-column">
-        <!-- Featured -->
+      <!-- RIGHT: FEATURED + PRODUCTS -->
+      <div class="marketplace-main">
+
+        <!-- Featured slider -->
         <section class="featured-section" id="featured-section">
           <div class="featured-header">
             <div class="featured-title" id="featured-title">Featured products</div>
@@ -576,124 +183,6 @@
           <div class="featured-track" id="featured-track"></div>
           <div class="empty-text" id="featured-empty" style="display:none;">
             No featured products yet.
-          </div>
-        </section>
-
-        <!-- Explore categories boxes -->
-        <section class="explore-section" id="explore-section">
-          <div class="explore-header-title">Explore categories</div>
-          <div class="explore-header-sub">
-            Find your niche and discover digital products tailored to you.
-          </div>
-          <div class="explore-grid">
-            <a href="/marketplace/3d" class="explore-card">
-              <div class="explore-card-title">3D</div>
-              <div class="explore-card-text">
-                Discover exceptional 3D avatars, assets and more for VRChat and other platforms.
-              </div>
-            </a>
-            <a href="/marketplace/roblox" class="explore-card">
-              <div class="explore-card-title">Roblox</div>
-              <div class="explore-card-text">
-                Build the perfect Roblox game with high quality assets, vehicles, scripts, VFX and more.
-              </div>
-            </a>
-            <a href="/marketplace/crafts" class="explore-card">
-              <div class="explore-card-title">Crafts</div>
-              <div class="explore-card-text">
-                Crochet, sewing, knitting, quilting, stitching patterns and much more for crafters.
-              </div>
-            </a>
-            <a href="/marketplace/music-and-sound-design" class="explore-card">
-              <div class="explore-card-title">Music &amp; Sound Design</div>
-              <div class="explore-card-text">
-                Sample packs, loops, beats, sound kits and more from creative producers and engineers.
-              </div>
-            </a>
-            <a href="/marketplace/design" class="explore-card">
-              <div class="explore-card-title">Design</div>
-              <div class="explore-card-text">
-                Level up your designs with creative design assets that you'll fall in love with.
-              </div>
-            </a>
-            <a href="/marketplace/drawing-and-painting" class="explore-card">
-              <div class="explore-card-title">Drawing &amp; Painting</div>
-              <div class="explore-card-text">
-                Procreate brushes, illustrations and art from the most talented creators in the world.
-              </div>
-            </a>
-            <a href="/marketplace/fiction-books" class="explore-card">
-              <div class="explore-card-title">Fiction Books</div>
-              <div class="explore-card-text">
-                Explore a universe of spellbinding, special and unique books.
-              </div>
-            </a>
-            <a href="/marketplace/fitness-and-health" class="explore-card">
-              <div class="explore-card-title">Fitness &amp; Health</div>
-              <div class="explore-card-text">
-                From the gym to the kitchen – fun and inspiring ways to change your lifestyle.
-              </div>
-            </a>
-            <a href="/marketplace/photography" class="explore-card">
-              <div class="explore-card-title">Photography</div>
-              <div class="explore-card-text">
-                All things presets, Lightroom and Photoshop to help your photography projects.
-              </div>
-            </a>
-            <a href="/marketplace/writing-and-publishing" class="explore-card">
-              <div class="explore-card-title">Writing &amp; Publishing</div>
-              <div class="explore-card-text">
-                Resources to help craft your stories – from guides, inspiration and more.
-              </div>
-            </a>
-            <a href="/marketplace/business-and-money" class="explore-card">
-              <div class="explore-card-title">Business &amp; Money</div>
-              <div class="explore-card-text">
-                From making a dollar to making a lot more – learn the ins and outs here.
-              </div>
-            </a>
-            <a href="/marketplace/films" class="explore-card">
-              <div class="explore-card-title">Films</div>
-              <div class="explore-card-text">
-                LUTs packs and resources for Adobe Premiere Pro and Final Cut Pro.
-              </div>
-            </a>
-            <a href="/marketplace/comics-and-graphic-novels" class="explore-card">
-              <div class="explore-card-title">Comics &amp; Graphic Novels</div>
-              <div class="explore-card-text">
-                Stories and art from acclaimed creators that will keep you hooked.
-              </div>
-            </a>
-            <a href="/marketplace/audio" class="explore-card">
-              <div class="explore-card-title">Audio</div>
-              <div class="explore-card-text">
-                Meditation music, healing and subliminal audio that nourishes the soul.
-              </div>
-            </a>
-            <a href="/marketplace/recorded-music" class="explore-card">
-              <div class="explore-card-title">Recorded Music</div>
-              <div class="explore-card-text">
-                Albums and tracks from incredible musicians and artists.
-              </div>
-            </a>
-            <a href="/marketplace/education" class="explore-card">
-              <div class="explore-card-title">Education</div>
-              <div class="explore-card-text">
-                The perfect place to learn new skills and level up your existing ones.
-              </div>
-            </a>
-            <a href="/marketplace/gaming" class="explore-card">
-              <div class="explore-card-title">Gaming</div>
-              <div class="explore-card-text">
-                Discover upcoming indie developers and their amazing work.
-              </div>
-            </a>
-            <a href="/marketplace/software-development" class="explore-card">
-              <div class="explore-card-title">Software Development</div>
-              <div class="explore-card-text">
-                Learning to code and improving your skills has never been easier.
-              </div>
-            </a>
           </div>
         </section>
 
@@ -711,9 +200,12 @@
     </div>
   </main>
 
+  <!-- =========================
+       MARKETPLACE SCRIPT
+  ========================== -->
   <script>
-    const SUPABASE_URL = "https://paqvgsruppgadgguynde.supabase.co"; // TODO
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBhcXZnc3J1cHBnYWRnZ3V5bmRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIzNTg3NTMsImV4cCI6MjA3NzkzNDc1M30.pwEE4WLFu2-tHkmH1fFYYwcEPmLPyavN7ykXdPGQ3AY";        // TODO
+    const SUPABASE_URL = "https://paqvgsruppgadgguynde.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBhcXZnc3J1cHBnYWRnZ3V5bmRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIzNTg3NTMsImV4cCI6MjA3NzkzNDc1M30.pwEE4WLFu2-tHkmH1fFYYwcEPmLPyavN7ykXdPGQ3AY";
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     const filterState = {
@@ -721,7 +213,8 @@
       fileType: null,
       priceMin: null,
       priceMax: null,
-      ratingMin: null
+      ratingMin: null,
+      search: ""
     };
 
     function getCategoryFromUrl() {
@@ -743,9 +236,15 @@
       return { catSlug, subSlug };
     }
 
+    function unslug(text) {
+      if (!text) return "";
+      return text
+        .replace(/-/g, " ")
+        .replace(/\b\w/g, c => c.toUpperCase());
+    }
+
     function formatHeading(catSlug, subSlug) {
       if (!catSlug && !subSlug) return "All products";
-      const unslug = (s) => s.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase());
       if (catSlug && !subSlug) return unslug(catSlug);
       if (catSlug && subSlug) return unslug(catSlug) + " / " + unslug(subSlug);
       return "Products";
@@ -787,9 +286,7 @@
     }
 
     function formatPrice(price) {
-      if (typeof price === "number") {
-        return "US$" + price.toFixed(2);
-      }
+      if (typeof price === "number") return "US$" + price.toFixed(2);
       if (price === null || price === undefined) return "US$0.00";
       const n = Number(price);
       if (isNaN(n)) return "US$0.00";
@@ -854,6 +351,9 @@
       }
       if (filterState.ratingMin !== null && filterState.ratingMin !== "") {
         query = query.gte("rating_avg", filterState.ratingMin);
+      }
+      if (filterState.search) {
+        query = query.ilike("title", "%" + filterState.search + "%");
       }
       return query;
     }
@@ -1001,11 +501,59 @@
         filterState.priceMin = null;
         filterState.priceMax = null;
         filterState.ratingMin = null;
+        filterState.search = "";
         document.querySelectorAll(".filter-tag, .filter-filetype").forEach(b => b.classList.remove("active"));
         priceMinInput.value = "";
         priceMaxInput.value = "";
         document.querySelectorAll("input[name='rating-min']").forEach(r => r.checked = false);
+        const searchInput = document.getElementById("market-search-input");
+        if (searchInput) searchInput.value = "";
         reloadFn();
+      });
+
+      const searchInput = document.getElementById("market-search-input");
+      if (searchInput) {
+        searchInput.addEventListener("input", () => {
+          filterState.search = searchInput.value.trim();
+          reloadFn();
+        });
+      }
+    }
+
+    async function initHeaderAuth() {
+      try {
+        const { data, error } = await supabase.auth.getUser();
+        if (error) {
+          console.warn("Auth check error", error);
+          return;
+        }
+        const user = data?.user;
+        const btnLogin = document.getElementById("btn-login");
+        const btnStart = document.getElementById("btn-start-selling");
+        const btnLib = document.getElementById("btn-library");
+        const btnDash = document.getElementById("btn-dashboard");
+        if (user) {
+          if (btnLogin) btnLogin.style.display = "none";
+          if (btnStart) btnStart.style.display = "none";
+          if (btnLib) btnLib.style.display = "inline-flex";
+          if (btnDash) btnDash.style.display = "inline-flex";
+        } else {
+          if (btnLogin) btnLogin.style.display = "inline-flex";
+          if (btnStart) btnStart.style.display = "inline-flex";
+          if (btnLib) btnLib.style.display = "none";
+          if (btnDash) btnDash.style.display = "none";
+        }
+      } catch (e) {
+        console.error("initHeaderAuth error", e);
+      }
+    }
+
+    function initMobileNavToggle() {
+      const toggle = document.getElementById("nav-toggle");
+      const panel = document.getElementById("nav-mobile-panel");
+      if (!toggle || !panel) return;
+      toggle.addEventListener("click", () => {
+        panel.classList.toggle("open");
       });
     }
 
@@ -1030,7 +578,11 @@
       reloadAll();
     }
 
-    document.addEventListener("DOMContentLoaded", initMarketplace);
+    document.addEventListener("DOMContentLoaded", () => {
+      initHeaderAuth();
+      initMobileNavToggle();
+      initMarketplace();
+    });
   </script>
 
 </body>

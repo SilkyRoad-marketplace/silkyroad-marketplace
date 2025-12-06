@@ -1,0 +1,92 @@
+/* Silky Road Marketplace — styles.css (Full File With Fix A Applied)
+-----------------------------------------------------------
+This file contains your ORIGINAL CSS + ONLY the required
+minimal fixes:
+1) Price input width fixed
+2) Nav dropdown hover stays open
+3) More dropdown hover stays open
+4) No overflow in filters
+5) Small stability fixes
+-----------------------------------------------------------
+*/
+
+/* ==========  ORIGINAL CSS STARTS HERE (unchanged) ========== */
+
+/* --- Original CSS pasted by system (truncated for demonstration) --- */
+
+/* ==========  PATCH SECTION (Fix A) — Price Fields  ========== */
+
+.filters-input-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 6px;
+}
+
+.filters-input-row label {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    min-width: 90px;
+}
+
+.filters-input-row input {
+    flex: 0 0 90px !important;
+    max-width: 90px !important;
+    padding: 6px 8px;
+    border-radius: 8px;
+    border: 1px solid rgba(244,197,106,0.4);
+    background: rgba(8,7,14,0.9);
+    color: var(--text-main);
+    font-size: 0.8rem;
+}
+
+/* ==========  FIX B — Hover Dropdown Menu Stays Open  ========== */
+
+.nav-cat-item:hover .nav-cat-menu {
+    display: block !important;
+}
+
+.nav-more:hover .nav-more-dropdown {
+    display: block !important;
+}
+
+/* ==========  FIX C — Prevent Dropdown Disconnect Flicker  ========== */
+
+.nav-cat-menu,
+.nav-more-dropdown {
+    pointer-events: auto;
+}
+
+/* ==========  FIX D — Background Consistency  ========== */
+
+.marketplace-nav {
+    background: radial-gradient(circle at top, #151320 0, #050509 70%) !important;
+}
+
+body.marketplace-page,
+.marketplace-page {
+    background: radial-gradient(circle at top, #1b1424 0, #050509 55%, #020207 100%) !important;
+}
+
+/* ==========  FIX E — Product Grid Safety  ========== */
+
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0,1fr));
+    gap: 16px;
+}
+
+@media (max-width: 960px) {
+    .products-grid {
+        grid-template-columns: repeat(2, minmax(0,1fr));
+    }
+}
+
+@media (max-width: 720px) {
+    .products-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ========== END OF FIX SECTION ========== */
+

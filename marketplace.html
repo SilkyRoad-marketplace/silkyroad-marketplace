@@ -5,120 +5,70 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Marketplace – Silky Road</title>
   <link rel="icon" href="/favicon.png">
-  <link rel="stylesheet" href="/css/styles.css">
+  <!-- use your dark/gold styles -->
+  <link rel="stylesheet" href="css/styles.css">
 
-  <!-- Supabase JS v2 -->
+  <!-- Supabase JS -->
   <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 </head>
-<body class="marketplace-page">
+<body class="page marketplace-page">
 
-  <!-- =========================
-       SILKY ROAD MARKETPLACE HEADER (2 ROWS)
-  ========================== -->
-  <header class="sr-header">
-    <div class="sr-container">
-      <div class="sr-header-inner">
-        <!-- Left: Logo -->
-        <a href="/index.html" class="logo-link">
-          <img src="/logo.png" alt="Silky Road" class="logo-img">
-        </a>
+  <!-- (optional) If you want the same header as home page,
+       you can copy the <header> from index.html and paste it here above the nav. -->
 
-        <!-- Center: Search products -->
-        <div class="market-search">
-          <input id="market-search-input" type="text" placeholder="Search products...">
-        </div>
+  <!-- Top category nav -->
+  <div class="marketplace-nav">
+    <div class="sr-container marketplace-nav-inner">
+      <div class="nav-scroll">
+        <a href="/marketplace.html" class="nav-pill" data-cat="all">All</a>
+        <a href="/marketplace.html?cat=3d" class="nav-pill" data-cat="3d">3D</a>
+        <a href="/marketplace.html?cat=roblox" class="nav-pill" data-cat="roblox">Roblox</a>
+        <a href="/marketplace.html?cat=crafts" class="nav-pill" data-cat="crafts">Crafts</a>
+        <a href="/marketplace.html?cat=design" class="nav-pill" data-cat="design">Design</a>
+        <a href="/marketplace.html?cat=drawing-and-painting" class="nav-pill" data-cat="drawing-and-painting">Drawing &amp; Painting</a>
+        <a href="/marketplace.html?cat=music-and-sound-design" class="nav-pill" data-cat="music-and-sound-design">Music &amp; Sound Design</a>
+        <a href="/marketplace.html?cat=films" class="nav-pill" data-cat="films">Films</a>
 
-        <!-- Right: Actions (login / start selling OR library / dashboard) -->
-        <div class="nav-actions nav-actions-market">
-          <a href="/login.html" class="btn btn-ghost" id="btn-login">Login</a>
-          <a href="/signup.html" class="btn btn-primary" id="btn-start-selling">Start selling</a>
-
-          <a href="/library.html" class="btn btn-ghost" id="btn-library" style="display:none;">Library</a>
-          <a href="/dashboard.html" class="btn btn-ghost" id="btn-dashboard" style="display:none;">Dashboard</a>
-
-          <a href="/checkout.html" class="cart-link">
-            <span class="cart-icon">🛒</span>
-          </a>
-        </div>
-
-        <!-- Mobile menu toggle -->
-        <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
-          <span></span><span></span><span></span>
-        </button>
-      </div>
-
-      <!-- Mobile panel (simple for now) -->
-      <div class="nav-mobile-panel" id="nav-mobile-panel">
-        <div class="nav-mobile-section">
-          <strong>Account</strong>
-          <a href="/login.html" class="nav-link nav-link-small">Login</a>
-          <a href="/signup.html" class="nav-link nav-link-small">Start selling</a>
-          <a href="/library.html" class="nav-link nav-link-small">Library</a>
-          <a href="/dashboard.html" class="nav-link nav-link-small">Dashboard</a>
-        </div>
-      </div>
-    </div>
-
-    <!-- Row 2: Category nav (Payhip style, scrollable on mobile) -->
-    <nav class="marketplace-nav">
-      <div class="sr-container">
-        <div class="marketplace-nav-inner">
-          <div class="nav-scroll">
-            <a href="/marketplace" class="nav-pill" data-cat="all">All</a>
-            <a href="/marketplace/3d" class="nav-pill" data-cat="3d">3D</a>
-            <a href="/marketplace/roblox" class="nav-pill" data-cat="roblox">Roblox</a>
-            <a href="/marketplace/crafts" class="nav-pill" data-cat="crafts">Crafts</a>
-            <a href="/marketplace/design" class="nav-pill" data-cat="design">Design</a>
-            <a href="/marketplace/drawing-and-painting" class="nav-pill" data-cat="drawing-and-painting">Drawing &amp; Painting</a>
-            <a href="/marketplace/music-and-sound-design" class="nav-pill" data-cat="music-and-sound-design">Music &amp; Sound Design</a>
-            <a href="/marketplace/films" class="nav-pill" data-cat="films">Films</a>
-
-            <!-- More ▾ with subcategories -->
-            <div class="nav-more">
-              <button class="nav-pill">More ▾</button>
-              <div class="nav-more-dropdown">
-                <div class="more-group">
-                  <div class="more-group-title">Fiction Books</div>
-                  <a class="more-link" href="/marketplace/fiction-books/mystery">Mystery</a>
-                  <a class="more-link" href="/marketplace/fiction-books/thriller">Thriller</a>
-                  <a class="more-link" href="/marketplace/fiction-books/romance">Romance</a>
-                  <a class="more-link" href="/marketplace/fiction-books/fantasy">Fantasy</a>
-                </div>
-
-                <div class="more-group">
-                  <div class="more-group-title">Business &amp; Money</div>
-                  <a class="more-link" href="/marketplace/business-and-money/investing">Investing</a>
-                  <a class="more-link" href="/marketplace/business-and-money/personal-finance">Personal Finance</a>
-                  <a class="more-link" href="/marketplace/business-and-money/entrepreneurship">Entrepreneurship</a>
-                </div>
-
-                <div class="more-group">
-                  <div class="more-group-title">Education</div>
-                  <a class="more-link" href="/marketplace/education/ebooks">eBooks</a>
-                  <a class="more-link" href="/marketplace/education/worksheets">Worksheets</a>
-                  <a class="more-link" href="/marketplace/education/online-courses">Online Courses</a>
-                </div>
-
-                <!-- Add more groups if you want -->
-              </div>
+        <div class="nav-more">
+          <button class="nav-pill nav-more-toggle">More ▾</button>
+          <div class="nav-more-dropdown">
+            <div class="more-group">
+              <div class="more-group-title">Fiction Books</div>
+              <a class="more-link" href="/marketplace.html?cat=fiction-books&sub=mystery">Mystery</a>
+              <a class="more-link" href="/marketplace.html?cat=fiction-books&sub=thriller">Thriller</a>
+              <a class="more-link" href="/marketplace.html?cat=fiction-books&sub=romance">Romance</a>
+              <a class="more-link" href="/marketplace.html?cat=fiction-books&sub=fantasy">Fantasy</a>
             </div>
+
+            <div class="more-group">
+              <div class="more-group-title">Business &amp; Money</div>
+              <a class="more-link" href="/marketplace.html?cat=business-and-money&sub=investing">Investing</a>
+              <a class="more-link" href="/marketplace.html?cat=business-and-money&sub=personal-finance">Personal Finance</a>
+              <a class="more-link" href="/marketplace.html?cat=business-and-money&sub=entrepreneurship">Entrepreneurship</a>
+            </div>
+
+            <div class="more-group">
+              <div class="more-group-title">Education</div>
+              <a class="more-link" href="/marketplace.html?cat=education&sub=ebooks">eBooks</a>
+              <a class="more-link" href="/marketplace.html?cat=education&sub=worksheets">Worksheets</a>
+              <a class="more-link" href="/marketplace.html?cat=education&sub=online-courses">Online Courses</a>
+            </div>
+
+            <!-- Add more groups if you want -->
           </div>
         </div>
       </div>
-    </nav>
-  </header>
+    </div>
+  </div>
 
-  <!-- =========================
-       MAIN MARKETPLACE CONTENT
-  ========================== -->
-  <main class="page marketplace-page">
+  <!-- Main content -->
+  <main class="sr-container">
     <div class="marketplace-layout">
 
-      <!-- LEFT: FILTERS -->
+      <!-- ===== Filters Sidebar ===== -->
       <aside class="filters-column">
         <div class="filters-title-main">Filters</div>
 
-        <!-- Tags -->
         <div class="filters-block">
           <div class="filters-block-title">Tags</div>
           <button class="filter-tag" data-tag="vrchat">vrchat</button>
@@ -129,7 +79,6 @@
           <button class="filter-tag" data-tag="" id="tags-show-more">Show more</button>
         </div>
 
-        <!-- File types -->
         <div class="filters-block">
           <div class="filters-block-title">Contains</div>
           <button class="filter-filetype" data-type="pdf">pdf</button>
@@ -139,7 +88,6 @@
           <button class="filter-filetype" data-type="mp3">mp3</button>
         </div>
 
-        <!-- Price -->
         <div class="filters-block">
           <div class="filters-block-title">Price</div>
           <div class="filters-input-row">
@@ -152,7 +100,6 @@
           </div>
         </div>
 
-        <!-- Rating -->
         <div class="filters-block filters-rating">
           <div class="filters-block-title">Rating</div>
           <label><input type="radio" name="rating-min" value="4"> ★★★★☆ and up</label>
@@ -162,16 +109,14 @@
           <label><input type="radio" name="rating-min" value=""> Any rating</label>
         </div>
 
-        <!-- Clear filters -->
         <div class="filters-footer">
           <button class="filters-clear-btn" id="filters-clear">Clear filters</button>
         </div>
       </aside>
 
-      <!-- RIGHT: FEATURED + PRODUCTS -->
-      <div class="marketplace-main">
-
-        <!-- Featured slider -->
+      <!-- ===== Right Content Column ===== -->
+      <div class="content-column">
+        <!-- Featured -->
         <section class="featured-section" id="featured-section">
           <div class="featured-header">
             <div class="featured-title" id="featured-title">Featured products</div>
@@ -200,9 +145,6 @@
     </div>
   </main>
 
-  <!-- =========================
-       MARKETPLACE SCRIPT
-  ========================== -->
   <script>
     const SUPABASE_URL = "https://paqvgsruppgadgguynde.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBhcXZnc3J1cHBnYWRnZ3V5bmRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIzNTg3NTMsImV4cCI6MjA3NzkzNDc1M30.pwEE4WLFu2-tHkmH1fFYYwcEPmLPyavN7ykXdPGQ3AY";
@@ -213,38 +155,20 @@
       fileType: null,
       priceMin: null,
       priceMax: null,
-      ratingMin: null,
-      search: ""
+      ratingMin: null
     };
 
     function getCategoryFromUrl() {
-      const path = window.location.pathname;
-      const segments = path.split("/").filter(Boolean);
-      let catSlug = null;
-      let subSlug = null;
-      const idx = segments.indexOf("marketplace");
-      if (idx !== -1) {
-        catSlug = segments[idx + 1] || null;
-        subSlug = segments[idx + 2] || null;
-      }
       const params = new URLSearchParams(window.location.search);
-      const qCat = params.get("cat");
-      const qSub = params.get("sub");
-      if (!catSlug && qCat) catSlug = qCat;
-      if (!subSlug && qSub) subSlug = qSub;
+      let catSlug = params.get("cat");
+      let subSlug = params.get("sub");
       if (catSlug === "all") catSlug = null;
       return { catSlug, subSlug };
     }
 
-    function unslug(text) {
-      if (!text) return "";
-      return text
-        .replace(/-/g, " ")
-        .replace(/\b\w/g, c => c.toUpperCase());
-    }
-
     function formatHeading(catSlug, subSlug) {
       if (!catSlug && !subSlug) return "All products";
+      const unslug = (s) => s.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase());
       if (catSlug && !subSlug) return unslug(catSlug);
       if (catSlug && subSlug) return unslug(catSlug) + " / " + unslug(subSlug);
       return "Products";
@@ -286,7 +210,9 @@
     }
 
     function formatPrice(price) {
-      if (typeof price === "number") return "US$" + price.toFixed(2);
+      if (typeof price === "number") {
+        return "US$" + price.toFixed(2);
+      }
       if (price === null || price === undefined) return "US$0.00";
       const n = Number(price);
       if (isNaN(n)) return "US$0.00";
@@ -298,7 +224,7 @@
       const sellerHtml = formatSellerDisplay(product.seller_name, product.seller_plan);
       const priceText = formatPrice(product.price);
       const cover = product.cover_url || "/placeholder-product.png";
-      const productUrl = `/product/${product.slug || product.id}`;
+      const productUrl = `/product.html?slug=${encodeURIComponent(product.slug || product.id)}`;
       return `
         <a href="${productUrl}" class="product-card">
           <div class="product-thumb">
@@ -321,7 +247,7 @@
       const priceText = formatPrice(product.price);
       const sellerHtml = formatSellerDisplay(product.seller_name, product.seller_plan);
       const cover = product.cover_url || "/placeholder-product.png";
-      const productUrl = `/product/${product.slug || product.id}`;
+      const productUrl = `/product.html?slug=${encodeURIComponent(product.slug || product.id)}`;
       return `
         <a href="${productUrl}" class="featured-card">
           <div class="featured-thumb">
@@ -351,9 +277,6 @@
       }
       if (filterState.ratingMin !== null && filterState.ratingMin !== "") {
         query = query.gte("rating_avg", filterState.ratingMin);
-      }
-      if (filterState.search) {
-        query = query.ilike("title", "%" + filterState.search + "%");
       }
       return query;
     }
@@ -501,59 +424,11 @@
         filterState.priceMin = null;
         filterState.priceMax = null;
         filterState.ratingMin = null;
-        filterState.search = "";
         document.querySelectorAll(".filter-tag, .filter-filetype").forEach(b => b.classList.remove("active"));
         priceMinInput.value = "";
         priceMaxInput.value = "";
         document.querySelectorAll("input[name='rating-min']").forEach(r => r.checked = false);
-        const searchInput = document.getElementById("market-search-input");
-        if (searchInput) searchInput.value = "";
         reloadFn();
-      });
-
-      const searchInput = document.getElementById("market-search-input");
-      if (searchInput) {
-        searchInput.addEventListener("input", () => {
-          filterState.search = searchInput.value.trim();
-          reloadFn();
-        });
-      }
-    }
-
-    async function initHeaderAuth() {
-      try {
-        const { data, error } = await supabase.auth.getUser();
-        if (error) {
-          console.warn("Auth check error", error);
-          return;
-        }
-        const user = data?.user;
-        const btnLogin = document.getElementById("btn-login");
-        const btnStart = document.getElementById("btn-start-selling");
-        const btnLib = document.getElementById("btn-library");
-        const btnDash = document.getElementById("btn-dashboard");
-        if (user) {
-          if (btnLogin) btnLogin.style.display = "none";
-          if (btnStart) btnStart.style.display = "none";
-          if (btnLib) btnLib.style.display = "inline-flex";
-          if (btnDash) btnDash.style.display = "inline-flex";
-        } else {
-          if (btnLogin) btnLogin.style.display = "inline-flex";
-          if (btnStart) btnStart.style.display = "inline-flex";
-          if (btnLib) btnLib.style.display = "none";
-          if (btnDash) btnDash.style.display = "none";
-        }
-      } catch (e) {
-        console.error("initHeaderAuth error", e);
-      }
-    }
-
-    function initMobileNavToggle() {
-      const toggle = document.getElementById("nav-toggle");
-      const panel = document.getElementById("nav-mobile-panel");
-      if (!toggle || !panel) return;
-      toggle.addEventListener("click", () => {
-        panel.classList.toggle("open");
       });
     }
 
@@ -561,11 +436,9 @@
       const { catSlug, subSlug } = getCategoryFromUrl();
       const heading = formatHeading(catSlug, subSlug);
       document.getElementById("products-title").textContent = heading;
-      if (catSlug || subSlug) {
-        document.getElementById("featured-title").textContent = "Featured in " + heading;
-      } else {
-        document.getElementById("featured-title").textContent = "Featured products";
-      }
+      document.getElementById("featured-title").textContent =
+        (catSlug || subSlug) ? ("Featured in " + heading) : "Featured products";
+
       updateNavActive(catSlug);
       initFeaturedSlider();
 
@@ -578,11 +451,7 @@
       reloadAll();
     }
 
-    document.addEventListener("DOMContentLoaded", () => {
-      initHeaderAuth();
-      initMobileNavToggle();
-      initMarketplace();
-    });
+    document.addEventListener("DOMContentLoaded", initMarketplace);
   </script>
 
 </body>

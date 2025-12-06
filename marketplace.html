@@ -2,457 +2,86 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Marketplace – Silky Road</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
   <link rel="icon" href="/favicon.png">
-  <!-- use your dark/gold styles -->
-  <link rel="stylesheet" href="css/styles.css">
-
-  <!-- Supabase JS -->
-  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="/css/styles.css">
 </head>
-<body class="page marketplace-page">
+<body class="sr-body marketplace-page">
+  <!-- Header placeholder -->
+  <div id="header-root"></div>
 
-  <!-- (optional) If you want the same header as home page,
-       you can copy the <header> from index.html and paste it here above the nav. -->
+  <main class="mp-main">
+    <section class="mp-container">
+      <!-- FILTERS (LEFT) -->
+      <aside class="mp-filters-card">
+        <h2 class="mp-filters-title">Filters</h2>
 
-  <!-- Top category nav -->
-  <div class="marketplace-nav">
-    <div class="sr-container marketplace-nav-inner">
-      <div class="nav-scroll">
-        <a href="/marketplace.html" class="nav-pill" data-cat="all">All</a>
-        <a href="/marketplace.html?cat=3d" class="nav-pill" data-cat="3d">3D</a>
-        <a href="/marketplace.html?cat=roblox" class="nav-pill" data-cat="roblox">Roblox</a>
-        <a href="/marketplace.html?cat=crafts" class="nav-pill" data-cat="crafts">Crafts</a>
-        <a href="/marketplace.html?cat=design" class="nav-pill" data-cat="design">Design</a>
-        <a href="/marketplace.html?cat=drawing-and-painting" class="nav-pill" data-cat="drawing-and-painting">Drawing &amp; Painting</a>
-        <a href="/marketplace.html?cat=music-and-sound-design" class="nav-pill" data-cat="music-and-sound-design">Music &amp; Sound Design</a>
-        <a href="/marketplace.html?cat=films" class="nav-pill" data-cat="films">Films</a>
-
-        <div class="nav-more">
-          <button class="nav-pill nav-more-toggle">More ▾</button>
-          <div class="nav-more-dropdown">
-            <div class="more-group">
-              <div class="more-group-title">Fiction Books</div>
-              <a class="more-link" href="/marketplace.html?cat=fiction-books&sub=mystery">Mystery</a>
-              <a class="more-link" href="/marketplace.html?cat=fiction-books&sub=thriller">Thriller</a>
-              <a class="more-link" href="/marketplace.html?cat=fiction-books&sub=romance">Romance</a>
-              <a class="more-link" href="/marketplace.html?cat=fiction-books&sub=fantasy">Fantasy</a>
+        <div class="mp-filter-group">
+          <label class="mp-filter-label" for="price-min">Price</label>
+          <div class="mp-price-row">
+            <div class="mp-price-field">
+              <span class="mp-price-prefix">$</span>
+              <input id="price-min" type="number" class="mp-input" placeholder="Min">
             </div>
-
-            <div class="more-group">
-              <div class="more-group-title">Business &amp; Money</div>
-              <a class="more-link" href="/marketplace.html?cat=business-and-money&sub=investing">Investing</a>
-              <a class="more-link" href="/marketplace.html?cat=business-and-money&sub=personal-finance">Personal Finance</a>
-              <a class="more-link" href="/marketplace.html?cat=business-and-money&sub=entrepreneurship">Entrepreneurship</a>
+            <span class="mp-price-separator">–</span>
+            <div class="mp-price-field">
+              <span class="mp-price-prefix">$</span>
+              <input id="price-max" type="number" class="mp-input" placeholder="Max">
             </div>
-
-            <div class="more-group">
-              <div class="more-group-title">Education</div>
-              <a class="more-link" href="/marketplace.html?cat=education&sub=ebooks">eBooks</a>
-              <a class="more-link" href="/marketplace.html?cat=education&sub=worksheets">Worksheets</a>
-              <a class="more-link" href="/marketplace.html?cat=education&sub=online-courses">Online Courses</a>
-            </div>
-
-            <!-- Add more groups if you want -->
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Main content -->
-  <main class="sr-container">
-    <div class="marketplace-layout">
-
-      <!-- ===== Filters Sidebar ===== -->
-      <aside class="filters-column">
-        <div class="filters-title-main">Filters</div>
-
-        <div class="filters-block">
-          <div class="filters-block-title">Tags</div>
-          <button class="filter-tag" data-tag="vrchat">vrchat</button>
-          <button class="filter-tag" data-tag="notion template">notion template</button>
-          <button class="filter-tag" data-tag="vrchat asset">vrchat asset</button>
-          <button class="filter-tag" data-tag="free">free</button>
-          <button class="filter-tag" data-tag="blender">blender</button>
-          <button class="filter-tag" data-tag="" id="tags-show-more">Show more</button>
-        </div>
-
-        <div class="filters-block">
-          <div class="filters-block-title">Contains</div>
-          <button class="filter-filetype" data-type="pdf">pdf</button>
-          <button class="filter-filetype" data-type="zip">zip</button>
-          <button class="filter-filetype" data-type="mp4">mp4</button>
-          <button class="filter-filetype" data-type="rar">rar</button>
-          <button class="filter-filetype" data-type="mp3">mp3</button>
-        </div>
-
-        <div class="filters-block">
-          <div class="filters-block-title">Price</div>
-          <div class="filters-input-row">
-            <label for="price-min">Minimum price</label>
-            <input id="price-min" type="number" min="0" step="0.01" placeholder="0">
-          </div>
-          <div class="filters-input-row">
-            <label for="price-max">Maximum price</label>
-            <input id="price-max" type="number" min="0" step="0.01" placeholder="∞">
           </div>
         </div>
 
-        <div class="filters-block filters-rating">
-          <div class="filters-block-title">Rating</div>
-          <label><input type="radio" name="rating-min" value="4"> ★★★★☆ and up</label>
-          <label><input type="radio" name="rating-min" value="3"> ★★★☆☆ and up</label>
-          <label><input type="radio" name="rating-min" value="2"> ★★☆☆☆ and up</label>
-          <label><input type="radio" name="rating-min" value="1"> ★☆☆☆☆ and up</label>
-          <label><input type="radio" name="rating-min" value=""> Any rating</label>
-        </div>
-
-        <div class="filters-footer">
-          <button class="filters-clear-btn" id="filters-clear">Clear filters</button>
-        </div>
+        <!-- You can add more filters later (category, rating, etc.) -->
       </aside>
 
-      <!-- ===== Right Content Column ===== -->
-      <div class="content-column">
-        <!-- Featured -->
-        <section class="featured-section" id="featured-section">
-          <div class="featured-header">
-            <div class="featured-title" id="featured-title">Featured products</div>
-            <div class="featured-controls">
-              <button class="featured-btn" data-dir="left">‹</button>
-              <button class="featured-btn" data-dir="right">›</button>
-            </div>
+      <!-- PRODUCTS (RIGHT) -->
+      <section class="mp-products-section">
+        <header class="mp-products-header">
+          <h1 class="mp-products-title">All Products</h1>
+          <div class="mp-sort">
+            <label for="sort-by" class="mp-sort-label">Sort by</label>
+            <select id="sort-by" class="mp-select">
+              <option value="latest">Latest</option>
+              <option value="price-low-high">Price: Low to High</option>
+              <option value="price-high-low">Price: High to Low</option>
+            </select>
           </div>
-          <div class="featured-track" id="featured-track"></div>
-          <div class="empty-text" id="featured-empty" style="display:none;">
-            No featured products yet.
-          </div>
-        </section>
+        </header>
 
-        <!-- Products grid -->
-        <section class="products-section">
-          <div class="products-header">
-            <div class="products-title" id="products-title">All products</div>
-          </div>
-          <div class="products-grid" id="products-grid"></div>
-          <div class="empty-text" id="products-empty" style="display:none;">
-            No products found in this category yet.
-          </div>
-        </section>
-      </div>
-    </div>
+        <div id="product-grid" class="mp-product-grid">
+          <!-- Example static cards (replace with your JS-generated cards) -->
+          <article class="mp-product-card">
+            <div class="mp-product-thumb"></div>
+            <h3 class="mp-product-title">Sample Product 1</h3>
+            <p class="mp-product-meta">By Creator • eBook</p>
+            <p class="mp-product-price">$9.90</p>
+          </article>
+
+          <article class="mp-product-card">
+            <div class="mp-product-thumb"></div>
+            <h3 class="mp-product-title">Sample Product 2</h3>
+            <p class="mp-product-meta">By Creator • Music</p>
+            <p class="mp-product-price">$4.99</p>
+          </article>
+
+          <article class="mp-product-card">
+            <div class="mp-product-thumb"></div>
+            <h3 class="mp-product-title">Sample Product 3</h3>
+            <p class="mp-product-meta">By Creator • Template</p>
+            <p class="mp-product-price">$14.00</p>
+          </article>
+        </div>
+      </section>
+    </section>
   </main>
 
-  <script>
-    const SUPABASE_URL = "https://paqvgsruppgadgguynde.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBhcXZnc3J1cHBnYWRnZ3V5bmRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIzNTg3NTMsImV4cCI6MjA3NzkzNDc1M30.pwEE4WLFu2-tHkmH1fFYYwcEPmLPyavN7ykXdPGQ3AY";
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  <!-- Footer placeholder -->
+  <div id="footer-root"></div>
 
-    const filterState = {
-      tag: null,
-      fileType: null,
-      priceMin: null,
-      priceMax: null,
-      ratingMin: null
-    };
-
-    function getCategoryFromUrl() {
-      const params = new URLSearchParams(window.location.search);
-      let catSlug = params.get("cat");
-      let subSlug = params.get("sub");
-      if (catSlug === "all") catSlug = null;
-      return { catSlug, subSlug };
-    }
-
-    function formatHeading(catSlug, subSlug) {
-      if (!catSlug && !subSlug) return "All products";
-      const unslug = (s) => s.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase());
-      if (catSlug && !subSlug) return unslug(catSlug);
-      if (catSlug && subSlug) return unslug(catSlug) + " / " + unslug(subSlug);
-      return "Products";
-    }
-
-    function updateNavActive(catSlug) {
-      const pills = document.querySelectorAll(".nav-pill[data-cat]");
-      pills.forEach(pill => {
-        const pillCat = pill.getAttribute("data-cat");
-        if ((!catSlug && pillCat === "all") || (catSlug && pillCat === catSlug)) {
-          pill.classList.add("active");
-        } else {
-          pill.classList.remove("active");
-        }
-      });
-    }
-
-    function formatSellerDisplay(name, plan) {
-      if (!name) name = "Unknown seller";
-      if (plan === "PRO") {
-        return `${name} <span class="seller-badge-pro">[ ★ PRO ]</span>`;
-      }
-      if (plan === "ULTIMATE") {
-        return `${name} <span class="seller-badge-ultimate">[ 👑 ULTIMATE ]</span>`;
-      }
-      return name;
-    }
-
-    function buildRatingHtml(avg, count) {
-      if (!avg || !count || count <= 0) return "";
-      const score = Number(avg).toFixed(1);
-      return `
-        <div class="product-rating">
-          <span class="star">★</span>
-          <span>${score}</span>
-          <span>(${count})</span>
-        </div>
-      `;
-    }
-
-    function formatPrice(price) {
-      if (typeof price === "number") {
-        return "US$" + price.toFixed(2);
-      }
-      if (price === null || price === undefined) return "US$0.00";
-      const n = Number(price);
-      if (isNaN(n)) return "US$0.00";
-      return "US$" + n.toFixed(2);
-    }
-
-    function buildProductCard(product) {
-      const ratingHtml = buildRatingHtml(product.rating_avg, product.rating_count);
-      const sellerHtml = formatSellerDisplay(product.seller_name, product.seller_plan);
-      const priceText = formatPrice(product.price);
-      const cover = product.cover_url || "/placeholder-product.png";
-      const productUrl = `/product.html?slug=${encodeURIComponent(product.slug || product.id)}`;
-      return `
-        <a href="${productUrl}" class="product-card">
-          <div class="product-thumb">
-            <img src="${cover}" alt="${product.title || "Product"}">
-          </div>
-          <div class="product-body">
-            <div class="product-title">${product.title || "Untitled product"}</div>
-            <div class="product-seller">${sellerHtml}</div>
-            ${ratingHtml}
-            <div class="product-footer">
-              <div class="product-price">${priceText}</div>
-              <div class="product-cta">View</div>
-            </div>
-          </div>
-        </a>
-      `;
-    }
-
-    function buildFeaturedCard(product) {
-      const priceText = formatPrice(product.price);
-      const sellerHtml = formatSellerDisplay(product.seller_name, product.seller_plan);
-      const cover = product.cover_url || "/placeholder-product.png";
-      const productUrl = `/product.html?slug=${encodeURIComponent(product.slug || product.id)}`;
-      return `
-        <a href="${productUrl}" class="featured-card">
-          <div class="featured-thumb">
-            <img src="${cover}" alt="${product.title || "Product"}">
-          </div>
-          <div class="featured-body">
-            <div class="featured-title-text">${product.title || "Untitled product"}</div>
-            <div class="featured-meta">${sellerHtml}</div>
-            <div class="featured-price">${priceText}</div>
-          </div>
-        </a>
-      `;
-    }
-
-    function applyFiltersToQuery(query) {
-      if (filterState.tag) {
-        query = query.contains("tags", [filterState.tag]);
-      }
-      if (filterState.fileType) {
-        query = query.contains("file_types", [filterState.fileType]);
-      }
-      if (filterState.priceMin !== null && filterState.priceMin !== "") {
-        query = query.gte("price", filterState.priceMin);
-      }
-      if (filterState.priceMax !== null && filterState.priceMax !== "") {
-        query = query.lte("price", filterState.priceMax);
-      }
-      if (filterState.ratingMin !== null && filterState.ratingMin !== "") {
-        query = query.gte("rating_avg", filterState.ratingMin);
-      }
-      return query;
-    }
-
-    async function loadFeaturedProducts(catSlug, subSlug) {
-      const track = document.getElementById("featured-track");
-      const empty = document.getElementById("featured-empty");
-      track.innerHTML = "";
-      empty.style.display = "none";
-
-      let query = supabase
-        .from("products")
-        .select("id, slug, title, price, cover_url, seller_name, seller_plan, rating_avg, rating_count, category_slug, subcategory_slug, is_featured, is_active")
-        .eq("is_active", true)
-        .eq("is_featured", true)
-        .limit(10);
-
-      if (catSlug) query = query.eq("category_slug", catSlug);
-      if (subSlug) query = query.eq("subcategory_slug", subSlug);
-
-      query = applyFiltersToQuery(query);
-
-      const { data, error } = await query;
-      if (error) {
-        console.error("Error loading featured products", error);
-        empty.textContent = "Failed to load featured products.";
-        empty.style.display = "block";
-        return;
-      }
-
-      if (!data || data.length === 0) {
-        empty.style.display = "block";
-        return;
-      }
-
-      data.forEach(p => {
-        track.insertAdjacentHTML("beforeend", buildFeaturedCard(p));
-      });
-    }
-
-    async function loadProductsGrid(catSlug, subSlug) {
-      const grid = document.getElementById("products-grid");
-      const empty = document.getElementById("products-empty");
-      grid.innerHTML = "";
-      empty.style.display = "none";
-
-      let query = supabase
-        .from("products")
-        .select("id, slug, title, price, cover_url, seller_name, seller_plan, rating_avg, rating_count, category_slug, subcategory_slug, is_active")
-        .eq("is_active", true);
-
-      if (catSlug) query = query.eq("category_slug", catSlug);
-      if (subSlug) query = query.eq("subcategory_slug", subSlug);
-
-      query = applyFiltersToQuery(query);
-
-      const { data, error } = await query;
-      if (error) {
-        console.error("Error loading products", error);
-        empty.textContent = "Failed to load products.";
-        empty.style.display = "block";
-        return;
-      }
-
-      if (!data || data.length === 0) {
-        empty.style.display = "block";
-        return;
-      }
-
-      data.forEach(p => {
-        grid.insertAdjacentHTML("beforeend", buildProductCard(p));
-      });
-    }
-
-    function initFeaturedSlider() {
-      const track = document.getElementById("featured-track");
-      if (!track) return;
-      const buttons = document.querySelectorAll(".featured-btn");
-      buttons.forEach(btn => {
-        btn.addEventListener("click", () => {
-          const dir = btn.getAttribute("data-dir");
-          const amount = 220;
-          track.scrollBy({
-            left: dir === "left" ? -amount : amount,
-            behavior: "smooth"
-          });
-        });
-      });
-    }
-
-    function initFilterEvents(reloadFn) {
-      document.querySelectorAll(".filter-tag").forEach(btn => {
-        btn.addEventListener("click", () => {
-          const tag = btn.getAttribute("data-tag");
-          if (!tag) return;
-          if (filterState.tag === tag) {
-            filterState.tag = null;
-            btn.classList.remove("active");
-          } else {
-            filterState.tag = tag;
-            document.querySelectorAll(".filter-tag").forEach(b => b.classList.remove("active"));
-            btn.classList.add("active");
-          }
-          reloadFn();
-        });
-      });
-
-      document.querySelectorAll(".filter-filetype").forEach(btn => {
-        btn.addEventListener("click", () => {
-          const t = btn.getAttribute("data-type");
-          if (filterState.fileType === t) {
-            filterState.fileType = null;
-            btn.classList.remove("active");
-          } else {
-            filterState.fileType = t;
-            document.querySelectorAll(".filter-filetype").forEach(b => b.classList.remove("active"));
-            btn.classList.add("active");
-          }
-          reloadFn();
-        });
-      });
-
-      const priceMinInput = document.getElementById("price-min");
-      const priceMaxInput = document.getElementById("price-max");
-      priceMinInput.addEventListener("change", () => {
-        filterState.priceMin = priceMinInput.value !== "" ? parseFloat(priceMinInput.value) : null;
-        reloadFn();
-      });
-      priceMaxInput.addEventListener("change", () => {
-        filterState.priceMax = priceMaxInput.value !== "" ? parseFloat(priceMaxInput.value) : null;
-        reloadFn();
-      });
-
-      document.querySelectorAll("input[name='rating-min']").forEach(radio => {
-        radio.addEventListener("change", () => {
-          const v = radio.value;
-          filterState.ratingMin = v === "" ? null : parseFloat(v);
-          reloadFn();
-        });
-      });
-
-      document.getElementById("filters-clear").addEventListener("click", () => {
-        filterState.tag = null;
-        filterState.fileType = null;
-        filterState.priceMin = null;
-        filterState.priceMax = null;
-        filterState.ratingMin = null;
-        document.querySelectorAll(".filter-tag, .filter-filetype").forEach(b => b.classList.remove("active"));
-        priceMinInput.value = "";
-        priceMaxInput.value = "";
-        document.querySelectorAll("input[name='rating-min']").forEach(r => r.checked = false);
-        reloadFn();
-      });
-    }
-
-    async function initMarketplace() {
-      const { catSlug, subSlug } = getCategoryFromUrl();
-      const heading = formatHeading(catSlug, subSlug);
-      document.getElementById("products-title").textContent = heading;
-      document.getElementById("featured-title").textContent =
-        (catSlug || subSlug) ? ("Featured in " + heading) : "Featured products";
-
-      updateNavActive(catSlug);
-      initFeaturedSlider();
-
-      const reloadAll = () => {
-        loadFeaturedProducts(catSlug, subSlug);
-        loadProductsGrid(catSlug, subSlug);
-      };
-
-      initFilterEvents(reloadAll);
-      reloadAll();
-    }
-
-    document.addEventListener("DOMContentLoaded", initMarketplace);
-  </script>
-
+  <script src="/js/header-market.js"></script>
+  <script src="/js/footer.js"></script>
+  <!-- Your existing marketplace JS (Supabase, filters, etc.) -->
+  <script src="/js/marketplace.js"></script>
 </body>
 </html>

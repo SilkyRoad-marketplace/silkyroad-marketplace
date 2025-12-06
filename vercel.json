@@ -1,8 +1,15 @@
 {
   "rewrites": [
+    { "source": "/", "destination": "/index.html" },
     { "source": "/marketplace", "destination": "/marketplace.html" },
-    { "source": "/marketplace/", "destination": "/marketplace.html" },
-    { "source": "/marketplace/:category", "destination": "/marketplace.html" },
-    { "source": "/marketplace/:category/:subcategory", "destination": "/marketplace.html" }
+    { "source": "/marketplace/:path*", "destination": "/marketplace.html" },
+    { "source": "/product/:path*", "destination": "/product.html" },
+    { "source": "/pricing", "destination": "/pricing.html" },
+    { "source": "/login", "destination": "/login.html" },
+    { "source": "/sign_up", "destination": "/sign_up.html" },
+    { "source": "/reset", "destination": "/reset.html" },
+    { "source": "/library", "destination": "/library.html" },
+    { "source": "/css/:path*", "destination": "/css/:path*" },
+    { "source": "/img/:path*", "destination": "/img/:path*" }
   ]
 }

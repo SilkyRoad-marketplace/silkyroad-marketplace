@@ -2257,3 +2257,144 @@ body.filters-open .filters-overlay {
     margin-left: 6px;
   }
 }
+/* ============================
+   SILKY ROAD MARKETPLACE FIX PATCH
+   ============================ */
+
+/* Remove giant blank space above header (mobile) */
+body.marketplace-page {
+  padding-top: 0 !important;
+}
+
+/* Fix huge blank space under footer */
+.sr-footer {
+  margin-bottom: 0 !important;
+  padding-bottom: 16px !important;
+}
+body {
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-attachment: scroll;
+}
+
+/* Remove orange search button on mobile */
+.market-search button,
+.sr-search-btn {
+  display: none !important;
+}
+
+/* Make search input full width + small for mobile */
+@media (max-width: 720px) {
+  .sr-search-wrap,
+  .market-search {
+    width: 100% !important;
+  }
+  .sr-search-input {
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+}
+
+/* Hide desktop category bar on mobile */
+@media (max-width: 720px) {
+  .sr-header-row2,
+  .marketplace-nav {
+    display: none !important;
+  }
+}
+
+/* Dropdown hover menu always ON TOP */
+.sr-cat-menu {
+  z-index: 99999 !important;
+}
+
+/* Desktop category bar styling */
+.desktop-cat-bar {
+  display: flex;
+  gap: 14px;
+  padding: 10px 0;
+  margin-bottom: 12px;
+}
+
+/* Hide desktop bar on mobile */
+@media (max-width: 720px) {
+  .desktop-cat-bar {
+    display: none !important;
+  }
+}
+
+/* Mobile hamburger drawer fixes */
+.mobile-drawer {
+  position: fixed;
+  top: 0;
+  left: -100%;
+  width: 82%;
+  height: 100%;
+  background: #0b0b12;
+  padding: 18px;
+  z-index: 99999;
+  transition: left .25s ease;
+  overflow-y: auto;
+}
+
+.mobile-drawer.open {
+  left: 0;
+}
+
+.drawer-close {
+  font-size: 20px;
+  color: #fff;
+  margin-bottom: 14px;
+  display: inline-block;
+}
+
+.drawer-cat {
+  font-size: 16px;
+  font-weight: 600;
+  margin-top: 14px;
+  cursor: pointer;
+}
+
+.drawer-subcat {
+  padding-left: 14px;
+  margin-top: 6px;
+  display: block;
+}
+
+/* Filters drawer for mobile */
+.filters-drawer {
+  position: fixed;
+  top: 0;
+  right: -100%;
+  width: 82%;
+  height: 100%;
+  background: #0b0b12;
+  padding: 18px;
+  z-index: 99999;
+  transition: right .25s ease;
+  overflow-y: auto;
+}
+
+.filters-drawer.open {
+  right: 0;
+}
+
+.filters-btn-mobile {
+  display: none;
+}
+
+@media (max-width: 720px) {
+  .filters-btn-mobile {
+    display: block;
+    background: #f2c94c;
+    color: #000;
+    padding: 6px 12px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    cursor: pointer;
+  }
+
+  .filters-column {
+    display: none;
+  }
+}

@@ -2,28 +2,82 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Your library – Silky Road Marketplace</title>
+  <title>Your Library – Silky Road</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
+
   <link rel="icon" href="/favicon.png">
   <link rel="stylesheet" href="/css/styles.css">
-</head>
-<body class="marketplace-body">
-  <div id="header-root"></div>
 
-  <main class="page">
-    <section class="page-header">
-      <h1>Your library</h1>
-      <p class="muted">Purchased products will appear here once orders are connected.</p>
-    </section>
+  <!-- Supabase -->
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+</head>
+
+<body class="library-page">
+
+  <!-- SIMPLE LIBRARY HEADER -->
+  <div class="library-header">
+    <h1>Your Library</h1>
+    <button class="library-market-btn" onclick="window.location.href='/marketplace.html'">
+      ← Back to Marketplace
+    </button>
+  </div>
+
+  <!-- PURCHASED ITEMS LIST -->
+  <main class="library-container" id="library-container">
+    <p class="library-loading">Loading your items…</p>
   </main>
 
-  <div id="footer-root"></div>
+  <script>
+    const supabase = window.supabase.createClient(
+      "https://paqvgsruppgadgguynde.supabase.co",
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBhcXZnc3J1cHBnYWRnZ3V5bmRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIzNTg3NTMsImV4cCI6MjA3NzkzNDc1M30.pwEE4WLFu2-tHkmH1fFYYwcEPmLPyavN7ykXdPGQ3AY"
+    );
 
-  <script type="module" src="/js/header-market.js"></script>
-  <script type="module" src="/js/footer.js"></script>
-  <script type="module">
-    import { initAuthUI } from "/js/auth.js";
-    initAuthUI();
+    async function loadLibrary() {
+      const container = document.getElementById("library-container");
+
+      const { data: sessionData } = await supabase.auth.getSession();
+      if (!sessionData || !sessionData.session) {
+        container.innerHTML = "<p>Please log in to view your library.</p>";
+        return;
+      }
+
+      const user = sessionData.session.user;
+      const { data, error } = await supabase
+        .from("orders")
+        .select("products(id, title, cover_url)")
+        .eq("buyer_id", user.id);
+
+      if (error) {
+        container.innerHTML = "<p>Error loading library.</p>";
+        return;
+      }
+
+      if (!data || data.length === 0) {
+        container.innerHTML = "<p>You have no purchases yet.</p>";
+        return;
+      }
+
+      container.innerHTML = "";
+
+      data.forEach(row => {
+        const p = row.products;
+        container.innerHTML += `
+          <div class="library-item">
+            <img src="${p.cover_url || '/placeholder-product.png'}" class="library-thumb">
+            <div class="library-info">
+              <h3>${p.title}</h3>
+              <button onclick="window.location.href='/download.html?id=${p.id}'" class="library-download-btn">
+                Download
+              </button>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    loadLibrary();
   </script>
+
 </body>
 </html>

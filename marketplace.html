@@ -16,7 +16,7 @@
   <header class="sr-header sr-header-marketplace">
     <div class="sr-header-inner">
 
-      <!-- ROW 1: logo + search + actions -->
+      <!-- ROW 1: logo + search + actions (desktop) / logo + actions + menu (mobile grid) -->
       <div class="sr-header-row1">
         <div class="sr-logo-wrap">
           <a href="/index.html" class="sr-logo-link">
@@ -25,18 +25,18 @@
         </div>
 
         <div class="sr-search-wrap">
-  <form class="sr-search-form" action="/marketplace.html" method="get">
-    <span class="sr-search-icon-inline">🔍</span>
-    <input
-      type="text"
-      name="q"
-      class="sr-search-input"
-      placeholder="Search digital products..."
-      aria-label="Search products"
-    >
-    <button type="button" class="sr-search-clear" aria-label="Clear search">✕</button>
-  </form>
-</div>
+          <form class="sr-search-form" action="/marketplace.html" method="get">
+            <span class="sr-search-icon-inline">🔍</span>
+            <input
+              type="text"
+              name="q"
+              class="sr-search-input"
+              placeholder="Search digital products..."
+              aria-label="Search products"
+            >
+            <button type="button" class="sr-search-clear" aria-label="Clear search">✕</button>
+          </form>
+        </div>
 
         <div class="sr-header-actions">
           <!-- logged-out -->
@@ -65,13 +65,14 @@
       </div>
     </div>
   </header>
+
   <!-- DESKTOP CATEGORY BAR (supabase powered) -->
   <div class="marketplace-nav">
     <div class="sr-container">
       <div class="sr-category-scroll" id="desktop-cat-scroll"></div>
     </div>
   </div>
-  
+
   <!-- MOBILE NAV DRAWER -->
   <div class="sr-drawer-backdrop" id="nav-drawer-backdrop">
     <aside class="sr-drawer" id="nav-drawer">
@@ -233,7 +234,7 @@
   <!-- FOOTER -->
   <div id="footer-root"></div>
 
-    <!-- MAIN MARKETPLACE LOGIC -->
+  <!-- MAIN MARKETPLACE LOGIC -->
   <script>
     const SUPABASE_URL = "https://paqvgsruppgadgguynde.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBhcXZnc3J1cHBnYWRnZ3V5bmRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIzNTg3NTMsImV4cCI6MjA3NzkzNDc1M30.pwEE4WLFu2-tHkmH1fFYYwcEPmLPyavN7ykXdPGQ3AY";
@@ -257,35 +258,32 @@
       "films"
     ];
 
-    let currentSearchTerm = "";
+    // URL + headings + search text
+    let navState = {
+      allButton: null,
+      catButtons: {}, // slug -> element
+      moreButton: null
+    };
 
-    // --------- URL + headings ---------
-    function getParamsFromUrl() {
+    let drawerCatMap = {}; // slug -> { name, subs: [...] }
+    let searchText = "";
+
+    function getUrlState() {
       const params = new URLSearchParams(window.location.search);
       let catSlug = params.get("cat");
       let subSlug = params.get("sub");
-      const searchTerm = (params.get("q") || "").trim();
+      const q = params.get("q") || "";
       if (catSlug === "all") catSlug = null;
-      return { catSlug, subSlug, searchTerm };
+      return { catSlug, subSlug, q };
     }
 
-    function formatHeading(catSlug, subSlug, searchTerm) {
-      if (searchTerm && !catSlug && !subSlug) {
-        return `Search: "${searchTerm}"`;
-      }
+    function formatHeading(catSlug, subSlug) {
       if (!catSlug && !subSlug) return "All products";
       const unslug = (s) => s.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase());
       if (catSlug && !subSlug) return unslug(catSlug);
       if (catSlug && subSlug) return unslug(catSlug) + " / " + unslug(subSlug);
       return "Products";
     }
-
-    // nav active state
-    let navState = {
-      allButton: null,
-      catButtons: {}, // slug -> element
-      moreButton: null
-    };
 
     function updateNavActive(catSlug) {
       if (!navState.allButton) return;
@@ -306,7 +304,7 @@
       }
     }
 
-    // --------- seller, rating, price helpers ---------
+    // seller, rating, price helpers
     function formatSellerDisplay(name, plan) {
       if (!name) name = "Unknown seller";
       if (plan === "PRO") {
@@ -340,7 +338,7 @@
       return "US$" + n.toFixed(2);
     }
 
-    // --------- product card builders ---------
+    // product cards
     function buildProductCard(product) {
       const ratingHtml = buildRatingHtml(product.rating_avg, product.rating_count);
       const sellerHtml = formatSellerDisplay(product.seller_name, product.seller_plan);
@@ -384,7 +382,7 @@
       `;
     }
 
-    // --------- filters ---------
+    // filters
     function applyFiltersToQuery(query) {
       if (filterState.tag) {
         query = query.contains("tags", [filterState.tag]);
@@ -400,6 +398,9 @@
       }
       if (filterState.ratingMin !== null && filterState.ratingMin !== "") {
         query = query.gte("rating_avg", filterState.ratingMin);
+      }
+      if (searchText) {
+        query = query.ilike("title", "%" + searchText + "%");
       }
       return query;
     }
@@ -437,7 +438,6 @@
     }
 
     function initFilterEvents(reloadFn) {
-      // tag show-more + filetype show-more
       setupShowMore("#filters-tags-block", ".filter-tag");
       setupShowMore("#filters-filetypes-block", ".filter-filetype");
 
@@ -513,7 +513,7 @@
       });
     }
 
-    // --------- data loading ---------
+    // data loading
     async function loadFeaturedProducts(catSlug, subSlug) {
       const track = document.getElementById("featured-track");
       const empty = document.getElementById("featured-empty");
@@ -529,9 +529,6 @@
 
       if (catSlug) query = query.eq("category_slug", catSlug);
       if (subSlug) query = query.eq("subcategory_slug", subSlug);
-      if (currentSearchTerm) {
-        query = query.ilike("title", `%${currentSearchTerm}%`);
-      }
 
       query = applyFiltersToQuery(query);
 
@@ -566,9 +563,6 @@
 
       if (catSlug) query = query.eq("category_slug", catSlug);
       if (subSlug) query = query.eq("subcategory_slug", subSlug);
-      if (currentSearchTerm) {
-        query = query.ilike("title", `%${currentSearchTerm}%`);
-      }
 
       query = applyFiltersToQuery(query);
 
@@ -590,7 +584,7 @@
       });
     }
 
-    // --------- featured slider ---------
+    // featured slider
     function initFeaturedSlider() {
       const track = document.getElementById("featured-track");
       if (!track) return;
@@ -607,7 +601,7 @@
       });
     }
 
-    // --------- header auth + cart ---------
+    // header auth + cart
     function getCartCount() {
       try {
         const raw = localStorage.getItem("sr_cart_items");
@@ -669,9 +663,7 @@
       updateCartCount();
     }
 
-    // --------- CATEGORY NAV FROM SUPABASE ---------
-    let drawerCatMap = {}; // slug -> { name, subs: [ {slug,name} ] }
-
+    // CATEGORY NAV FROM SUPABASE
     async function buildCategoryNav(catSlug) {
       const desktopScroll = document.getElementById("desktop-cat-scroll");
       const drawerCatList = document.getElementById("nav-drawer-cat-list");
@@ -679,6 +671,8 @@
 
       desktopScroll.innerHTML = "";
       drawerCatList.innerHTML = "";
+      navState.catButtons = {};
+      navState.moreButton = null;
 
       // All button (desktop)
       const allItem = document.createElement("div");
@@ -818,13 +812,11 @@
         moreItem.appendChild(dropdown);
         desktopScroll.appendChild(moreItem);
 
+        // keep dropdown open while hovering
         let hideTimeout;
-        const open = () => {
-          dropdown.classList.add("open");
-        };
-        const close = () => {
-          dropdown.classList.remove("open");
-        };
+        const open = () => dropdown.classList.add("open");
+        const close = () => dropdown.classList.remove("open");
+
         moreItem.addEventListener("mouseenter", () => {
           clearTimeout(hideTimeout);
           open();
@@ -835,8 +827,7 @@
       }
 
       // MOBILE drawer categories (all cats)
-      const allCatsForDrawer = [...primary, ...more];
-      allCatsForDrawer.forEach(cat => {
+      more.concat(primary).forEach(cat => {
         const btn = document.createElement("button");
         btn.type = "button";
         btn.className = "drawer-link drawer-link-cat";
@@ -846,7 +837,7 @@
       });
     }
 
-    // --------- mobile nav drawer behavior ---------
+    // mobile nav drawer
     function initNavDrawer() {
       const toggle = document.getElementById("nav-drawer-toggle");
       const backdrop = document.getElementById("nav-drawer-backdrop");
@@ -908,7 +899,6 @@
         viewSubs.style.display = "";
       });
 
-      // "All products" button at top of drawer
       document.querySelectorAll("[data-cat-link][data-cat='all']").forEach(btn => {
         btn.addEventListener("click", () => {
           window.location.href = "/marketplace.html";
@@ -916,7 +906,7 @@
       });
     }
 
-    // --------- filters drawer (mobile) ---------
+    // filters drawer (mobile)
     function initFiltersDrawer() {
       const toggle = document.getElementById("filters-toggle");
       if (!toggle) return;
@@ -936,11 +926,14 @@
       overlay.addEventListener("click", closeFilters);
     }
 
-    // --------- search clear button ---------
-    function initSearchClear() {
+    // search clear button
+    function initSearchClear(reloadFn) {
       const input = document.querySelector(".sr-search-input");
       const clearBtn = document.querySelector(".sr-search-clear");
       if (!input || !clearBtn) return;
+
+      // initial value from searchText
+      input.value = searchText || "";
 
       function syncClear() {
         if (input.value && input.value.length > 0) {
@@ -951,29 +944,37 @@
       }
 
       input.addEventListener("input", syncClear);
+
       clearBtn.addEventListener("click", () => {
         input.value = "";
+        searchText = "";
         syncClear();
+
+        // remove q from URL without losing cat/sub
+        const url = new URL(window.location.href);
+        url.searchParams.delete("q");
+        window.history.replaceState({}, "", url.toString());
+
+        reloadFn();
         input.focus();
       });
 
       syncClear();
     }
 
-    // --------- init ---------
+    // init
     async function initMarketplace() {
-      const { catSlug, subSlug, searchTerm } = getParamsFromUrl();
-      currentSearchTerm = searchTerm;
+      if (!document.body.classList.contains("marketplace-page")) return;
 
-      const heading = formatHeading(catSlug, subSlug, searchTerm);
+      const state = getUrlState();
+      const catSlug = state.catSlug;
+      const subSlug = state.subSlug;
+      searchText = state.q;
+
+      const heading = formatHeading(catSlug, subSlug);
       document.getElementById("products-title").textContent = heading;
       document.getElementById("featured-title").textContent =
-        (catSlug || subSlug || searchTerm) ? ("Featured in " + heading) : "Featured products";
-
-      const searchInput = document.querySelector(".sr-search-input");
-      if (searchInput && searchTerm) {
-        searchInput.value = searchTerm;
-      }
+        (catSlug || subSlug) ? ("Featured in " + heading) : "Featured products";
 
       await buildCategoryNav(catSlug);
       updateNavActive(catSlug);
@@ -982,7 +983,6 @@
       initNavDrawer();
       initFiltersDrawer();
       await initHeaderAuthAndCart();
-      initSearchClear();
 
       const reloadAll = () => {
         loadFeaturedProducts(catSlug, subSlug);
@@ -990,6 +990,7 @@
       };
 
       initFilterEvents(reloadAll);
+      initSearchClear(reloadAll);
       reloadAll();
     }
 
@@ -1000,4 +1001,3 @@
   <script type="module" src="/js/footer.js"></script>
 </body>
 </html>
-

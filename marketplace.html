@@ -929,7 +929,31 @@
     }
 
     // --------- init ---------
-    async function initMarketplace() {
+    async function initMarketplace() function initSearchClear() {
+  const input = document.querySelector(".sr-search-input");
+  const clearBtn = document.querySelector(".sr-search-clear");
+  if (!input || !clearBtn) return;
+
+  function syncClear() {
+    if (input.value && input.value.length > 0) {
+      clearBtn.style.display = "block";
+    } else {
+      clearBtn.style.display = "none";
+    }
+  }
+
+  input.addEventListener("input", syncClear);
+  clearBtn.addEventListener("click", () => {
+    input.value = "";
+    syncClear();
+    input.focus();
+  });
+
+  syncClear();
+}
+
+    
+   {
       const { catSlug, subSlug } = getCategoryFromUrl();
       const heading = formatHeading(catSlug, subSlug);
       document.getElementById("products-title").textContent = heading;
@@ -951,7 +975,8 @@
 
       initFilterEvents(reloadAll);
       reloadAll();
-    }
+  initSearchClear();   //
+   }
 
     document.addEventListener("DOMContentLoaded", initMarketplace);
   </script>

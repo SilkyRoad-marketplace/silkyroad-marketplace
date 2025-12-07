@@ -233,7 +233,7 @@
   <!-- FOOTER -->
   <div id="footer-root"></div>
 
-  <!-- MAIN MARKETPLACE LOGIC -->
+    <!-- MAIN MARKETPLACE LOGIC -->
   <script>
     const SUPABASE_URL = "https://paqvgsruppgadgguynde.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBhcXZnc3J1cHBnYWRnZ3V5bmRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIzNTg3NTMsImV4cCI6MjA3NzkzNDc1M30.pwEE4WLFu2-tHkmH1fFYYwcEPmLPyavN7ykXdPGQ3AY";
@@ -257,16 +257,22 @@
       "films"
     ];
 
+    let currentSearchTerm = "";
+
     // --------- URL + headings ---------
-    function getCategoryFromUrl() {
+    function getParamsFromUrl() {
       const params = new URLSearchParams(window.location.search);
       let catSlug = params.get("cat");
       let subSlug = params.get("sub");
+      const searchTerm = (params.get("q") || "").trim();
       if (catSlug === "all") catSlug = null;
-      return { catSlug, subSlug };
+      return { catSlug, subSlug, searchTerm };
     }
 
-    function formatHeading(catSlug, subSlug) {
+    function formatHeading(catSlug, subSlug, searchTerm) {
+      if (searchTerm && !catSlug && !subSlug) {
+        return `Search: "${searchTerm}"`;
+      }
       if (!catSlug && !subSlug) return "All products";
       const unslug = (s) => s.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase());
       if (catSlug && !subSlug) return unslug(catSlug);
@@ -284,7 +290,6 @@
     function updateNavActive(catSlug) {
       if (!navState.allButton) return;
 
-      // clear all
       Object.values(navState.catButtons).forEach(btn => btn.classList.remove("active"));
       if (navState.moreButton) navState.moreButton.classList.remove("active");
       navState.allButton.classList.remove("active");
@@ -405,7 +410,6 @@
       const items = Array.from(container.querySelectorAll(itemSelector));
       if (items.length <= 5) return;
 
-      // hide beyond 5
       items.forEach((item, index) => {
         if (index >= 5) item.classList.add("filter-hidden");
       });
@@ -525,6 +529,9 @@
 
       if (catSlug) query = query.eq("category_slug", catSlug);
       if (subSlug) query = query.eq("subcategory_slug", subSlug);
+      if (currentSearchTerm) {
+        query = query.ilike("title", `%${currentSearchTerm}%`);
+      }
 
       query = applyFiltersToQuery(query);
 
@@ -559,6 +566,9 @@
 
       if (catSlug) query = query.eq("category_slug", catSlug);
       if (subSlug) query = query.eq("subcategory_slug", subSlug);
+      if (currentSearchTerm) {
+        query = query.ilike("title", `%${currentSearchTerm}%`);
+      }
 
       query = applyFiltersToQuery(query);
 
@@ -808,7 +818,6 @@
         moreItem.appendChild(dropdown);
         desktopScroll.appendChild(moreItem);
 
-        // JS hover helper so it doesn't close too quickly
         let hideTimeout;
         const open = () => {
           dropdown.classList.add("open");
@@ -825,8 +834,9 @@
         });
       }
 
-      // MOBILE drawer categories
-      more.concat(primary).forEach(cat => {
+      // MOBILE drawer categories (all cats)
+      const allCatsForDrawer = [...primary, ...more];
+      allCatsForDrawer.forEach(cat => {
         const btn = document.createElement("button");
         btn.type = "button";
         btn.className = "drawer-link drawer-link-cat";
@@ -870,7 +880,6 @@
         viewSubs.style.display = "none";
       });
 
-      // delegate clicks for category links
       document.getElementById("nav-drawer-cat-list").addEventListener("click", (e) => {
         const btn = e.target.closest(".drawer-link-cat");
         if (!btn) return;
@@ -881,7 +890,6 @@
         subsTitle.textContent = catEntry.name;
         subsList.innerHTML = "";
 
-        // link to "All in {cat}"
         const allLink = document.createElement("a");
         allLink.className = "drawer-link";
         allLink.href = `/marketplace.html?cat=${encodeURIComponent(slug)}`;
@@ -928,37 +936,44 @@
       overlay.addEventListener("click", closeFilters);
     }
 
-    // --------- init ---------
-    async function initMarketplace() function initSearchClear() {
-  const input = document.querySelector(".sr-search-input");
-  const clearBtn = document.querySelector(".sr-search-clear");
-  if (!input || !clearBtn) return;
+    // --------- search clear button ---------
+    function initSearchClear() {
+      const input = document.querySelector(".sr-search-input");
+      const clearBtn = document.querySelector(".sr-search-clear");
+      if (!input || !clearBtn) return;
 
-  function syncClear() {
-    if (input.value && input.value.length > 0) {
-      clearBtn.style.display = "block";
-    } else {
-      clearBtn.style.display = "none";
+      function syncClear() {
+        if (input.value && input.value.length > 0) {
+          clearBtn.style.display = "block";
+        } else {
+          clearBtn.style.display = "none";
+        }
+      }
+
+      input.addEventListener("input", syncClear);
+      clearBtn.addEventListener("click", () => {
+        input.value = "";
+        syncClear();
+        input.focus();
+      });
+
+      syncClear();
     }
-  }
 
-  input.addEventListener("input", syncClear);
-  clearBtn.addEventListener("click", () => {
-    input.value = "";
-    syncClear();
-    input.focus();
-  });
+    // --------- init ---------
+    async function initMarketplace() {
+      const { catSlug, subSlug, searchTerm } = getParamsFromUrl();
+      currentSearchTerm = searchTerm;
 
-  syncClear();
-}
-
-    
-   {
-      const { catSlug, subSlug } = getCategoryFromUrl();
-      const heading = formatHeading(catSlug, subSlug);
+      const heading = formatHeading(catSlug, subSlug, searchTerm);
       document.getElementById("products-title").textContent = heading;
       document.getElementById("featured-title").textContent =
-        (catSlug || subSlug) ? ("Featured in " + heading) : "Featured products";
+        (catSlug || subSlug || searchTerm) ? ("Featured in " + heading) : "Featured products";
+
+      const searchInput = document.querySelector(".sr-search-input");
+      if (searchInput && searchTerm) {
+        searchInput.value = searchTerm;
+      }
 
       await buildCategoryNav(catSlug);
       updateNavActive(catSlug);
@@ -967,6 +982,7 @@
       initNavDrawer();
       initFiltersDrawer();
       await initHeaderAuthAndCart();
+      initSearchClear();
 
       const reloadAll = () => {
         loadFeaturedProducts(catSlug, subSlug);
@@ -975,8 +991,7 @@
 
       initFilterEvents(reloadAll);
       reloadAll();
-  initSearchClear();   //
-   }
+    }
 
     document.addEventListener("DOMContentLoaded", initMarketplace);
   </script>
@@ -985,3 +1000,4 @@
   <script type="module" src="/js/footer.js"></script>
 </body>
 </html>
+

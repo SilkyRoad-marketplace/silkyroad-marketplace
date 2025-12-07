@@ -2728,3 +2728,165 @@ body.filters-open .filters-overlay{
 .nav-more-dropdown.open{
   display:block;
 }
+/* --- Ensure marketplace cat bar & dropdowns sit above content --- */
+.marketplace-nav {
+  position: relative;
+  z-index: 20;
+}
+
+.nav-cat-menu,
+.nav-more-dropdown {
+  position: absolute;
+  z-index: 30;
+}
+
+/* --- Desktop only: show cat bar --- */
+@media (min-width: 769px) {
+  .marketplace-nav {
+    display: block;
+  }
+}
+
+/* --- Mobile only: hide cat bar (use hamburger instead) --- */
+@media (max-width: 768px) {
+  .marketplace-nav {
+    display: none;
+  }
+}
+
+/* --- Marketplace header layout: 2 rows on mobile --- */
+.sr-header-marketplace .sr-header-row1 {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  grid-template-rows: auto auto;
+  grid-template-areas:
+    "logo actions menu"
+    "search search search";
+  align-items: center;
+  column-gap: 0.75rem;
+  row-gap: 0.5rem;
+}
+
+.sr-header-marketplace .sr-logo-wrap {
+  grid-area: logo;
+}
+
+.sr-header-marketplace .sr-header-actions {
+  grid-area: actions;
+  justify-self: flex-end;
+}
+
+.sr-header-marketplace .sr-menu-btn {
+  grid-area: menu;
+  justify-self: flex-end;
+}
+
+.sr-header-marketplace .sr-search-wrap {
+  grid-area: search;
+  width: 100%;
+}
+
+/* Desktop: revert to normal flex header */
+@media (min-width: 769px) {
+  .sr-header-marketplace .sr-header-row1 {
+    display: flex;
+    align-items: center;
+  }
+
+  .sr-header-marketplace .sr-search-wrap {
+    max-width: 520px;
+    margin: 0 1.5rem;
+  }
+
+  .sr-header-marketplace .sr-menu-btn {
+    display: none;
+  }
+}
+
+/* --- Search bar icon + clear button --- */
+.sr-search-form {
+  position: relative;
+  width: 100%;
+}
+
+.sr-search-icon-inline {
+  position: absolute;
+  left: 0.9rem;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.sr-search-input {
+  width: 100%;
+  padding-left: 2.2rem; /* space for icon */
+}
+
+.sr-search-clear {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.9rem;
+  display: none; /* shown via JS when text exists */
+}
+
+/* --- Filters drawer overlay for mobile --- */
+.filters-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  z-index: 40;
+}
+
+/* Mobile: filters sidebar becomes slide-out drawer */
+@media (max-width: 768px) {
+  .filters-column {
+    position: fixed;
+    top: 0;
+    left: -320px;
+    width: 280px;
+    max-width: 80%;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 50;
+    transition: left 0.2s ease;
+  }
+
+  body.filters-open .filters-column {
+    left: 0;
+  }
+
+  body.filters-open .filters-overlay {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .filters-toggle-btn {
+    display: inline-flex;
+    margin-bottom: 1rem;
+  }
+}
+
+/* Desktop: filters sidebar always visible, toggle button hidden */
+@media (min-width: 769px) {
+  .filters-column {
+    position: static;
+    height: auto;
+  }
+
+  .filters-toggle-btn {
+    display: none;
+  }
+}
+
+/* Hide extra filter tags/filetypes until "Show more" clicked */
+.filter-hidden {
+  display: none;
+}

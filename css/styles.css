@@ -1915,3 +1915,251 @@ body.marketplace-page{
   color: #f2c94c;
   margin: 4px 0 0 0;
 }
+
+/* ===========================
+   EXTRA MARKETPLACE TWEAKS
+   =========================== */
+
+/* Ensure dropdowns are above page content */
+.nav-cat-menu,
+.nav-more-dropdown {
+  z-index: 1000;
+}
+
+.sr-header-marketplace {
+  z-index: 80;
+}
+
+/* "Show more" helper */
+.filter-hidden {
+  display: none;
+}
+
+.filter-show-more {
+  margin-top: 6px;
+  border-radius: 999px;
+  border: 1px solid rgba(244,197,106,0.4);
+  background: rgba(7,7,12,0.9);
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  padding: 4px 10px;
+  cursor: pointer;
+}
+
+.filter-show-more:hover {
+  color: var(--accent-gold);
+}
+
+/* hide native number arrows, keep integers only visual */
+.filters-input-row input[type="number"]::-webkit-outer-spin-button,
+.filters-input-row input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.filters-input-row input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/* cart badge */
+.cart-count-badge {
+  margin-left: 4px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: var(--accent-gold);
+  color: #1b1105;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+/* mobile menu button */
+.sr-menu-btn {
+  display: none;
+  border: none;
+  background: #101018;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 16px;
+  color: var(--text-main);
+  cursor: pointer;
+}
+
+/* NAV MORE dropdown: JS toggles .open */
+.nav-more-dropdown {
+  display: none;
+  position: absolute;
+}
+.nav-more-dropdown.open {
+  display: block;
+}
+
+/* NAV DRAWER */
+.sr-drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: none;
+  align-items: stretch;
+  justify-content: flex-start;
+  z-index: 90;
+}
+
+.sr-drawer-backdrop.open {
+  display: flex;
+}
+
+.sr-drawer {
+  width: 80%;
+  max-width: 320px;
+  background: radial-gradient(circle at top,#171322 0,#050509 75%);
+  border-right: 1px solid rgba(244,197,106,0.45);
+  padding: 12px 14px 18px;
+  box-shadow: var(--shadow-soft);
+  overflow-y: auto;
+}
+
+.sr-drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.sr-drawer-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.sr-drawer-close {
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.drawer-section {
+  margin-top: 10px;
+}
+
+.drawer-account {
+  border-bottom: 1px solid rgba(244,197,106,0.25);
+  padding-bottom: 8px;
+}
+
+.drawer-link {
+  display: block;
+  width: 100%;
+  text-align: left;
+  font-size: 0.9rem;
+  padding: 6px 0;
+  color: var(--text-main);
+  text-decoration: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.drawer-link:hover {
+  color: var(--accent-gold);
+}
+
+.drawer-link-cat {
+  font-size: 0.9rem;
+}
+
+.drawer-subcats-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.drawer-back {
+  border: none;
+  background: none;
+  color: var(--accent-gold);
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+/* FILTER OVERLAY (mobile) */
+.filters-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 69;
+}
+
+/* when body has filters-open, show overlay and slide filters aside in */
+body.filters-open .filters-overlay {
+  display: block;
+}
+
+@media (max-width: 720px) {
+  /* header rows: show burger, adjust layout */
+  .sr-header-row1 {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .sr-search-wrap {
+    order: 2;
+    flex: 1;
+  }
+
+  .sr-header-actions {
+    display: none; /* moved into drawer on mobile */
+  }
+
+  .sr-menu-btn {
+    display: inline-flex;
+    order: 3;
+  }
+
+  .sr-header-row2 {
+    padding-top: 6px;
+  }
+
+  .sr-category-scroll {
+    overflow-x: auto;
+  }
+
+  /* filters: become drawer */
+  .filters-column {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: -100%;
+    width: 80%;
+    max-width: 320px;
+    z-index: 70;
+    overflow-y: auto;
+    transition: left .25s ease;
+  }
+
+  body.filters-open .filters-column {
+    left: 0;
+  }
+
+  /* filters toggle button visible on mobile */
+  .filters-toggle-btn {
+    display: inline-flex;
+    margin-bottom: 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(244,197,106,0.4);
+    background: rgba(7,7,12,0.9);
+    color: var(--text-main);
+    font-size: 0.8rem;
+    padding: 6px 12px;
+    cursor: pointer;
+  }
+}
+
+/* desktop: filters toggle hidden */
+@media (min-width: 721px) {
+  .filters-toggle-btn {
+    display: none;
+  }
+}

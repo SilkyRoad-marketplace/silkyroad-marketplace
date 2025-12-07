@@ -1,114 +1,192 @@
 <header class="sr-header sr-header-market">
   <div class="sr-container sr-header-inner">
+
+    <!-- ============= LOGO ============= -->
     <a href="/index.html" class="logo-link">
-      <img src="/logo.png" alt="Silky Road logo" class="logo-img">
+      <img src="/logo.png" alt="Silky Road" class="logo-img">
     </a>
 
+    <!-- ============= SEARCH BAR ============= -->
     <div class="market-search">
-      <input type="search" placeholder="Search digital products…" aria-label="Search products">
+      <input 
+        id="search-input"
+        type="search" 
+        placeholder="Search digital products…" 
+        aria-label="Search products">
     </div>
 
+    <!-- ============= HEADER ACTIONS (RIGHT SIDE) ============= -->
     <div class="nav-actions nav-actions-market">
-      <nav class="nav-categories" aria-label="Primary categories">
-        <div class="nav-cat-item" data-main-cat="all">
-          <button class="nav-cat-trigger">All</button>
-          <div class="nav-cat-menu nav-cat-menu-wide">
-            <p class="nav-cat-note">Browse everything on Silky Road in one feed.</p>
+
+      <!-- CATEGORY BAR DESKTOP (auto-hide on mobile) -->
+      <nav class="desktop-cat-bar" id="desktop-cat-bar">
+        <div class="sr-cat-item sr-cat-with-menu">
+          <button class="sr-cat-btn">All</button>
+          <div class="sr-cat-menu">
+            <a href="/marketplace.html">All Products</a>
           </div>
         </div>
-        <div class="nav-cat-item" data-main-cat="other">
-          <button class="nav-cat-trigger">Other</button>
-          <div class="nav-cat-menu">
-            <a href="/category.html?category=Other">Other</a>
-            <a href="/category.html?category=Templates">Templates</a>
+
+        <!-- 3D -->
+        <div class="sr-cat-item sr-cat-with-menu">
+          <button class="sr-cat-btn">3D</button>
+          <div class="sr-cat-menu">
+            <a href="/marketplace.html?cat=3d&sub=models">Models</a>
+            <a href="/marketplace.html?cat=3d&sub=textures">Textures</a>
+            <a href="/marketplace.html?cat=3d&sub=characters">Characters</a>
           </div>
         </div>
-        <div class="nav-cat-item" data-main-cat="design">
-          <button class="nav-cat-trigger">Design</button>
-          <div class="nav-cat-menu">
-            <a href="/category.html?category=Design">Design</a>
-            <a href="/category.html?category=Drawing%20%26%20Painting">Drawing &amp; Painting</a>
-            <a href="/category.html?category=Photography">Photography</a>
-            <a href="/category.html?category=Comics%20%26%20Graphic%20Novels">Comics &amp; Graphic Novels</a>
+
+        <!-- Roblox -->
+        <div class="sr-cat-item sr-cat-with-menu">
+          <button class="sr-cat-btn">Roblox</button>
+          <div class="sr-cat-menu">
+            <a href="/marketplace.html?cat=roblox&sub=maps">Maps</a>
+            <a href="/marketplace.html?cat=roblox&sub=scripts">Scripts</a>
+            <a href="/marketplace.html?cat=roblox&sub=assets">Assets</a>
           </div>
         </div>
-        <div class="nav-cat-item" data-main-cat="software">
-          <button class="nav-cat-trigger">Software Development</button>
-          <div class="nav-cat-menu">
-            <a href="/category.html?category=Software%20Development">Software Development</a>
-            <a href="/category.html?category=Gaming">Gaming</a>
-            <a href="/category.html?category=Business%20%26%20Money">Business &amp; Money</a>
-            <a href="/category.html?category=Education">Education</a>
+
+        <!-- Crafts -->
+        <div class="sr-cat-item sr-cat-with-menu">
+          <button class="sr-cat-btn">Crafts</button>
+          <div class="sr-cat-menu">
+            <a href="/marketplace.html?cat=crafts&sub=printables">Printables</a>
+            <a href="/marketplace.html?cat=crafts&sub=patterns">Patterns</a>
           </div>
         </div>
-        <div class="nav-cat-item" data-main-cat="3d">
-          <button class="nav-cat-trigger">3D</button>
-          <div class="nav-cat-menu">
-            <a href="/category.html?category=3D">3D</a>
-            <a href="/category.html?category=Roblox">Roblox</a>
-            <a href="/category.html?category=VRChat">VRChat</a>
+
+        <!-- Design -->
+        <div class="sr-cat-item sr-cat-with-menu">
+          <button class="sr-cat-btn">Design</button>
+          <div class="sr-cat-menu">
+            <a href="/marketplace.html?cat=design&sub=templates">Templates</a>
+            <a href="/marketplace.html?cat=design&sub=fonts">Fonts</a>
+            <a href="/marketplace.html?cat=design&sub=mockups">Mockups</a>
           </div>
         </div>
-        <div class="nav-cat-item" data-main-cat="films">
-          <button class="nav-cat-trigger">Films</button>
-          <div class="nav-cat-menu">
-            <a href="/category.html?category=Films">Films</a>
-            <a href="/category.html?category=Audio">Audio</a>
-            <a href="/category.html?category=Recorded%20Music">Recorded Music</a>
-            <a href="/category.html?category=Music%20%26%20Sound%20Design">Music &amp; Sound Design</a>
+
+        <!-- Drawing & Painting -->
+        <div class="sr-cat-item sr-cat-with-menu">
+          <button class="sr-cat-btn">Drawing & Painting</button>
+          <div class="sr-cat-menu">
+            <a href="/marketplace.html?cat=drawing-and-painting&sub=brushes">Brushes</a>
+            <a href="/marketplace.html?cat=drawing-and-painting&sub=tutorials">Tutorials</a>
           </div>
         </div>
-        <div class="nav-cat-item nav-cat-more" data-main-cat="more">
-          <button class="nav-cat-trigger">More ▾</button>
-          <div class="nav-cat-menu nav-cat-menu-wide">
-            <a href="/category.html?category=Crafts">Crafts</a>
-            <a href="/category.html?category=Fiction%20Books">Fiction Books</a>
-            <a href="/category.html?category=Fitness%20%26%20Health">Fitness &amp; Health</a>
-            <a href="/category.html?category=Writing%20%26%20Publishing">Writing &amp; Publishing</a>
-            <a href="/category.html?category=Education">Education</a>
-            <a href="/category.html?category=Gaming">Gaming</a>
-            <a href="/category.html?category=Business%20%26%20Money">Business &amp; Money</a>
+
+        <!-- Music & Sound Design -->
+        <div class="sr-cat-item sr-cat-with-menu">
+          <button class="sr-cat-btn">Music & Sound Design</button>
+          <div class="sr-cat-menu">
+            <a href="/marketplace.html?cat=music-and-sound-design&sub=loops">Loops</a>
+            <a href="/marketplace.html?cat=music-and-sound-design&sub=samples">Samples</a>
+            <a href="/marketplace.html?cat=music-and-sound-design&sub=tracks">Tracks</a>
+          </div>
+        </div>
+
+        <!-- Films -->
+        <div class="sr-cat-item sr-cat-with-menu">
+          <button class="sr-cat-btn">Films</button>
+          <div class="sr-cat-menu">
+            <a href="/marketplace.html?cat=films&sub=stock-footage">Stock Footage</a>
+            <a href="/marketplace.html?cat=films&sub=overlays">Overlays</a>
+          </div>
+        </div>
+
+        <!-- MORE -->
+        <div class="sr-cat-item sr-cat-with-menu">
+          <button class="sr-cat-btn">More ▾</button>
+          <div class="sr-cat-menu nav-cat-menu-wide">
+            <a href="/marketplace.html?cat=business-and-money">Business & Money</a>
+            <a href="/marketplace.html?cat=software-development">Software Development</a>
+            <a href="/marketplace.html?cat=gaming">Gaming</a>
+            <a href="/marketplace.html?cat=photography">Photography</a>
+            <a href="/marketplace.html?cat=education">Education</a>
+            <a href="/marketplace.html?cat=other">Other</a>
           </div>
         </div>
       </nav>
 
-      <div class="nav-user-actions">
-        <a href="/library.html" class="nav-link" data-visible="logged-in">Library</a>
-        <a href="/login.html" class="nav-link" data-visible="logged-out" data-auth="login">Log in</a>
-        <a href="/dashboard.html" class="btn btn-ghost" data-visible="logged-in">Start selling</a>
-        <a href="/sign_up.html" class="btn btn-ghost" data-visible="logged-out">Start selling</a>
-        <a href="/checkout.html" class="cart-link" aria-label="Cart">
-          <span class="cart-icon">🛒</span>
-        </a>
-      </div>
+      <!-- LOGIN / LIBRARY -->
+      <a href="/login.html" class="nav-link" data-visible="logged-out">Log in</a>
+      <a href="/library.html" class="nav-link" data-visible="logged-in">Library</a>
+
+      <!-- START SELLING / DASHBOARD -->
+      <a href="/sign_up.html" class="btn btn-ghost" data-visible="logged-out">Start selling</a>
+      <a href="/dashboard.html" class="btn btn-ghost" data-visible="logged-in">Dashboard</a>
+
+      <!-- CART -->
+      <a href="/checkout.html" class="cart-link">
+        <span class="cart-icon">🛒</span>
+        <span id="cart-count" style="font-size: 12px; margin-left: 4px;"></span>
+      </a>
+
     </div>
 
-    <button class="nav-toggle" aria-label="Toggle navigation">
+    <!-- ============= HAMBURGER (MOBILE) ============= -->
+    <button class="nav-toggle" id="hamburger-btn" aria-label="Toggle navigation">
       <span></span><span></span><span></span>
     </button>
+
   </div>
 
-  <div class="nav-mobile-panel market-mobile-panel">
-    <div class="market-search market-search-mobile">
-      <input type="search" placeholder="Search…" aria-label="Search products">
-    </div>
-    <div class="nav-mobile-section">
-      <strong>Categories</strong>
-      <a href="/marketplace.html">All</a>
-      <a href="/category.html?category=Design">Design</a>
-      <a href="/category.html?category=Software%20Development">Software Development</a>
-      <a href="/category.html?category=3D">3D</a>
-      <a href="/category.html?category=Films">Films</a>
-      <a href="/category.html?category=Crafts">Crafts</a>
-      <a href="/category.html?category=Education">Education</a>
-    </div>
-    <div class="nav-mobile-section">
-      <strong>Account</strong>
-      <a href="/library.html" data-visible="logged-in">Library</a>
-      <a href="/login.html" data-visible="logged-out" data-auth="login">Log in</a>
-      <a href="/dashboard.html" data-visible="logged-in">Dashboard</a>
-      <a href="/sign_up.html" data-visible="logged-out">Start selling</a>
-      <a href="/checkout.html">Cart</a>
-    </div>
+  <!-- ============= MOBILE DRAWER ============= -->
+  <div class="mobile-drawer" id="mobile-drawer">
+    <span class="drawer-close" id="drawer-close">✕</span>
+
+    <!-- Login / Start selling -->
+    <a href="/login.html" data-visible="logged-out" class="nav-link">Log in</a>
+    <a href="/sign_up.html" data-visible="logged-out" class="nav-link">Start selling</a>
+
+    <a href="/library.html" data-visible="logged-in" class="nav-link">Library</a>
+    <a href="/dashboard.html" data-visible="logged-in" class="nav-link">Dashboard</a>
+
+    <hr>
+
+    <!-- CATEGORY LIST -->
+    <div class="drawer-cat">All</div>
+
+    <div class="drawer-cat">3D</div>
+    <a class="drawer-subcat" href="/marketplace.html?cat=3d&sub=models">Models</a>
+    <a class="drawer-subcat" href="/marketplace.html?cat=3d&sub=textures">Textures</a>
+    <a class="drawer-subcat" href="/marketplace.html?cat=3d&sub=characters">Characters</a>
+
+    <div class="drawer-cat">Roblox</div>
+    <a class="drawer-subcat" href="/marketplace.html?cat=roblox&sub=maps">Maps</a>
+    <a class="drawer-subcat" href="/marketplace.html?cat=roblox&sub=scripts">Scripts</a>
+    <a class="drawer-subcat" href="/marketplace.html?cat=roblox&sub=assets">Assets</a>
+
+    <div class="drawer-cat">Crafts</div>
+    <a class="drawer-subcat" href="/marketplace.html?cat=crafts&sub=printables">Printables</a>
+    <a class="drawer-subcat" href="/marketplace.html?cat=crafts&sub=patterns">Patterns</a>
+
+    <div class="drawer-cat">Design</div>
+    <a class="drawer-subcat" href="/marketplace.html?cat=design&sub=templates">Templates</a>
+    <a class="drawer-subcat" href="/marketplace.html?cat=design&sub=fonts">Fonts</a>
+    <a class="drawer-subcat" href="/marketplace.html?cat=design&sub=mockups">Mockups</a>
+
+    <div class="drawer-cat">Drawing & Painting</div>
+    <a class="drawer-subcat" href="/marketplace.html?cat=drawing-and-painting&sub=brushes">Brushes</a>
+    <a class="drawer-subcat" href="/marketplace.html?cat=drawing-and-painting&sub=tutorials">Tutorials</a>
+
+    <div class="drawer-cat">Music & Sound Design</div>
+    <a class="drawer-subcat" href="/marketplace.html?cat=music-and-sound-design&sub=loops">Loops</a>
+    <a class="drawer-subcat" href="/marketplace.html?cat=music-and-sound-design&sub=samples">Samples</a>
+    <a class="drawer-subcat" href="/marketplace.html?cat=music-and-sound-design&sub=tracks">Tracks</a>
+
+    <div class="drawer-cat">Films</div>
+    <a class="drawer-subcat" href="/marketplace.html?cat=films&sub=stock-footage">Stock Footage</a>
+    <a class="drawer-subcat" href="/marketplace.html?cat=films&sub=overlays">Overlays</a>
+
+    <div class="drawer-cat">More</div>
+    <a class="drawer-subcat" href="/marketplace.html?cat=business-and-money">Business & Money</a>
+    <a class="drawer-subcat" href="/marketplace.html?cat=software-development">Software Development</a>
+    <a class="drawer-subcat" href="/marketplace.html?cat=gaming">Gaming</a>
+    <a class="drawer-subcat" href="/marketplace.html?cat=photography">Photography</a>
+    <a class="drawer-subcat" href="/marketplace.html?cat=education">Education</a>
+    <a class="drawer-subcat" href="/marketplace.html?cat=other">Other</a>
+
   </div>
+
 </header>

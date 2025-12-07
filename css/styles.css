@@ -2890,3 +2890,27 @@ body.filters-open .filters-overlay{
 .filter-hidden {
   display: none;
 }
+/* FORCE CATEGORY NAV ABOVE EVERYTHING */
+.marketplace-nav {
+  position: relative !important;
+  z-index: 9999 !important;
+}
+
+/* Ensure dropdowns also stay on top */
+.nav-cat-menu,
+.nav-more-dropdown {
+  position: absolute !important;
+  z-index: 10000 !important;
+}
+
+/* Prevent header or main content from covering cat-bar */
+.sr-header,
+.sr-header-marketplace,
+header,
+main,
+.sr-container,
+.marketplace-layout,
+.content-column {
+  position: relative;
+  z-index: 1 !important;
+}

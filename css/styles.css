@@ -2163,3 +2163,8 @@ body.filters-open .filters-overlay {
     display: none;
   }
 }
+@media (max-width: 720px) {
+  .marketplace-nav {
+    display: none;
+  }
+}

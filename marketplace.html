@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="en">
 <head>
@@ -6,7 +5,6 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Marketplace – Silky Road</title>
   <link rel="icon" href="/favicon.png">
-  <!-- use your dark/gold styles -->
   <link rel="stylesheet" href="css/styles.css">
 
   <!-- Supabase JS -->
@@ -14,55 +12,122 @@
 </head>
 <body class="page marketplace-page">
 
-  <!-- (optional) If you want the same header as home page,
-       you can copy the <header> from index.html and paste it here above the nav. -->
+  <!-- MARKETPLACE HEADER (SEPARATE FROM header-main) -->
+  <header class="sr-header sr-header-marketplace">
+    <div class="sr-header-inner">
 
-  <!-- Top category nav -->
-  <div class="marketplace-nav">
-    <div class="sr-container marketplace-nav-inner">
-      <div class="nav-scroll">
-        <a href="/marketplace.html" class="nav-pill" data-cat="all">All</a>
-        <a href="/marketplace.html?cat=3d" class="nav-pill" data-cat="3d">3D</a>
-        <a href="/marketplace.html?cat=roblox" class="nav-pill" data-cat="roblox">Roblox</a>
-        <a href="/marketplace.html?cat=crafts" class="nav-pill" data-cat="crafts">Crafts</a>
-        <a href="/marketplace.html?cat=design" class="nav-pill" data-cat="design">Design</a>
-        <a href="/marketplace.html?cat=drawing-and-painting" class="nav-pill" data-cat="drawing-and-painting">Drawing &amp; Painting</a>
-        <a href="/marketplace.html?cat=music-and-sound-design" class="nav-pill" data-cat="music-and-sound-design">Music &amp; Sound Design</a>
-        <a href="/marketplace.html?cat=films" class="nav-pill" data-cat="films">Films</a>
+      <!-- ROW 1: logo + search + actions -->
+      <div class="sr-header-row1">
+        <div class="sr-logo-wrap">
+          <a href="/index.html" class="sr-logo-link">
+            <img src="/logo.png" alt="Silky Road" class="sr-logo-img">
+          </a>
+        </div>
 
-        <div class="nav-more">
-          <button class="nav-pill nav-more-toggle">More ▾</button>
-          <div class="nav-more-dropdown">
-            <div class="more-group">
-              <div class="more-group-title">Fiction Books</div>
-              <a class="more-link" href="/marketplace.html?cat=fiction-books&sub=mystery">Mystery</a>
-              <a class="more-link" href="/marketplace.html?cat=fiction-books&sub=thriller">Thriller</a>
-              <a class="more-link" href="/marketplace.html?cat=fiction-books&sub=romance">Romance</a>
-              <a class="more-link" href="/marketplace.html?cat=fiction-books&sub=fantasy">Fantasy</a>
-            </div>
+        <div class="sr-search-wrap">
+          <form class="sr-search-form" action="/marketplace.html" method="get">
+            <input
+              type="text"
+              name="q"
+              class="sr-search-input"
+              placeholder="Search digital products, eBooks, music, templates…"
+              aria-label="Search products"
+            >
+            <button type="submit" class="sr-search-btn">
+              <span class="sr-search-icon">🔍</span>
+            </button>
+          </form>
+        </div>
 
-            <div class="more-group">
-              <div class="more-group-title">Business &amp; Money</div>
-              <a class="more-link" href="/marketplace.html?cat=business-and-money&sub=investing">Investing</a>
-              <a class="more-link" href="/marketplace.html?cat=business-and-money&sub=personal-finance">Personal Finance</a>
-              <a class="more-link" href="/marketplace.html?cat=business-and-money&sub=entrepreneurship">Entrepreneurship</a>
-            </div>
+        <div class="sr-header-actions">
+          <!-- logged-out -->
+          <a href="/login.html" class="sr-header-link" data-role="login-link">Login</a>
+          <a href="/sign_up.html" class="sr-header-btn sr-header-btn-gold" data-role="start-link">
+            Start selling
+          </a>
 
-            <div class="more-group">
-              <div class="more-group-title">Education</div>
-              <a class="more-link" href="/marketplace.html?cat=education&sub=ebooks">eBooks</a>
-              <a class="more-link" href="/marketplace.html?cat=education&sub=worksheets">Worksheets</a>
-              <a class="more-link" href="/marketplace.html?cat=education&sub=online-courses">Online Courses</a>
-            </div>
+          <!-- logged-in -->
+          <a href="/library.html" class="sr-header-link" data-role="library-link" style="display:none;">Library</a>
+          <a href="/dashboard.html" class="sr-header-btn sr-header-btn-gold" data-role="dashboard-link" style="display:none;">
+            Dashboard
+          </a>
 
-            <!-- Add more groups if you want -->
-          </div>
+          <!-- cart -->
+          <button type="button" class="sr-icon-btn sr-cart-btn" aria-label="Cart" data-role="cart-button">
+            🛒
+            <span class="cart-count-badge" data-role="cart-count" style="display:none;"></span>
+          </button>
+        </div>
+
+        <!-- mobile-only hamburger -->
+        <button class="sr-menu-btn" aria-label="Open navigation" id="nav-drawer-toggle">
+          ☰
+        </button>
+      </div>
+
+      <!-- ROW 2: category bar (desktop) -->
+      <div class="sr-header-row2">
+        <div class="sr-category-scroll" id="desktop-cat-scroll">
+          <!-- Filled dynamically from Supabase -->
         </div>
       </div>
     </div>
+  </header>
+
+  <!-- MOBILE NAV DRAWER -->
+  <div class="sr-drawer-backdrop" id="nav-drawer-backdrop">
+    <aside class="sr-drawer" id="nav-drawer">
+      <div class="sr-drawer-header">
+        <button class="sr-drawer-close" type="button" id="nav-drawer-close">✕</button>
+        <div class="sr-drawer-title" id="nav-drawer-title">Browse categories</div>
+      </div>
+
+      <div class="sr-drawer-body">
+        <!-- Account actions (login / start OR library / dashboard) -->
+        <div class="drawer-section drawer-account">
+          <a href="/login.html" class="sr-header-link" data-role="login-link">Login</a>
+          <a href="/sign_up.html" class="sr-header-btn sr-header-btn-gold" data-role="start-link">
+            Start selling
+          </a>
+          <a href="/library.html" class="sr-header-link" data-role="library-link" style="display:none;">
+            Library
+          </a>
+          <a href="/dashboard.html" class="sr-header-btn sr-header-btn-gold" data-role="dashboard-link" style="display:none;">
+            Dashboard
+          </a>
+          <button type="button" class="sr-icon-btn sr-cart-btn drawer-cart" data-role="cart-button">
+            🛒
+            <span class="cart-count-badge" data-role="cart-count" style="display:none;"></span>
+          </button>
+        </div>
+
+        <!-- MAIN CATEGORY LIST VIEW -->
+        <div class="drawer-view drawer-view-main" id="drawer-view-main">
+          <div class="drawer-section">
+            <button type="button" class="drawer-link" data-cat="all" data-cat-link>
+              All products
+            </button>
+          </div>
+          <div class="drawer-section" id="nav-drawer-cat-list">
+            <!-- main categories injected here -->
+          </div>
+        </div>
+
+        <!-- SUBCATEGORY VIEW -->
+        <div class="drawer-view drawer-view-subcats" id="drawer-view-subcats" style="display:none;">
+          <div class="drawer-section drawer-subcats-header">
+            <button type="button" class="drawer-back" id="drawer-subcats-back">‹ Back</button>
+            <span id="drawer-subcats-title"></span>
+          </div>
+          <div class="drawer-section" id="drawer-subcats-list">
+            <!-- subcategories for chosen cat -->
+          </div>
+        </div>
+      </div>
+    </aside>
   </div>
 
-  <!-- Main content -->
+  <!-- MAIN CONTENT -->
   <main class="sr-container">
     <div class="marketplace-layout">
 
@@ -70,34 +135,49 @@
       <aside class="filters-column">
         <div class="filters-title-main">Filters</div>
 
-        <div class="filters-block">
+        <div class="filters-block" id="filters-tags-block">
           <div class="filters-block-title">Tags</div>
           <button class="filter-tag" data-tag="vrchat">vrchat</button>
           <button class="filter-tag" data-tag="notion template">notion template</button>
           <button class="filter-tag" data-tag="vrchat asset">vrchat asset</button>
           <button class="filter-tag" data-tag="free">free</button>
           <button class="filter-tag" data-tag="blender">blender</button>
-          <button class="filter-tag" data-tag="" id="tags-show-more">Show more</button>
+          <!-- more tags can be added later -->
         </div>
 
-        <div class="filters-block">
+        <div class="filters-block" id="filters-filetypes-block">
           <div class="filters-block-title">Contains</div>
           <button class="filter-filetype" data-type="pdf">pdf</button>
           <button class="filter-filetype" data-type="zip">zip</button>
           <button class="filter-filetype" data-type="mp4">mp4</button>
           <button class="filter-filetype" data-type="rar">rar</button>
           <button class="filter-filetype" data-type="mp3">mp3</button>
+          <!-- more filetypes can be added later -->
         </div>
 
         <div class="filters-block">
           <div class="filters-block-title">Price</div>
           <div class="filters-input-row">
             <label for="price-min">Minimum price</label>
-            <input id="price-min" type="number" min="0" step="0.01" placeholder="0">
+            <input
+              id="price-min"
+              type="number"
+              min="0"
+              step="1"
+              inputmode="numeric"
+              pattern="[0-9]*"
+              placeholder="0">
           </div>
           <div class="filters-input-row">
             <label for="price-max">Maximum price</label>
-            <input id="price-max" type="number" min="0" step="0.01" placeholder="∞">
+            <input
+              id="price-max"
+              type="number"
+              min="0"
+              step="1"
+              inputmode="numeric"
+              pattern="[0-9]*"
+              placeholder="∞">
           </div>
         </div>
 
@@ -117,6 +197,12 @@
 
       <!-- ===== Right Content Column ===== -->
       <div class="content-column">
+
+        <!-- MOBILE FILTERS BUTTON -->
+        <button type="button" class="filters-toggle-btn" id="filters-toggle">
+          Filters
+        </button>
+
         <!-- Featured -->
         <section class="featured-section" id="featured-section">
           <div class="featured-header">
@@ -146,6 +232,10 @@
     </div>
   </main>
 
+  <!-- FOOTER -->
+  <div id="footer-root"></div>
+
+  <!-- MAIN MARKETPLACE LOGIC -->
   <script>
     const SUPABASE_URL = "https://paqvgsruppgadgguynde.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBhcXZnc3J1cHBnYWRnZ3V5bmRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIzNTg3NTMsImV4cCI6MjA3NzkzNDc1M30.pwEE4WLFu2-tHkmH1fFYYwcEPmLPyavN7ykXdPGQ3AY";
@@ -159,6 +249,17 @@
       ratingMin: null
     };
 
+    const PRIMARY_DESKTOP_CATS = [
+      "3d",
+      "roblox",
+      "crafts",
+      "design",
+      "drawing-and-painting",
+      "music-and-sound-design",
+      "films"
+    ];
+
+    // --------- URL + headings ---------
     function getCategoryFromUrl() {
       const params = new URLSearchParams(window.location.search);
       let catSlug = params.get("cat");
@@ -175,18 +276,34 @@
       return "Products";
     }
 
+    // nav active state
+    let navState = {
+      allButton: null,
+      catButtons: {}, // slug -> element
+      moreButton: null
+    };
+
     function updateNavActive(catSlug) {
-      const pills = document.querySelectorAll(".nav-pill[data-cat]");
-      pills.forEach(pill => {
-        const pillCat = pill.getAttribute("data-cat");
-        if ((!catSlug && pillCat === "all") || (catSlug && pillCat === catSlug)) {
-          pill.classList.add("active");
-        } else {
-          pill.classList.remove("active");
-        }
-      });
+      if (!navState.allButton) return;
+
+      // clear all
+      Object.values(navState.catButtons).forEach(btn => btn.classList.remove("active"));
+      if (navState.moreButton) navState.moreButton.classList.remove("active");
+      navState.allButton.classList.remove("active");
+
+      if (!catSlug) {
+        navState.allButton.classList.add("active");
+        return;
+      }
+
+      if (navState.catButtons[catSlug]) {
+        navState.catButtons[catSlug].classList.add("active");
+      } else if (navState.moreButton) {
+        navState.moreButton.classList.add("active");
+      }
     }
 
+    // --------- seller, rating, price helpers ---------
     function formatSellerDisplay(name, plan) {
       if (!name) name = "Unknown seller";
       if (plan === "PRO") {
@@ -220,6 +337,7 @@
       return "US$" + n.toFixed(2);
     }
 
+    // --------- product card builders ---------
     function buildProductCard(product) {
       const ratingHtml = buildRatingHtml(product.rating_avg, product.rating_count);
       const sellerHtml = formatSellerDisplay(product.seller_name, product.seller_plan);
@@ -263,6 +381,7 @@
       `;
     }
 
+    // --------- filters ---------
     function applyFiltersToQuery(query) {
       if (filterState.tag) {
         query = query.contains("tags", [filterState.tag]);
@@ -282,6 +401,117 @@
       return query;
     }
 
+    function setupShowMore(containerSelector, itemSelector) {
+      const container = document.querySelector(containerSelector);
+      if (!container) return;
+      const items = Array.from(container.querySelectorAll(itemSelector));
+      if (items.length <= 5) return;
+
+      // hide beyond 5
+      items.forEach((item, index) => {
+        if (index >= 5) item.classList.add("filter-hidden");
+      });
+
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "filter-show-more";
+      btn.textContent = "Show more";
+      let expanded = false;
+
+      btn.addEventListener("click", () => {
+        expanded = !expanded;
+        if (expanded) {
+          items.forEach(i => i.classList.remove("filter-hidden"));
+          btn.textContent = "Show less";
+        } else {
+          items.forEach((item, index) => {
+            if (index >= 5) item.classList.add("filter-hidden");
+          });
+          btn.textContent = "Show more";
+        }
+      });
+
+      container.appendChild(btn);
+    }
+
+    function initFilterEvents(reloadFn) {
+      // tag show-more + filetype show-more
+      setupShowMore("#filters-tags-block", ".filter-tag");
+      setupShowMore("#filters-filetypes-block", ".filter-filetype");
+
+      document.querySelectorAll(".filter-tag").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const tag = btn.getAttribute("data-tag");
+          if (!tag) return;
+          if (filterState.tag === tag) {
+            filterState.tag = null;
+            btn.classList.remove("active");
+          } else {
+            filterState.tag = tag;
+            document.querySelectorAll(".filter-tag").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+          }
+          reloadFn();
+        });
+      });
+
+      document.querySelectorAll(".filter-filetype").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const t = btn.getAttribute("data-type");
+          if (filterState.fileType === t) {
+            filterState.fileType = null;
+            btn.classList.remove("active");
+          } else {
+            filterState.fileType = t;
+            document.querySelectorAll(".filter-filetype").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+          }
+          reloadFn();
+        });
+      });
+
+      const priceMinInput = document.getElementById("price-min");
+      const priceMaxInput = document.getElementById("price-max");
+
+      priceMinInput.addEventListener("change", () => {
+        const v = priceMinInput.value;
+        const parsed = v === "" ? null : Math.max(0, parseInt(v, 10) || 0);
+        priceMinInput.value = parsed === null ? "" : parsed;
+        filterState.priceMin = parsed;
+        reloadFn();
+      });
+
+      priceMaxInput.addEventListener("change", () => {
+        const v = priceMaxInput.value;
+        const parsed = v === "" ? null : Math.max(0, parseInt(v, 10) || 0);
+        priceMaxInput.value = parsed === null ? "" : parsed;
+        filterState.priceMax = parsed;
+        reloadFn();
+      });
+
+      document.querySelectorAll("input[name='rating-min']").forEach(radio => {
+        radio.addEventListener("change", () => {
+          const v = radio.value;
+          filterState.ratingMin = v === "" ? null : parseFloat(v);
+          reloadFn();
+        });
+      });
+
+      document.getElementById("filters-clear").addEventListener("click", () => {
+        filterState.tag = null;
+        filterState.fileType = null;
+        filterState.priceMin = null;
+        filterState.priceMax = null;
+        filterState.ratingMin = null;
+        document.querySelectorAll(".filter-tag, .filter-filetype").forEach(b => b.classList.remove("active"));
+        priceMinInput.value = "";
+        priceMaxInput.value = "";
+        document.querySelectorAll("input[name='rating-min']").forEach(r => r.checked = false);
+        reloadFn();
+      });
+    }
+
+    // --------- data loading ---------
     async function loadFeaturedProducts(catSlug, subSlug) {
       const track = document.getElementById("featured-track");
       const empty = document.getElementById("featured-empty");
@@ -352,6 +582,7 @@
       });
     }
 
+    // --------- featured slider ---------
     function initFeaturedSlider() {
       const track = document.getElementById("featured-track");
       if (!track) return;
@@ -368,71 +599,338 @@
       });
     }
 
-    function initFilterEvents(reloadFn) {
-      document.querySelectorAll(".filter-tag").forEach(btn => {
-        btn.addEventListener("click", () => {
-          const tag = btn.getAttribute("data-tag");
-          if (!tag) return;
-          if (filterState.tag === tag) {
-            filterState.tag = null;
-            btn.classList.remove("active");
-          } else {
-            filterState.tag = tag;
-            document.querySelectorAll(".filter-tag").forEach(b => b.classList.remove("active"));
-            btn.classList.add("active");
-          }
-          reloadFn();
-        });
-      });
+    // --------- header auth + cart ---------
+    function getCartCount() {
+      try {
+        const raw = localStorage.getItem("sr_cart_items");
+        if (!raw) return 0;
+        const arr = JSON.parse(raw);
+        if (Array.isArray(arr)) return arr.length;
+        return 0;
+      } catch {
+        return 0;
+      }
+    }
 
-      document.querySelectorAll(".filter-filetype").forEach(btn => {
-        btn.addEventListener("click", () => {
-          const t = btn.getAttribute("data-type");
-          if (filterState.fileType === t) {
-            filterState.fileType = null;
-            btn.classList.remove("active");
-          } else {
-            filterState.fileType = t;
-            document.querySelectorAll(".filter-filetype").forEach(b => b.classList.remove("active"));
-            btn.classList.add("active");
-          }
-          reloadFn();
-        });
-      });
-
-      const priceMinInput = document.getElementById("price-min");
-      const priceMaxInput = document.getElementById("price-max");
-      priceMinInput.addEventListener("change", () => {
-        filterState.priceMin = priceMinInput.value !== "" ? parseFloat(priceMinInput.value) : null;
-        reloadFn();
-      });
-      priceMaxInput.addEventListener("change", () => {
-        filterState.priceMax = priceMaxInput.value !== "" ? parseFloat(priceMaxInput.value) : null;
-        reloadFn();
-      });
-
-      document.querySelectorAll("input[name='rating-min']").forEach(radio => {
-        radio.addEventListener("change", () => {
-          const v = radio.value;
-          filterState.ratingMin = v === "" ? null : parseFloat(v);
-          reloadFn();
-        });
-      });
-
-      document.getElementById("filters-clear").addEventListener("click", () => {
-        filterState.tag = null;
-        filterState.fileType = null;
-        filterState.priceMin = null;
-        filterState.priceMax = null;
-        filterState.ratingMin = null;
-        document.querySelectorAll(".filter-tag, .filter-filetype").forEach(b => b.classList.remove("active"));
-        priceMinInput.value = "";
-        priceMaxInput.value = "";
-        document.querySelectorAll("input[name='rating-min']").forEach(r => r.checked = false);
-        reloadFn();
+    function updateCartCount() {
+      const count = getCartCount();
+      document.querySelectorAll('[data-role="cart-count"]').forEach(span => {
+        if (count > 0) {
+          span.textContent = count;
+          span.style.display = "inline-block";
+        } else {
+          span.textContent = "";
+          span.style.display = "none";
+        }
       });
     }
 
+    function applyAuthState(loggedIn) {
+      document.querySelectorAll('[data-role="login-link"]').forEach(el => {
+        el.style.display = loggedIn ? "none" : "";
+      });
+      document.querySelectorAll('[data-role="start-link"]').forEach(el => {
+        el.style.display = loggedIn ? "none" : "";
+      });
+      document.querySelectorAll('[data-role="library-link"]').forEach(el => {
+        el.style.display = loggedIn ? "" : "none";
+      });
+      document.querySelectorAll('[data-role="dashboard-link"]').forEach(el => {
+        el.style.display = loggedIn ? "" : "none";
+      });
+    }
+
+    async function initHeaderAuthAndCart() {
+      try {
+        const { data } = await supabase.auth.getSession();
+        applyAuthState(!!data.session);
+
+        supabase.auth.onAuthStateChange((_event, session) => {
+          applyAuthState(!!session);
+        });
+      } catch (err) {
+        console.error("Auth state error", err);
+      }
+
+      document.querySelectorAll('[data-role="cart-button"]').forEach(btn => {
+        btn.addEventListener("click", () => {
+          window.location.href = "/checkout.html";
+        });
+      });
+
+      updateCartCount();
+    }
+
+    // --------- CATEGORY NAV FROM SUPABASE ---------
+    let drawerCatMap = {}; // slug -> { name, subs: [ {slug,name} ] }
+
+    async function buildCategoryNav(catSlug) {
+      const desktopScroll = document.getElementById("desktop-cat-scroll");
+      const drawerCatList = document.getElementById("nav-drawer-cat-list");
+      if (!desktopScroll || !drawerCatList) return;
+
+      desktopScroll.innerHTML = "";
+      drawerCatList.innerHTML = "";
+
+      // All button (desktop)
+      const allItem = document.createElement("div");
+      allItem.className = "nav-cat-item";
+      const allBtn = document.createElement("a");
+      allBtn.href = "/marketplace.html";
+      allBtn.textContent = "All";
+      allBtn.className = "nav-pill";
+      navState.allButton = allBtn;
+      allItem.appendChild(allBtn);
+      desktopScroll.appendChild(allItem);
+
+      // fetch categories + subcategories
+      const { data: cats, error: catErr } = await supabase
+        .from("categories")
+        .select("id, slug, name, sort_order")
+        .order("sort_order", { ascending: true });
+
+      if (catErr) {
+        console.error("Error loading categories", catErr);
+        return;
+      }
+
+      const { data: subs, error: subErr } = await supabase
+        .from("subcategories")
+        .select("id, category_id, slug, name, sort_order")
+        .order("sort_order", { ascending: true });
+
+      if (subErr) {
+        console.error("Error loading subcategories", subErr);
+        return;
+      }
+
+      const subsByCatId = {};
+      (subs || []).forEach(sc => {
+        if (!subsByCatId[sc.category_id]) subsByCatId[sc.category_id] = [];
+        subsByCatId[sc.category_id].push(sc);
+      });
+
+      drawerCatMap = {};
+
+      const primary = [];
+      const more = [];
+
+      (cats || []).forEach(c => {
+        const entry = {
+          id: c.id,
+          slug: c.slug,
+          name: c.name,
+          subs: subsByCatId[c.id] || []
+        };
+        drawerCatMap[c.slug] = {
+          name: c.name,
+          subs: entry.subs
+        };
+
+        if (PRIMARY_DESKTOP_CATS.includes(c.slug)) {
+          primary.push(entry);
+        } else {
+          more.push(entry);
+        }
+      });
+
+      // desktop primary categories
+      primary.forEach(cat => {
+        const item = document.createElement("div");
+        item.className = "nav-cat-item has-menu";
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "nav-pill nav-cat-trigger";
+        btn.textContent = cat.name;
+        btn.dataset.cat = cat.slug;
+        navState.catButtons[cat.slug] = btn;
+
+        btn.addEventListener("click", () => {
+          window.location.href = `/marketplace.html?cat=${encodeURIComponent(cat.slug)}`;
+        });
+
+        const menu = document.createElement("div");
+        menu.className = "nav-cat-menu";
+        if (cat.subs.length > 0) {
+          cat.subs.forEach(sc => {
+            const a = document.createElement("a");
+            a.href = `/marketplace.html?cat=${encodeURIComponent(cat.slug)}&sub=${encodeURIComponent(sc.slug)}`;
+            a.textContent = sc.name;
+            menu.appendChild(a);
+          });
+        } else {
+          const a = document.createElement("a");
+          a.href = `/marketplace.html?cat=${encodeURIComponent(cat.slug)}`;
+          a.textContent = `View all ${cat.name}`;
+          menu.appendChild(a);
+        }
+
+        item.appendChild(btn);
+        item.appendChild(menu);
+        desktopScroll.appendChild(item);
+      });
+
+      // desktop MORE menu
+      if (more.length > 0) {
+        const moreItem = document.createElement("div");
+        moreItem.className = "nav-more";
+        const moreBtn = document.createElement("button");
+        moreBtn.type = "button";
+        moreBtn.className = "nav-pill nav-more-toggle";
+        moreBtn.textContent = "More ▾";
+        navState.moreButton = moreBtn;
+
+        const dropdown = document.createElement("div");
+        dropdown.className = "nav-more-dropdown";
+
+        more.forEach(cat => {
+          const groupTitle = document.createElement("div");
+          groupTitle.className = "more-group-title";
+          groupTitle.textContent = cat.name;
+          dropdown.appendChild(groupTitle);
+
+          if (cat.subs.length > 0) {
+            cat.subs.forEach(sc => {
+              const a = document.createElement("a");
+              a.className = "more-link";
+              a.href = `/marketplace.html?cat=${encodeURIComponent(cat.slug)}&sub=${encodeURIComponent(sc.slug)}`;
+              a.textContent = sc.name;
+              dropdown.appendChild(a);
+            });
+          } else {
+            const a = document.createElement("a");
+            a.className = "more-link";
+            a.href = `/marketplace.html?cat=${encodeURIComponent(cat.slug)}`;
+            a.textContent = `All ${cat.name}`;
+            dropdown.appendChild(a);
+          }
+        });
+
+        moreItem.appendChild(moreBtn);
+        moreItem.appendChild(dropdown);
+        desktopScroll.appendChild(moreItem);
+
+        // JS hover helper so it doesn't close too quickly
+        let hideTimeout;
+        const open = () => {
+          dropdown.classList.add("open");
+        };
+        const close = () => {
+          dropdown.classList.remove("open");
+        };
+        moreItem.addEventListener("mouseenter", () => {
+          clearTimeout(hideTimeout);
+          open();
+        });
+        moreItem.addEventListener("mouseleave", () => {
+          hideTimeout = setTimeout(close, 150);
+        });
+      }
+
+      // MOBILE drawer categories
+      more.concat(primary).forEach(cat => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "drawer-link drawer-link-cat";
+        btn.dataset.catSlug = cat.slug;
+        btn.textContent = `${cat.name} ›`;
+        drawerCatList.appendChild(btn);
+      });
+    }
+
+    // --------- mobile nav drawer behavior ---------
+    function initNavDrawer() {
+      const toggle = document.getElementById("nav-drawer-toggle");
+      const backdrop = document.getElementById("nav-drawer-backdrop");
+      const drawer = document.getElementById("nav-drawer");
+      const closeBtn = document.getElementById("nav-drawer-close");
+      const backBtn = document.getElementById("drawer-subcats-back");
+      const viewMain = document.getElementById("drawer-view-main");
+      const viewSubs = document.getElementById("drawer-view-subcats");
+      const subsTitle = document.getElementById("drawer-subcats-title");
+      const subsList = document.getElementById("drawer-subcats-list");
+
+      if (!toggle || !backdrop || !drawer) return;
+
+      function openDrawer() {
+        backdrop.classList.add("open");
+      }
+      function closeDrawer() {
+        backdrop.classList.remove("open");
+        viewMain.style.display = "";
+        viewSubs.style.display = "none";
+      }
+
+      toggle.addEventListener("click", openDrawer);
+      closeBtn.addEventListener("click", closeDrawer);
+      backdrop.addEventListener("click", (e) => {
+        if (e.target === backdrop) closeDrawer();
+      });
+
+      backBtn.addEventListener("click", () => {
+        viewMain.style.display = "";
+        viewSubs.style.display = "none";
+      });
+
+      // delegate clicks for category links
+      document.getElementById("nav-drawer-cat-list").addEventListener("click", (e) => {
+        const btn = e.target.closest(".drawer-link-cat");
+        if (!btn) return;
+        const slug = btn.dataset.catSlug;
+        const catEntry = drawerCatMap[slug];
+        if (!catEntry) return;
+
+        subsTitle.textContent = catEntry.name;
+        subsList.innerHTML = "";
+
+        // link to "All in {cat}"
+        const allLink = document.createElement("a");
+        allLink.className = "drawer-link";
+        allLink.href = `/marketplace.html?cat=${encodeURIComponent(slug)}`;
+        allLink.textContent = `All ${catEntry.name}`;
+        subsList.appendChild(allLink);
+
+        (catEntry.subs || []).forEach(sc => {
+          const a = document.createElement("a");
+          a.className = "drawer-link";
+          a.href = `/marketplace.html?cat=${encodeURIComponent(slug)}&sub=${encodeURIComponent(sc.slug)}`;
+          a.textContent = sc.name;
+          subsList.appendChild(a);
+        });
+
+        viewMain.style.display = "none";
+        viewSubs.style.display = "";
+      });
+
+      // "All products" button at top of drawer
+      document.querySelectorAll("[data-cat-link][data-cat='all']").forEach(btn => {
+        btn.addEventListener("click", () => {
+          window.location.href = "/marketplace.html";
+        });
+      });
+    }
+
+    // --------- filters drawer (mobile) ---------
+    function initFiltersDrawer() {
+      const toggle = document.getElementById("filters-toggle");
+      if (!toggle) return;
+
+      const overlay = document.createElement("div");
+      overlay.className = "filters-overlay";
+      document.body.appendChild(overlay);
+
+      function openFilters() {
+        document.body.classList.add("filters-open");
+      }
+      function closeFilters() {
+        document.body.classList.remove("filters-open");
+      }
+
+      toggle.addEventListener("click", openFilters);
+      overlay.addEventListener("click", closeFilters);
+    }
+
+    // --------- init ---------
     async function initMarketplace() {
       const { catSlug, subSlug } = getCategoryFromUrl();
       const heading = formatHeading(catSlug, subSlug);
@@ -440,8 +938,13 @@
       document.getElementById("featured-title").textContent =
         (catSlug || subSlug) ? ("Featured in " + heading) : "Featured products";
 
+      await buildCategoryNav(catSlug);
       updateNavActive(catSlug);
+
       initFeaturedSlider();
+      initNavDrawer();
+      initFiltersDrawer();
+      await initHeaderAuthAndCart();
 
       const reloadAll = () => {
         loadFeaturedProducts(catSlug, subSlug);
@@ -455,5 +958,7 @@
     document.addEventListener("DOMContentLoaded", initMarketplace);
   </script>
 
+  <!-- Footer loader -->
+  <script type="module" src="/js/footer.js"></script>
 </body>
 </html>

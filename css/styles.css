@@ -2168,3 +2168,55 @@ body.filters-open .filters-overlay {
     display: none;
   }
 }
+/* Search: icon inside input + clear button */
+.sr-search-form {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: #101018;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  overflow: hidden;
+}
+
+.sr-search-icon-inline {
+  position: absolute;
+  left: 10px;
+  font-size: 14px;
+  pointer-events: none;
+  color: #7f7a99;
+}
+
+.sr-search-input {
+  flex: 1;
+  border: none;
+  padding: 8px 32px 8px 30px; /* space for icon + X */
+  background: transparent;
+  color: #f8f4ff;
+  font-size: 14px;
+  min-width: 0;
+}
+
+.sr-search-input::placeholder {
+  color: #7f7a99;
+}
+
+.sr-search-input:focus {
+  outline: none;
+}
+
+.sr-search-clear {
+  position: absolute;
+  right: 10px;
+  border: none;
+  background: transparent;
+  color: #7f7a99;
+  font-size: 14px;
+  cursor: pointer;
+  display: none; /* shown when text present */
+}
+
+/* hide old orange pill if any rule still applies */
+.sr-search-btn {
+  display: none !important;
+}

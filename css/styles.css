@@ -2220,3 +2220,40 @@ body.filters-open .filters-overlay {
 .sr-search-btn {
   display: none !important;
 }
+/* MOBILE HEADER LAYOUT OVERRIDE */
+@media (max-width: 720px) {
+  .sr-header-row1 {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .sr-logo-wrap {
+    order: 1;
+    flex: 0 0 auto;
+  }
+
+  /* hide auth buttons, keep only cart in header on mobile */
+  .sr-header-actions .sr-header-link,
+  .sr-header-actions .sr-header-btn {
+    display: none !important;
+  }
+
+  .sr-cart-btn {
+    order: 2;
+    margin-left: auto;
+  }
+
+  /* search row under logo+cart */
+  .sr-search-wrap {
+    order: 3;
+    width: 100%;
+  }
+
+  /* hamburger sits to the right of search bar */
+  .sr-menu-btn {
+    order: 4;
+    margin-left: 6px;
+  }
+}

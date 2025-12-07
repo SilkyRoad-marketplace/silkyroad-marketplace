@@ -2398,3 +2398,333 @@ body {
     display: none;
   }
 }
+/* ===========================
+   MARKETPLACE HEADER (CUSTOM)
+=========================== */
+
+.sr-header-marketplace .sr-header-inner{
+  max-width:1120px;
+  margin:0 auto;
+  padding:10px 16px;
+}
+
+.sr-header-row1{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.sr-logo-wrap{
+  flex:0 0 auto;
+}
+
+.sr-search-wrap{
+  flex:1 1 auto;
+}
+
+.sr-header-actions{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  white-space:nowrap;
+}
+
+.sr-menu-btn{
+  flex:0 0 auto;
+  border:none;
+  background:#101018;
+  border-radius:999px;
+  padding:6px 10px;
+  font-size:16px;
+  cursor:pointer;
+  color:var(--text-main);
+  display:none;
+}
+
+/* Search form with inline icon + clear (no orange button) */
+
+.sr-search-form{
+  display:flex;
+  align-items:center;
+  background:#101018;
+  border-radius:999px;
+  border:1px solid rgba(255,215,0,0.3);
+  padding:4px 10px;
+  gap:6px;
+}
+
+.sr-search-icon-inline{
+  font-size:14px;
+  opacity:0.8;
+}
+
+.sr-search-input{
+  flex:1;
+  border:none;
+  background:transparent;
+  color:var(--text-main);
+  font-size:14px;
+  min-width:0;
+}
+
+.sr-search-input::placeholder{
+  color:#7f7a99;
+}
+
+.sr-search-input:focus{
+  outline:none;
+}
+
+.sr-search-clear{
+  border:none;
+  background:transparent;
+  cursor:pointer;
+  font-size:14px;
+  color:#7f7a99;
+  padding:0;
+  display:none;
+}
+
+/* Small cart badge */
+
+.cart-count-badge{
+  display:inline-block;
+  min-width:16px;
+  padding:0 4px;
+  margin-left:4px;
+  border-radius:999px;
+  background:var(--accent-gold);
+  color:#1b1105;
+  font-size:11px;
+  font-weight:700;
+}
+
+/* Desktop only: keep marketplace nav under header */
+@media (min-width:721px){
+  .marketplace-nav{
+    border-bottom:1px solid rgba(244,197,106,0.38);
+  }
+}
+
+/* Hide desktop nav on mobile, show hamburger */
+
+@media (max-width:720px){
+  .marketplace-nav{
+    display:none;
+  }
+
+  .sr-header-marketplace .sr-header-inner{
+    padding:8px 12px;
+  }
+
+  .sr-header-row1{
+    gap:8px;
+  }
+
+  .sr-header-actions{
+    display:none; /* hide Login / Start selling (header) on mobile */
+  }
+
+  .sr-menu-btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  .sr-logo-wrap{
+    order:1;
+  }
+
+  .sr-search-wrap{
+    order:2;
+  }
+
+  .sr-menu-btn{
+    order:3;
+  }
+}
+
+/* ===========================
+   NAV DRAWER (MOBILE)
+=========================== */
+
+.sr-drawer-backdrop{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.6);
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .2s ease;
+  z-index:60;
+}
+
+.sr-drawer-backdrop.open{
+  opacity:1;
+  pointer-events:auto;
+}
+
+.sr-drawer{
+  position:absolute;
+  top:0;
+  left:-100%;
+  width:80%;
+  max-width:340px;
+  height:100%;
+  background:radial-gradient(circle at top,#151320 0,#050509 70%);
+  border-right:1px solid rgba(244,197,106,0.4);
+  box-shadow:0 0 32px rgba(0,0,0,0.95);
+  display:flex;
+  flex-direction:column;
+  transition:left .2s ease;
+}
+
+.sr-drawer-backdrop.open .sr-drawer{
+  left:0;
+}
+
+.sr-drawer-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:12px 14px;
+  border-bottom:1px solid rgba(244,197,106,0.35);
+}
+
+.sr-drawer-title{
+  font-size:0.95rem;
+  font-weight:600;
+}
+
+.sr-drawer-close{
+  border:none;
+  background:none;
+  color:var(--text-muted);
+  font-size:1.2rem;
+  cursor:pointer;
+}
+
+.sr-drawer-body{
+  flex:1;
+  overflow-y:auto;
+  padding:10px 14px 16px;
+}
+
+.drawer-section{
+  margin-bottom:12px;
+}
+
+.drawer-account{
+  border-bottom:1px solid rgba(244,197,106,0.25);
+  padding-bottom:10px;
+  margin-bottom:12px;
+}
+
+.drawer-link{
+  width:100%;
+  text-align:left;
+  border:none;
+  background:none;
+  color:var(--text-main);
+  font-size:0.9rem;
+  padding:6px 0;
+  cursor:pointer;
+  text-decoration:none;
+  display:block;
+}
+
+.drawer-link:hover{
+  color:var(--accent-gold);
+}
+
+.drawer-cart{
+  margin-top:6px;
+}
+
+.drawer-view-subcats .drawer-subcats-header{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-bottom:8px;
+}
+
+.drawer-back{
+  border:none;
+  background:none;
+  color:var(--accent-gold);
+  font-size:0.85rem;
+  cursor:pointer;
+}
+
+/* ===========================
+   FILTERS DRAWER (MOBILE)
+=========================== */
+
+.filters-toggle-btn{
+  display:none;
+  border-radius:999px;
+  border:1px solid rgba(244,197,106,0.45);
+  background:rgba(7,7,12,0.9);
+  color:var(--accent-gold);
+  font-size:0.85rem;
+  padding:6px 12px;
+  margin-bottom:10px;
+  cursor:pointer;
+}
+
+.filters-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.6);
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .2s ease;
+  z-index:65;
+}
+
+body.filters-open .filters-overlay{
+  opacity:1;
+  pointer-events:auto;
+}
+
+@media (max-width:720px){
+  .filters-column{
+    position:fixed;
+    top:0;
+    left:-100%;
+    width:80%;
+    max-width:320px;
+    height:100%;
+    overflow-y:auto;
+    z-index:70;
+    transition:left .2s ease;
+  }
+
+  body.filters-open .filters-column{
+    left:0;
+  }
+
+  .filters-toggle-btn{
+    display:inline-block;
+  }
+}
+
+/* Hide extra tags/filetypes until "Show more" */
+
+.filter-hidden{
+  display:none;
+}
+
+.filter-show-more{
+  border:none;
+  background:none;
+  color:var(--accent-gold);
+  font-size:0.8rem;
+  margin-top:4px;
+  cursor:pointer;
+}
+
+/* Ensure More dropdown can stay visible */
+
+.nav-more-dropdown.open{
+  display:block;
+}

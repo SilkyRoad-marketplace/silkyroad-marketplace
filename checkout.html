@@ -2,28 +2,61 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Checkout – Silky Road Marketplace</title>
+  <title>Checkout – Silky Road</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
+
   <link rel="icon" href="/favicon.png">
   <link rel="stylesheet" href="/css/styles.css">
-</head>
-<body class="marketplace-body">
-  <div id="header-root"></div>
 
-  <main class="page">
-    <section class="page-header">
-      <h1>Checkout</h1>
-      <p class="muted">Stripe / PayPal checkout flow will be integrated here.</p>
+  <!-- Supabase -->
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+</head>
+
+<body class="checkout-page">
+
+  <main class="checkout-container">
+
+    <!-- PRODUCT SUMMARY -->
+    <section class="checkout-product-box">
+      <img id="product-cover" class="checkout-product-cover" src="/placeholder-product.png" alt="Product">
+      <div class="checkout-product-info">
+        <h1 id="product-title">Loading product…</h1>
+        <p class="checkout-product-price" id="product-price">—</p>
+      </div>
     </section>
+
+    <!-- PAYMENT SECTION -->
+    <section class="checkout-payment-box">
+      <h2>Secure Checkout</h2>
+
+      <label>Email</label>
+      <input type="email" id="checkout-email" placeholder="you@example.com">
+
+      <label>Card Information</label>
+      <div class="checkout-card-box">
+        (Your Stripe integration will go here)
+      </div>
+
+      <button class="checkout-pay-btn" id="checkout-pay-btn">Complete Purchase</button>
+
+      <button class="checkout-back-btn" onclick="window.location.href='/marketplace.html'">
+        ← Continue Shopping
+      </button>
+    </section>
+
   </main>
 
-  <div id="footer-root"></div>
+  <script>
+    // Basic product loader (replace with real logic)
+    const params = new URLSearchParams(window.location.search);
+    const title = params.get("title");
+    const price = params.get("price");
+    const cover = params.get("cover");
 
-  <script type="module" src="/js/header-market.js"></script>
-  <script type="module" src="/js/footer.js"></script>
-  <script type="module">
-    import { initAuthUI } from "/js/auth.js";
-    initAuthUI();
+    if (title) document.getElementById("product-title").textContent = title;
+    if (price) document.getElementById("product-price").textContent = "US$" + price;
+    if (cover) document.getElementById("product-cover").src = cover;
   </script>
+
 </body>
 </html>

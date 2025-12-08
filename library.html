@@ -4,80 +4,95 @@
   <meta charset="utf-8">
   <title>Your Library – Silky Road</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
-
   <link rel="icon" href="/favicon.png">
   <link rel="stylesheet" href="/css/styles.css">
-
-  <!-- Supabase -->
-  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 </head>
-
 <body class="library-page">
 
-  <!-- SIMPLE LIBRARY HEADER -->
-  <div class="library-header">
-    <h1>Your Library</h1>
-    <button class="library-market-btn" onclick="window.location.href='/marketplace.html'">
-      ← Back to Marketplace
+  <!-- MOBILE HEADER -->
+  <header class="sr-app-header-mobile">
+    <a href="/index.html" class="sr-app-logo-link">
+      <img src="/logo.png" alt="Silky Road" class="sr-app-logo-img">
+    </a>
+    <div class="sr-app-header-title">Library</div>
+    <button class="sr-app-header-menu" type="button" id="app-menu-toggle">
+      ☰
     </button>
+  </header>
+
+  <!-- SIDEBAR + MAIN LAYOUT -->
+  <div class="sr-app-shell">
+
+    <!-- SIDEBAR -->
+    <aside class="sr-side-nav" id="sr-side-nav">
+      <div class="sr-side-nav-inner">
+        <a href="/index.html" class="sr-side-logo">
+          <img src="/logo.png" alt="Silky Road" class="sr-side-logo-img">
+        </a>
+
+        <nav class="sr-side-nav-menu" aria-label="Library navigation">
+          <a href="/dashboard.html" class="sr-side-link">
+            <span class="sr-side-icon">🏠</span>
+            <span>Home</span>
+          </a>
+          <a href="/marketplace.html" class="sr-side-link">
+            <span class="sr-side-icon">🛒</span>
+            <span>Marketplace</span>
+          </a>
+          <a href="/library.html" class="sr-side-link is-active">
+            <span class="sr-side-icon">📚</span>
+            <span>Library</span>
+          </a>
+          <a href="/checkout.html" class="sr-side-link">
+            <span class="sr-side-icon">💳</span>
+            <span>Checkout</span>
+          </a>
+          <a href="/help.html" class="sr-side-link">
+            <span class="sr-side-icon">❓</span>
+            <span>Help</span>
+          </a>
+        </nav>
+
+        <div class="sr-side-nav-footer">
+          <button type="button" class="sr-side-link sr-side-link-ghost" id="side-logout">
+            <span class="sr-side-icon">⏏</span>
+            <span>Log out</span>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- BACKDROP FOR MOBILE DRAWER -->
+    <div class="sr-side-backdrop" id="sr-side-backdrop"></div>
+
+    <!-- MAIN CONTENT -->
+    <main class="sr-app-main">
+      <div class="sr-app-main-inner">
+        <h1 class="sr-app-page-title">Your library</h1>
+        <p class="sr-app-intro">
+          Purchased products will appear here once orders are connected to your account.
+        </p>
+
+        <section class="sr-app-card sr-app-card-empty">
+          <p>You don’t have any purchases yet.</p>
+          <a href="/marketplace.html" class="sr-app-btn sr-app-btn-gold">
+            Browse marketplace
+          </a>
+        </section>
+      </div>
+    </main>
   </div>
 
-  <!-- PURCHASED ITEMS LIST -->
-  <main class="library-container" id="library-container">
-    <p class="library-loading">Loading your items…</p>
-  </main>
+  <!-- JS -->
+  <script type="module">
+    import { supabase } from "/js/auth.js";
+    import { initSidebar } from "/js/sidebar.js";
 
-  <script>
-    const supabase = window.supabase.createClient(
-      "https://paqvgsruppgadgguynde.supabase.co",
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBhcXZnc3J1cHBnYWRnZ3V5bmRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIzNTg3NTMsImV4cCI6MjA3NzkzNDc1M30.pwEE4WLFu2-tHkmH1fFYYwcEPmLPyavN7ykXdPGQ3AY"
-    );
-
-    async function loadLibrary() {
-      const container = document.getElementById("library-container");
-
-      const { data: sessionData } = await supabase.auth.getSession();
-      if (!sessionData || !sessionData.session) {
-        container.innerHTML = "<p>Please log in to view your library.</p>";
-        return;
-      }
-
-      const user = sessionData.session.user;
-      const { data, error } = await supabase
-        .from("orders")
-        .select("products(id, title, cover_url)")
-        .eq("buyer_id", user.id);
-
-      if (error) {
-        container.innerHTML = "<p>Error loading library.</p>";
-        return;
-      }
-
-      if (!data || data.length === 0) {
-        container.innerHTML = "<p>You have no purchases yet.</p>";
-        return;
-      }
-
-      container.innerHTML = "";
-
-      data.forEach(row => {
-        const p = row.products;
-        container.innerHTML += `
-          <div class="library-item">
-            <img src="${p.cover_url || '/placeholder-product.png'}" class="library-thumb">
-            <div class="library-info">
-              <h3>${p.title}</h3>
-              <button onclick="window.location.href='/download.html?id=${p.id}'" class="library-download-btn">
-                Download
-              </button>
-            </div>
-          </div>
-        `;
-      });
-    }
-
-    loadLibrary();
+    initSidebar({
+      current: "library",
+      supabase,
+      logoutButtonId: "side-logout"
+    });
   </script>
-
 </body>
 </html>

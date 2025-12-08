@@ -234,7 +234,7 @@
   <!-- FOOTER -->
   <div id="footer-root"></div>
 
-  <!-- MAIN MARKETPLACE LOGIC -->
+    <!-- MAIN MARKETPLACE LOGIC -->
   <script>
     const SUPABASE_URL = "https://paqvgsruppgadgguynde.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBhcXZnc3J1cHBnYWRnZ3V5bmRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIzNTg3NTMsImV4cCI6MjA3NzkzNDc1M30.pwEE4WLFu2-tHkmH1fFYYwcEPmLPyavN7ykXdPGQ3AY";
@@ -258,17 +258,15 @@
       "films"
     ];
 
-    // URL + headings + search text
-    let navState = {
-      allButton: null,
-      catButtons: {}, // slug -> element
-      moreButton: null
+    const pageParams = {
+      catSlug: null,
+      subSlug: null,
+      q: ""
     };
 
-    let drawerCatMap = {}; // slug -> { name, subs: [...] }
-    let searchText = "";
+    // ---------------- URL & HEADINGS ----------------
 
-    function getUrlState() {
+    function getPageParams() {
       const params = new URLSearchParams(window.location.search);
       let catSlug = params.get("cat");
       let subSlug = params.get("sub");
@@ -277,18 +275,32 @@
       return { catSlug, subSlug, q };
     }
 
-    function formatHeading(catSlug, subSlug) {
+    function formatHeading(catSlug, subSlug, q) {
+      if (q) {
+        return `Results for "${q}"`;
+      }
       if (!catSlug && !subSlug) return "All products";
-      const unslug = (s) => s.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const unslug = (s) =>
+        s.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
       if (catSlug && !subSlug) return unslug(catSlug);
       if (catSlug && subSlug) return unslug(catSlug) + " / " + unslug(subSlug);
       return "Products";
     }
 
+    // --------------- NAV ACTIVE STATE ---------------
+
+    let navState = {
+      allButton: null,
+      catButtons: {},
+      moreButton: null
+    };
+
     function updateNavActive(catSlug) {
       if (!navState.allButton) return;
 
-      Object.values(navState.catButtons).forEach(btn => btn.classList.remove("active"));
+      Object.values(navState.catButtons).forEach((btn) =>
+        btn.classList.remove("active")
+      );
       if (navState.moreButton) navState.moreButton.classList.remove("active");
       navState.allButton.classList.remove("active");
 
@@ -304,7 +316,8 @@
       }
     }
 
-    // seller, rating, price helpers
+    // --------------- SELLER / PRICE / RATING -----------
+
     function formatSellerDisplay(name, plan) {
       if (!name) name = "Unknown seller";
       if (plan === "PRO") {
@@ -338,13 +351,22 @@
       return "US$" + n.toFixed(2);
     }
 
-    // product cards
+    // --------------- PRODUCT CARD BUILDERS --------------
+
     function buildProductCard(product) {
-      const ratingHtml = buildRatingHtml(product.rating_avg, product.rating_count);
-      const sellerHtml = formatSellerDisplay(product.seller_name, product.seller_plan);
+      const ratingHtml = buildRatingHtml(
+        product.rating_avg,
+        product.rating_count
+      );
+      const sellerHtml = formatSellerDisplay(
+        product.seller_name,
+        product.seller_plan
+      );
       const priceText = formatPrice(product.price);
       const cover = product.cover_url || "/placeholder-product.png";
-      const productUrl = `/product.html?slug=${encodeURIComponent(product.slug || product.id)}`;
+      const productUrl = `/product.html?slug=${encodeURIComponent(
+        product.slug || product.id
+      )}`;
       return `
         <a href="${productUrl}" class="product-card">
           <div class="product-thumb">
@@ -365,9 +387,14 @@
 
     function buildFeaturedCard(product) {
       const priceText = formatPrice(product.price);
-      const sellerHtml = formatSellerDisplay(product.seller_name, product.seller_plan);
+      const sellerHtml = formatSellerDisplay(
+        product.seller_name,
+        product.seller_plan
+      );
       const cover = product.cover_url || "/placeholder-product.png";
-      const productUrl = `/product.html?slug=${encodeURIComponent(product.slug || product.id)}`;
+      const productUrl = `/product.html?slug=${encodeURIComponent(
+        product.slug || product.id
+      )}`;
       return `
         <a href="${productUrl}" class="featured-card">
           <div class="featured-thumb">
@@ -382,7 +409,8 @@
       `;
     }
 
-    // filters
+    // --------------- FILTERS SHARED ---------------------
+
     function applyFiltersToQuery(query) {
       if (filterState.tag) {
         query = query.contains("tags", [filterState.tag]);
@@ -398,9 +426,6 @@
       }
       if (filterState.ratingMin !== null && filterState.ratingMin !== "") {
         query = query.gte("rating_avg", filterState.ratingMin);
-      }
-      if (searchText) {
-        query = query.ilike("title", "%" + searchText + "%");
       }
       return query;
     }
@@ -424,7 +449,7 @@
       btn.addEventListener("click", () => {
         expanded = !expanded;
         if (expanded) {
-          items.forEach(i => i.classList.remove("filter-hidden"));
+          items.forEach((i) => i.classList.remove("filter-hidden"));
           btn.textContent = "Show less";
         } else {
           items.forEach((item, index) => {
@@ -441,7 +466,7 @@
       setupShowMore("#filters-tags-block", ".filter-tag");
       setupShowMore("#filters-filetypes-block", ".filter-filetype");
 
-      document.querySelectorAll(".filter-tag").forEach(btn => {
+      document.querySelectorAll(".filter-tag").forEach((btn) => {
         btn.addEventListener("click", () => {
           const tag = btn.getAttribute("data-tag");
           if (!tag) return;
@@ -450,14 +475,16 @@
             btn.classList.remove("active");
           } else {
             filterState.tag = tag;
-            document.querySelectorAll(".filter-tag").forEach(b => b.classList.remove("active"));
+            document
+              .querySelectorAll(".filter-tag")
+              .forEach((b) => b.classList.remove("active"));
             btn.classList.add("active");
           }
           reloadFn();
         });
       });
 
-      document.querySelectorAll(".filter-filetype").forEach(btn => {
+      document.querySelectorAll(".filter-filetype").forEach((btn) => {
         btn.addEventListener("click", () => {
           const t = btn.getAttribute("data-type");
           if (filterState.fileType === t) {
@@ -465,7 +492,9 @@
             btn.classList.remove("active");
           } else {
             filterState.fileType = t;
-            document.querySelectorAll(".filter-filetype").forEach(b => b.classList.remove("active"));
+            document
+              .querySelectorAll(".filter-filetype")
+              .forEach((b) => b.classList.remove("active"));
             btn.classList.add("active");
           }
           reloadFn();
@@ -477,7 +506,8 @@
 
       priceMinInput.addEventListener("change", () => {
         const v = priceMinInput.value;
-        const parsed = v === "" ? null : Math.max(0, parseInt(v, 10) || 0);
+        const parsed =
+          v === "" ? null : Math.max(0, parseInt(v, 10) || 0);
         priceMinInput.value = parsed === null ? "" : parsed;
         filterState.priceMin = parsed;
         reloadFn();
@@ -485,13 +515,14 @@
 
       priceMaxInput.addEventListener("change", () => {
         const v = priceMaxInput.value;
-        const parsed = v === "" ? null : Math.max(0, parseInt(v, 10) || 0);
+        const parsed =
+          v === "" ? null : Math.max(0, parseInt(v, 10) || 0);
         priceMaxInput.value = parsed === null ? "" : parsed;
         filterState.priceMax = parsed;
         reloadFn();
       });
 
-      document.querySelectorAll("input[name='rating-min']").forEach(radio => {
+      document.querySelectorAll("input[name='rating-min']").forEach((radio) => {
         radio.addEventListener("change", () => {
           const v = radio.value;
           filterState.ratingMin = v === "" ? null : parseFloat(v);
@@ -499,21 +530,28 @@
         });
       });
 
-      document.getElementById("filters-clear").addEventListener("click", () => {
-        filterState.tag = null;
-        filterState.fileType = null;
-        filterState.priceMin = null;
-        filterState.priceMax = null;
-        filterState.ratingMin = null;
-        document.querySelectorAll(".filter-tag, .filter-filetype").forEach(b => b.classList.remove("active"));
-        priceMinInput.value = "";
-        priceMaxInput.value = "";
-        document.querySelectorAll("input[name='rating-min']").forEach(r => r.checked = false);
-        reloadFn();
-      });
+      document
+        .getElementById("filters-clear")
+        .addEventListener("click", () => {
+          filterState.tag = null;
+          filterState.fileType = null;
+          filterState.priceMin = null;
+          filterState.priceMax = null;
+          filterState.ratingMin = null;
+          document
+            .querySelectorAll(".filter-tag, .filter-filetype")
+            .forEach((b) => b.classList.remove("active"));
+          priceMinInput.value = "";
+          priceMaxInput.value = "";
+          document
+            .querySelectorAll("input[name='rating-min']")
+            .forEach((r) => (r.checked = false));
+          reloadFn();
+        });
     }
 
-    // data loading
+    // --------------- DATA LOADING -----------------
+
     async function loadFeaturedProducts(catSlug, subSlug) {
       const track = document.getElementById("featured-track");
       const empty = document.getElementById("featured-empty");
@@ -522,13 +560,20 @@
 
       let query = supabase
         .from("products")
-        .select("id, slug, title, price, cover_url, seller_name, seller_plan, rating_avg, rating_count, category_slug, subcategory_slug, is_featured, is_active")
+        .select(
+          "id, slug, title, price, cover_url, seller_name, seller_plan, rating_avg, rating_count, category_slug, subcategory_slug, is_featured, is_active"
+        )
         .eq("is_active", true)
         .eq("is_featured", true)
         .limit(10);
 
       if (catSlug) query = query.eq("category_slug", catSlug);
       if (subSlug) query = query.eq("subcategory_slug", subSlug);
+
+      // simple search by title
+      if (pageParams.q) {
+        query = query.ilike("title", `%${pageParams.q}%`);
+      }
 
       query = applyFiltersToQuery(query);
 
@@ -545,7 +590,7 @@
         return;
       }
 
-      data.forEach(p => {
+      data.forEach((p) => {
         track.insertAdjacentHTML("beforeend", buildFeaturedCard(p));
       });
     }
@@ -558,11 +603,17 @@
 
       let query = supabase
         .from("products")
-        .select("id, slug, title, price, cover_url, seller_name, seller_plan, rating_avg, rating_count, category_slug, subcategory_slug, is_active")
+        .select(
+          "id, slug, title, price, cover_url, seller_name, seller_plan, rating_avg, rating_count, category_slug, subcategory_slug, is_active"
+        )
         .eq("is_active", true);
 
       if (catSlug) query = query.eq("category_slug", catSlug);
       if (subSlug) query = query.eq("subcategory_slug", subSlug);
+
+      if (pageParams.q) {
+        query = query.ilike("title", `%${pageParams.q}%`);
+      }
 
       query = applyFiltersToQuery(query);
 
@@ -579,17 +630,18 @@
         return;
       }
 
-      data.forEach(p => {
+      data.forEach((p) => {
         grid.insertAdjacentHTML("beforeend", buildProductCard(p));
       });
     }
 
-    // featured slider
+    // --------------- FEATURED SLIDER -----------------
+
     function initFeaturedSlider() {
       const track = document.getElementById("featured-track");
       if (!track) return;
       const buttons = document.querySelectorAll(".featured-btn");
-      buttons.forEach(btn => {
+      buttons.forEach((btn) => {
         btn.addEventListener("click", () => {
           const dir = btn.getAttribute("data-dir");
           const amount = 220;
@@ -601,7 +653,8 @@
       });
     }
 
-    // header auth + cart
+    // --------------- HEADER AUTH + CART -----------------
+
     function getCartCount() {
       try {
         const raw = localStorage.getItem("sr_cart_items");
@@ -616,30 +669,32 @@
 
     function updateCartCount() {
       const count = getCartCount();
-      document.querySelectorAll('[data-role="cart-count"]').forEach(span => {
-        if (count > 0) {
-          span.textContent = count;
-          span.style.display = "inline-block";
-        } else {
-          span.textContent = "";
-          span.style.display = "none";
-        }
-      });
+      document
+        .querySelectorAll('[data-role="cart-count"]')
+        .forEach((span) => {
+          if (count > 0) {
+            span.textContent = count;
+            span.style.display = "inline-flex";
+          } else {
+            span.textContent = "";
+            span.style.display = "none";
+          }
+        });
     }
 
     function applyAuthState(loggedIn) {
-      document.querySelectorAll('[data-role="login-link"]').forEach(el => {
-        el.style.display = loggedIn ? "none" : "";
-      });
-      document.querySelectorAll('[data-role="start-link"]').forEach(el => {
-        el.style.display = loggedIn ? "none" : "";
-      });
-      document.querySelectorAll('[data-role="library-link"]').forEach(el => {
-        el.style.display = loggedIn ? "" : "none";
-      });
-      document.querySelectorAll('[data-role="dashboard-link"]').forEach(el => {
-        el.style.display = loggedIn ? "" : "none";
-      });
+      document
+        .querySelectorAll('[data-role="login-link"]')
+        .forEach((el) => (el.style.display = loggedIn ? "none" : ""));
+      document
+        .querySelectorAll('[data-role="start-link"]')
+        .forEach((el) => (el.style.display = loggedIn ? "none" : ""));
+      document
+        .querySelectorAll('[data-role="library-link"]')
+        .forEach((el) => (el.style.display = loggedIn ? "" : "none"));
+      document
+        .querySelectorAll('[data-role="dashboard-link"]')
+        .forEach((el) => (el.style.display = loggedIn ? "" : "none"));
     }
 
     async function initHeaderAuthAndCart() {
@@ -654,16 +709,21 @@
         console.error("Auth state error", err);
       }
 
-      document.querySelectorAll('[data-role="cart-button"]').forEach(btn => {
-        btn.addEventListener("click", () => {
-          window.location.href = "/checkout.html";
+      document
+        .querySelectorAll('[data-role="cart-button"]')
+        .forEach((btn) => {
+          btn.addEventListener("click", () => {
+            window.location.href = "/checkout.html";
+          });
         });
-      });
 
       updateCartCount();
     }
 
-    // CATEGORY NAV FROM SUPABASE
+    // --------------- CATEGORY NAV (DESKTOP + DRAWER) -----
+
+    let drawerCatMap = {}; // slug -> { name, subs: [...] }
+
     async function buildCategoryNav(catSlug) {
       const desktopScroll = document.getElementById("desktop-cat-scroll");
       const drawerCatList = document.getElementById("nav-drawer-cat-list");
@@ -672,9 +732,8 @@
       desktopScroll.innerHTML = "";
       drawerCatList.innerHTML = "";
       navState.catButtons = {};
-      navState.moreButton = null;
 
-      // All button (desktop)
+      // "All" button desktop
       const allItem = document.createElement("div");
       allItem.className = "nav-cat-item";
       const allBtn = document.createElement("a");
@@ -685,7 +744,7 @@
       allItem.appendChild(allBtn);
       desktopScroll.appendChild(allItem);
 
-      // fetch categories + subcategories
+      // fetch cats + subs
       const { data: cats, error: catErr } = await supabase
         .from("categories")
         .select("id, slug, name, sort_order")
@@ -707,7 +766,7 @@
       }
 
       const subsByCatId = {};
-      (subs || []).forEach(sc => {
+      (subs || []).forEach((sc) => {
         if (!subsByCatId[sc.category_id]) subsByCatId[sc.category_id] = [];
         subsByCatId[sc.category_id].push(sc);
       });
@@ -717,7 +776,7 @@
       const primary = [];
       const more = [];
 
-      (cats || []).forEach(c => {
+      (cats || []).forEach((c) => {
         const entry = {
           id: c.id,
           slug: c.slug,
@@ -736,10 +795,11 @@
         }
       });
 
-      // desktop primary categories
-      primary.forEach(cat => {
+      // desktop primary
+      primary.forEach((cat) => {
         const item = document.createElement("div");
         item.className = "nav-cat-item has-menu";
+
         const btn = document.createElement("button");
         btn.type = "button";
         btn.className = "nav-pill nav-cat-trigger";
@@ -748,15 +808,20 @@
         navState.catButtons[cat.slug] = btn;
 
         btn.addEventListener("click", () => {
-          window.location.href = `/marketplace.html?cat=${encodeURIComponent(cat.slug)}`;
+          window.location.href = `/marketplace.html?cat=${encodeURIComponent(
+            cat.slug
+          )}`;
         });
 
         const menu = document.createElement("div");
         menu.className = "nav-cat-menu";
+
         if (cat.subs.length > 0) {
-          cat.subs.forEach(sc => {
+          cat.subs.forEach((sc) => {
             const a = document.createElement("a");
-            a.href = `/marketplace.html?cat=${encodeURIComponent(cat.slug)}&sub=${encodeURIComponent(sc.slug)}`;
+            a.href = `/marketplace.html?cat=${encodeURIComponent(
+              cat.slug
+            )}&sub=${encodeURIComponent(sc.slug)}`;
             a.textContent = sc.name;
             menu.appendChild(a);
           });
@@ -772,10 +837,11 @@
         desktopScroll.appendChild(item);
       });
 
-      // desktop MORE menu
+      // desktop MORE
       if (more.length > 0) {
         const moreItem = document.createElement("div");
         moreItem.className = "nav-more";
+
         const moreBtn = document.createElement("button");
         moreBtn.type = "button";
         moreBtn.className = "nav-pill nav-more-toggle";
@@ -785,17 +851,19 @@
         const dropdown = document.createElement("div");
         dropdown.className = "nav-more-dropdown";
 
-        more.forEach(cat => {
-          const groupTitle = document.createElement("div");
-          groupTitle.className = "more-group-title";
-          groupTitle.textContent = cat.name;
-          dropdown.appendChild(groupTitle);
+        more.forEach((cat) => {
+          const title = document.createElement("div");
+          title.className = "more-group-title";
+          title.textContent = cat.name;
+          dropdown.appendChild(title);
 
           if (cat.subs.length > 0) {
-            cat.subs.forEach(sc => {
+            cat.subs.forEach((sc) => {
               const a = document.createElement("a");
               a.className = "more-link";
-              a.href = `/marketplace.html?cat=${encodeURIComponent(cat.slug)}&sub=${encodeURIComponent(sc.slug)}`;
+              a.href = `/marketplace.html?cat=${encodeURIComponent(
+                cat.slug
+              )}&sub=${encodeURIComponent(sc.slug)}`;
               a.textContent = sc.name;
               dropdown.appendChild(a);
             });
@@ -812,7 +880,7 @@
         moreItem.appendChild(dropdown);
         desktopScroll.appendChild(moreItem);
 
-        // keep dropdown open while hovering
+        // hover helper
         let hideTimeout;
         const open = () => dropdown.classList.add("open");
         const close = () => dropdown.classList.remove("open");
@@ -826,8 +894,9 @@
         });
       }
 
-      // MOBILE drawer categories (all cats)
-      more.concat(primary).forEach(cat => {
+      // mobile drawer cats (all cats, primary+more)
+      const allCats = primary.concat(more);
+      allCats.forEach((cat) => {
         const btn = document.createElement("button");
         btn.type = "button";
         btn.className = "drawer-link drawer-link-cat";
@@ -837,7 +906,8 @@
       });
     }
 
-    // mobile nav drawer
+    // --------------- MOBILE NAV DRAWER -------------------
+
     function initNavDrawer() {
       const toggle = document.getElementById("nav-drawer-toggle");
       const backdrop = document.getElementById("nav-drawer-backdrop");
@@ -848,6 +918,7 @@
       const viewSubs = document.getElementById("drawer-view-subcats");
       const subsTitle = document.getElementById("drawer-subcats-title");
       const subsList = document.getElementById("drawer-subcats-list");
+      const catList = document.getElementById("nav-drawer-cat-list");
 
       if (!toggle || !backdrop || !drawer) return;
 
@@ -871,7 +942,8 @@
         viewSubs.style.display = "none";
       });
 
-      document.getElementById("nav-drawer-cat-list").addEventListener("click", (e) => {
+      // tap on main cat → subcat view
+      catList.addEventListener("click", (e) => {
         const btn = e.target.closest(".drawer-link-cat");
         if (!btn) return;
         const slug = btn.dataset.catSlug;
@@ -887,10 +959,12 @@
         allLink.textContent = `All ${catEntry.name}`;
         subsList.appendChild(allLink);
 
-        (catEntry.subs || []).forEach(sc => {
+        (catEntry.subs || []).forEach((sc) => {
           const a = document.createElement("a");
           a.className = "drawer-link";
-          a.href = `/marketplace.html?cat=${encodeURIComponent(slug)}&sub=${encodeURIComponent(sc.slug)}`;
+          a.href = `/marketplace.html?cat=${encodeURIComponent(
+            slug
+          )}&sub=${encodeURIComponent(sc.slug)}`;
           a.textContent = sc.name;
           subsList.appendChild(a);
         });
@@ -899,14 +973,18 @@
         viewSubs.style.display = "";
       });
 
-      document.querySelectorAll("[data-cat-link][data-cat='all']").forEach(btn => {
-        btn.addEventListener("click", () => {
-          window.location.href = "/marketplace.html";
+      // "All products" top button in drawer
+      document
+        .querySelectorAll("[data-cat-link][data-cat='all']")
+        .forEach((btn) => {
+          btn.addEventListener("click", () => {
+            window.location.href = "/marketplace.html";
+          });
         });
-      });
     }
 
-    // filters drawer (mobile)
+    // --------------- FILTERS DRAWER (MOBILE) -------------
+
     function initFiltersDrawer() {
       const toggle = document.getElementById("filters-toggle");
       if (!toggle) return;
@@ -926,16 +1004,18 @@
       overlay.addEventListener("click", closeFilters);
     }
 
-    // search clear button
-    function initSearchClear(reloadFn) {
+    // --------------- SEARCH CLEAR BUTTON -----------------
+
+    function initSearchClear() {
       const input = document.querySelector(".sr-search-input");
       const clearBtn = document.querySelector(".sr-search-clear");
       if (!input || !clearBtn) return;
 
-      // initial value from searchText
-      input.value = searchText || "";
+      const params = new URLSearchParams(window.location.search);
+      const q = params.get("q") || "";
+      if (q) input.value = q;
 
-      function syncClear() {
+      function sync() {
         if (input.value && input.value.length > 0) {
           clearBtn.style.display = "block";
         } else {
@@ -943,59 +1023,56 @@
         }
       }
 
-      input.addEventListener("input", syncClear);
-
+      input.addEventListener("input", sync);
       clearBtn.addEventListener("click", () => {
         input.value = "";
-        searchText = "";
-        syncClear();
-
-        // remove q from URL without losing cat/sub
-        const url = new URL(window.location.href);
-        url.searchParams.delete("q");
-        window.history.replaceState({}, "", url.toString());
-
-        reloadFn();
+        sync();
         input.focus();
       });
 
-      syncClear();
+      sync();
     }
 
-    // init
+    // --------------- INIT MARKETPLACE --------------------
+
     async function initMarketplace() {
-      if (!document.body.classList.contains("marketplace-page")) return;
+      const params = getPageParams();
+      pageParams.catSlug = params.catSlug;
+      pageParams.subSlug = params.subSlug;
+      pageParams.q = params.q;
 
-      const state = getUrlState();
-      const catSlug = state.catSlug;
-      const subSlug = state.subSlug;
-      searchText = state.q;
-
-      const heading = formatHeading(catSlug, subSlug);
+      const heading = formatHeading(
+        pageParams.catSlug,
+        pageParams.subSlug,
+        pageParams.q
+      );
       document.getElementById("products-title").textContent = heading;
       document.getElementById("featured-title").textContent =
-        (catSlug || subSlug) ? ("Featured in " + heading) : "Featured products";
+        pageParams.catSlug || pageParams.subSlug || pageParams.q
+          ? "Featured in " + heading
+          : "Featured products";
 
-      await buildCategoryNav(catSlug);
-      updateNavActive(catSlug);
+      await buildCategoryNav(pageParams.catSlug);
+      updateNavActive(pageParams.catSlug);
 
       initFeaturedSlider();
       initNavDrawer();
       initFiltersDrawer();
       await initHeaderAuthAndCart();
+      initSearchClear();
 
       const reloadAll = () => {
-        loadFeaturedProducts(catSlug, subSlug);
-        loadProductsGrid(catSlug, subSlug);
+        loadFeaturedProducts(pageParams.catSlug, pageParams.subSlug);
+        loadProductsGrid(pageParams.catSlug, pageParams.subSlug);
       };
 
       initFilterEvents(reloadAll);
-      initSearchClear(reloadAll);
       reloadAll();
     }
 
     document.addEventListener("DOMContentLoaded", initMarketplace);
   </script>
+
 
   <!-- Footer loader -->
   <script type="module" src="/js/footer.js"></script>

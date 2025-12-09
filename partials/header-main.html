@@ -1,18 +1,15 @@
 <header class="sr-header sr-header-main">
   <div class="sr-container sr-header-inner">
-    <!-- Logo -->
     <a href="/index.html" class="logo-link">
       <img src="/logo.png" alt="Silky Road logo" class="logo-img">
     </a>
 
-    <!-- Desktop Navigation -->
     <nav class="nav-main">
       <a href="/marketplace.html" class="nav-link">Marketplace</a>
       <a href="/pricing.html" class="nav-link">Pricing</a>
       <a href="/about.html" class="nav-link">About</a>
     </nav>
 
-    <!-- Desktop Action Buttons -->
     <div class="nav-actions">
       <a href="/login.html" class="nav-link" data-visible="logged-out" data-auth="login">Log in</a>
       <a href="/sign_up.html" class="btn btn-primary" data-visible="logged-out">Start selling</a>
@@ -21,18 +18,15 @@
       <button class="nav-link nav-link-small" data-visible="logged-in" data-auth="logout">Log out</button>
     </div>
 
-    <!-- Hamburger (Mobile Only) -->
     <button class="nav-toggle" aria-label="Toggle navigation">
       <span></span><span></span><span></span>
     </button>
   </div>
 
-  <!-- Mobile Dropdown Panel -->
   <div class="nav-mobile-panel">
     <a href="/marketplace.html" class="nav-link">Marketplace</a>
     <a href="/pricing.html" class="nav-link">Pricing</a>
     <a href="/about.html" class="nav-link">About</a>
-
     <a href="/login.html" class="nav-link" data-visible="logged-out" data-auth="login">Log in</a>
     <a href="/sign_up.html" class="btn btn-primary btn-full" data-visible="logged-out">Start selling</a>
 
@@ -40,16 +34,16 @@
     <button class="nav-link nav-link-small" data-visible="logged-in" data-auth="logout">Log out</button>
   </div>
 
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const toggle = document.querySelector(".nav-toggle");
-      const panel = document.querySelector(".nav-mobile-panel");
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const toggle = document.querySelector(".nav-toggle");
+  const panel = document.querySelector(".nav-mobile-panel");
 
-      if (toggle && panel) {
-        toggle.addEventListener("click", () => {
-          panel.classList.toggle("open");
-        });
-      }
+  if (toggle && panel) {
+    toggle.addEventListener("click", () => {
+      panel.classList.toggle("open");
     });
-  </script>
+  }
+});
+</script>
 </header>

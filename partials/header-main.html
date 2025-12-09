@@ -1,45 +1,84 @@
-<header class="sr-header sr-header-main">
-  <div class="sr-container sr-header-inner">
+<header class="sr-header">
+  <div class="sr-container">
+    <div class="sr-header-inner">
+      <!-- Logo -->
+      <a href="/index.html" class="logo-link">
+        <img src="/logo.png" alt="Silky Road logo" class="logo-img">
+      </a>
 
-    <!-- LOGO -->
-    <a href="/index.html" class="logo-link">
-      <img src="/logo.png" alt="Silky Road logo" class="logo-img">
-    </a>
+      <!-- Desktop nav -->
+      <nav class="nav-main" aria-label="Main navigation">
+        <a href="/marketplace.html" class="nav-link">Marketplace</a>
+        <a href="/pricing.html" class="nav-link">Pricing</a>
+        <a href="/about.html" class="nav-link">About</a>
+      </nav>
 
-    <!-- DESKTOP NAV -->
-    <nav class="nav-main">
+      <!-- Desktop actions (JS will show/hide) -->
+      <div class="nav-actions">
+        <!-- WHEN LOGGED OUT -->
+        <div data-when="logged-out">
+          <a href="/login.html" class="btn btn-ghost">Log in</a>
+          <a href="/sign_up.html" class="btn btn-primary">Start selling</a>
+        </div>
+
+        <!-- WHEN LOGGED IN -->
+        <div data-when="logged-in">
+          <a href="/dashboard.html" class="btn btn-primary">Dashboard</a>
+          <button type="button" class="btn btn-ghost" id="btn-logout-main">
+            Log out
+          </button>
+        </div>
+      </div>
+
+      <!-- Mobile hamburger -->
+      <button
+        class="nav-toggle"
+        type="button"
+        aria-label="Toggle navigation"
+        aria-expanded="false"
+      >
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile backdrop -->
+  <div class="nav-backdrop" data-nav-backdrop></div>
+
+  <!-- Mobile drawer (slides from LEFT) -->
+  <div class="nav-mobile-panel" data-nav-panel>
+    <nav class="nav-mobile-section" aria-label="Mobile navigation">
       <a href="/marketplace.html" class="nav-link">Marketplace</a>
       <a href="/pricing.html" class="nav-link">Pricing</a>
       <a href="/about.html" class="nav-link">About</a>
+
+      <!-- Log in only when logged out -->
+      <a href="/login.html" class="nav-link" data-when="logged-out">
+        Log in
+      </a>
     </nav>
 
-    <!-- DESKTOP ACTIONS -->
-    <div class="nav-actions">
-      <a href="/login.html" class="nav-link" data-visible="logged-out">Log in</a>
-      <a href="/sign_up.html" class="btn btn-primary" data-visible="logged-out">Start selling</a>
-
-      <a href="/dashboard.html" class="btn btn-primary" data-visible="logged-in">Dashboard</a>
-      <button class="nav-link nav-link-small" data-visible="logged-in" data-auth="logout">Log out</button>
+    <!-- Logged out actions -->
+    <div class="nav-mobile-section" data-when="logged-out">
+      <a href="/sign_up.html" class="btn btn-primary btn-full">
+        Start selling
+      </a>
     </div>
 
-    <!-- MOBILE HAMBURGER -->
-    <button class="nav-toggle" aria-label="Toggle navigation">
-      <span></span><span></span><span></span>
-    </button>
-
+    <!-- Logged in actions -->
+    <div class="nav-mobile-section" data-when="logged-in">
+      <a href="/dashboard.html" class="btn btn-primary btn-full">
+        Dashboard
+      </a>
+      <button
+        type="button"
+        class="btn btn-ghost btn-full"
+        id="btn-logout-main-mobile"
+      >
+        Log out
+      </button>
+    </div>
   </div>
-
-  <!-- MOBILE SLIDE-DRAWER -->
-  <div class="nav-mobile-panel">
-    <a href="/marketplace.html" class="nav-link">Marketplace</a>
-    <a href="/pricing.html" class="nav-link">Pricing</a>
-    <a href="/about.html" class="nav-link">About</a>
-
-    <a href="/login.html" class="nav-link" data-visible="logged-out">Log in</a>
-    <a href="/sign_up.html" class="btn btn-primary btn-full" data-visible="logged-out">Start selling</a>
-
-    <a href="/dashboard.html" class="btn btn-primary btn-full" data-visible="logged-in">Dashboard</a>
-    <button class="nav-link nav-link-small" data-visible="logged-in" data-auth="logout">Log out</button>
-  </div>
-
 </header>

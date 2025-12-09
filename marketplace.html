@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Marketplace – Silky Road</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="icon" href="/favicon.png">
+  <link rel="stylesheet" href="/css/marketplace.css">
+
+  <!-- Supabase JS (browser global) -->
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+</head>
+<body class="mp-body">
+
+  <!-- HEADER (desktop + mobile combined) -->
+  <header class="mp-header">
+    <div class="mp-header-inner">
+      <!-- left: logo -->
+      <a href="/index.html" class="mp-logo-link">
+        <img src="/logo.png" alt="Silky Road" class="mp-logo-img">
+      </a>
+
+      <!-- center: search -->
+      <form class="mp-search" id="mp-search-form">
+        <span class="mp-search-icon">🔍</span>
+        <input
+          type="text"
+          name="q"
+          id="mp-search-input"
+          placeholder="Search digital products…"
+          autocomplete="off"
+        >
+        <button type="button" class="mp-search-clear" id="mp-search-clear" aria-label="Clear search">✕</button>
+      </form>
+
+      <!-- right: desktop actions -->
+      <div class="mp-header-actions">
+        <a href="/login.html" class="mp-link" data-role="login-link">Login</a>
+        <a href="/sign_up.html" class="mp-btn mp-btn-gold" data-role="start-link">Start selling</a>
+
+        <a href="/library.html" class="mp-link" data-role="library-link" style="display:none;">Library</a>
+        <a href="/dashboard.html" class="mp-btn mp-btn-gold" data-role="dashboard-link" style="display:none;">Dashboard</a>
+
+        <button type="button" class="mp-icon-btn" data-role="cart-button" aria-label="Cart">
+          🛒
+          <span class="mp-cart-count" data-role="cart-count" style="display:none;"></span>
+        </button>
+      </div>
+
+      <!-- mobile hamburger -->
+      <button class="mp-menu-btn" id="mp-menu-toggle" aria-label="Open navigation">
+        ☰
+      </button>
+    </div>
+
+    <!-- DESKTOP CATEGORY BAR -->
+    <nav class="mp-cat-bar" id="mp-cat-bar">
+      <!-- populated by JS from Supabase -->
+    </nav>
+  </header>
+
+  <!-- MOBILE NAV DRAWER -->
+  <div class="mp-drawer-backdrop" id="mp-drawer-backdrop">
+    <aside class="mp-drawer" id="mp-drawer">
+      <div class="mp-drawer-header">
+        <button class="mp-drawer-close" id="mp-drawer-close" type="button">✕</button>
+        <div class="mp-drawer-title">Browse</div>
+      </div>
+
+      <div class="mp-drawer-section mp-drawer-account">
+        <a href="/login.html" class="mp-link" data-role="login-link">Login</a>
+        <a href="/sign_up.html" class="mp-btn mp-btn-gold" data-role="start-link">Start selling</a>
+        <a href="/library.html" class="mp-link" data-role="library-link" style="display:none;">Library</a>
+        <a href="/dashboard.html" class="mp-btn mp-btn-gold" data-role="dashboard-link" style="display:none;">Dashboard</a>
+        <button type="button" class="mp-icon-btn" data-role="cart-button">
+          🛒
+          <span class="mp-cart-count" data-role="cart-count" style="display:none;"></span>
+        </button>
+      </div>
+
+      <div class="mp-drawer-view" id="mp-drawer-view-main">
+        <div class="mp-drawer-section">
+          <button type="button" class="mp-drawer-link" data-cat="all" data-drawer-all>All products</button>
+        </div>
+        <div class="mp-drawer-section" id="mp-drawer-cat-list">
+          <!-- categories injected -->
+        </div>
+      </div>
+
+      <div class="mp-drawer-view" id="mp-drawer-view-sub" style="display:none;">
+        <div class="mp-drawer-section mp-drawer-sub-header">
+          <button type="button" class="mp-drawer-back" id="mp-drawer-back">‹ Back</button>
+          <span id="mp-drawer-sub-title"></span>
+        </div>
+        <div class="mp-drawer-section" id="mp-drawer-sub-list">
+          <!-- subcats for selected cat -->
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- MAIN -->
+  <main class="mp-main">
+    <div class="mp-layout">
+      <!-- FILTERS SIDEBAR (desktop) -->
+      <aside class="mp-filters" id="mp-filters">
+        <h2 class="mp-filters-title">Filters</h2>
+
+        <section class="mp-filter-block" id="mp-filter-tags">
+          <h3>Tags</h3>
+          <!-- initial tags; more from Supabase products optionally -->
+          <button class="mp-chip mp-chip-tag" data-tag="ebook">ebook</button>
+          <button class="mp-chip mp-chip-tag" data-tag="template">template</button>
+          <button class="mp-chip mp-chip-tag" data-tag="music">music</button>
+          <button class="mp-chip mp-chip-tag" data-tag="3d">3d</button>
+          <button class="mp-chip mp-chip-tag" data-tag="free">free</button>
+        </section>
+
+        <section class="mp-filter-block" id="mp-filter-types">
+          <h3>Contains</h3>
+          <button class="mp-chip mp-chip-type" data-type="pdf">pdf</button>
+          <button class="mp-chip mp-chip-type" data-type="zip">zip</button>
+          <button class="mp-chip mp-chip-type" data-type="mp4">mp4</button>
+          <button class="mp-chip mp-chip-type" data-type="mp3">mp3</button>
+          <button class="mp-chip mp-chip-type" data-type="rar">rar</button>
+        </section>
+
+        <section class="mp-filter-block">
+          <h3>Price</h3>
+          <label class="mp-field">
+            <span>Min</span>
+            <input id="mp-price-min" type="number" min="0" step="1" inputmode="numeric" pattern="[0-9]*" placeholder="0">
+          </label>
+          <label class="mp-field">
+            <span>Max</span>
+            <input id="mp-price-max" type="number" min="0" step="1" inputmode="numeric" pattern="[0-9]*" placeholder="∞">
+          </label>
+        </section>
+
+        <section class="mp-filter-block">
+          <h3>Rating</h3>
+          <label><input type="radio" name="mp-rating-min" value="4"> ★★★★☆ and up</label>
+          <label><input type="radio" name="mp-rating-min" value="3"> ★★★☆☆ and up</label>
+          <label><input type="radio" name="mp-rating-min" value="2"> ★★☆☆☆ and up</label>
+          <label><input type="radio" name="mp-rating-min" value="1"> ★☆☆☆☆ and up</label>
+          <label><input type="radio" name="mp-rating-min" value=""> Any rating</label>
+        </section>
+
+        <button class="mp-btn mp-btn-ghost mp-filters-clear" id="mp-filters-clear">Clear filters</button>
+      </aside>
+
+      <!-- CONTENT -->
+      <section class="mp-content">
+        <!-- MOBILE FILTERS BUTTON -->
+        <button class="mp-filters-toggle" id="mp-filters-toggle">Filters</button>
+
+        <!-- FEATURED -->
+        <section class="mp-featured">
+          <div class="mp-section-header">
+            <h2 id="mp-featured-title">Featured products</h2>
+            <div class="mp-featured-arrows">
+              <button class="mp-icon-btn" data-dir="left" id="mp-featured-prev">‹</button>
+              <button class="mp-icon-btn" data-dir="right" id="mp-featured-next">›</button>
+            </div>
+          </div>
+          <div class="mp-featured-track" id="mp-featured-track"></div>
+          <p class="mp-empty" id="mp-featured-empty" style="display:none;">No featured products yet.</p>
+        </section>
+
+        <!-- PRODUCTS GRID -->
+        <section class="mp-products">
+          <div class="mp-section-header">
+            <h2 id="mp-products-title">All products</h2>
+          </div>
+          <div class="mp-products-grid" id="mp-products-grid"></div>
+          <p class="mp-empty" id="mp-products-empty" style="display:none;">No products found.</p>
+        </section>
+      </section>
+    </div>
+  </main>
+
+  <!-- FILTERS OVERLAY (mobile) -->
+  <div class="mp-filters-overlay" id="mp-filters-overlay"></div>
+
+  <!-- MAIN JS -->
+  <script src="/js/marketplace.js"></script>
+</body>
+</html>

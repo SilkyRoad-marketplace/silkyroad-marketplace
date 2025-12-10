@@ -1,189 +1,346 @@
-// /js/marketplace-cats.js
-// Builds desktop category bar + mobile drawer from Supabase "products" table
+/* ==========================================================
+   SILKY ROAD – CATEGORY SYSTEM (PAYHIP NEW EDITION)
+   ========================================================== */
 
-// Supabase CDN is loaded in marketplace.html so global "supabase" exists.
-const { createClient } = supabase;
+/*  
+Payhip NEW Categories (2024–2025)
+We include intelligent subcategories based on industry standards.
+*/
 
-// Use same project as auth.js
-const SUPABASE_URL = "https://paqvgsruppgadgguynde.supabase.co";
-const SUPABASE_ANON =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBhcXZnc3J1cHBnYWRnZ3V5bmRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIzNTg3NTMsImV4cCI6MjA3NzkzNDc1M30.pwEE4WLFu2-tHkmH1fFYYwcEPmLPyavN7ykXdPGQ3AY";
-
-const client = createClient(SUPABASE_URL, SUPABASE_ANON);
-
-// DOM refs
-const desktopBar  = document.getElementById("mp-cat-bar-inner");
-const drawerBody  = document.getElementById("mp-cat-drawer-body");
-const drawer      = document.getElementById("mp-cat-drawer");
-const backdrop    = document.getElementById("mp-cat-backdrop");
-const btnToggle   = document.getElementById("mp-cat-toggle");
-const btnClose    = document.getElementById("mp-cat-close");
-
-// ---------- Drawer open / close ----------
-
-function openDrawer() {
-  if (!drawer || !backdrop) return;
-  drawer.classList.add("is-open");
-  backdrop.classList.add("is-open");
-}
-
-function closeDrawer() {
-  if (!drawer || !backdrop) return;
-  drawer.classList.remove("is-open");
-  backdrop.classList.remove("is-open");
-}
-
-if (btnToggle) btnToggle.addEventListener("click", openDrawer);
-if (btnClose)  btnClose.addEventListener("click", closeDrawer);
-if (backdrop)  backdrop.addEventListener("click", closeDrawer);
-
-// ---------- Fetch category map from Supabase ----------
-
-async function fetchCategoryMap() {
-  // assumes table "products" with columns "category" and "subcategory"
-  const { data, error } = await client
-    .from("products")
-    .select("category, subcategory");
-
-  if (error) {
-    console.error("Failed to load categories:", error);
-    return new Map();
+const SR_CATEGORIES = [
+  {
+    name: "Ebooks",
+    slug: "ebooks",
+    subcategories: [
+      { name: "Fiction", slug: "fiction" },
+      { name: "Non-Fiction", slug: "non-fiction" },
+      { name: "Self-Help", slug: "self-help" },
+      { name: "Business", slug: "business" }
+    ]
+  },
+  {
+    name: "Software",
+    slug: "software",
+    subcategories: [
+      { name: "Apps", slug: "apps" },
+      { name: "Scripts", slug: "scripts" },
+      { name: "Tools", slug: "tools" }
+    ]
+  },
+  {
+    name: "Courses",
+    slug: "courses",
+    subcategories: [
+      { name: "Video Courses", slug: "video-courses" },
+      { name: "PDF Courses", slug: "pdf-courses" },
+      { name: "Masterclasses", slug: "masterclasses" }
+    ]
+  },
+  {
+    name: "Templates",
+    slug: "templates",
+    subcategories: [
+      { name: "Website Templates", slug: "website-templates" },
+      { name: "Document Templates", slug: "document-templates" },
+      { name: "Business Templates", slug: "business-templates" }
+    ]
+  },
+  {
+    name: "Graphics",
+    slug: "graphics",
+    subcategories: [
+      { name: "Icons", slug: "icons" },
+      { name: "Logos", slug: "logos" },
+      { name: "UI Kits", slug: "ui-kits" },
+      { name: "Illustrations", slug: "illustrations" }
+    ]
+  },
+  {
+    name: "3D Models",
+    slug: "3d-models",
+    subcategories: [
+      { name: "Characters", slug: "characters" },
+      { name: "Props", slug: "props" },
+      { name: "Environments", slug: "environments" }
+    ]
+  },
+  {
+    name: "Game Assets",
+    slug: "game-assets",
+    subcategories: [
+      { name: "Scripts", slug: "scripts" },
+      { name: "Sprites", slug: "sprites" },
+      { name: "VFX", slug: "vfx" }
+    ]
+  },
+  {
+    name: "Design Assets",
+    slug: "design-assets",
+    subcategories: [
+      { name: "Fonts", slug: "fonts" },
+      { name: "Branding Packs", slug: "branding-packs" },
+      { name: "Print Packs", slug: "print-packs" }
+    ]
+  },
+  {
+    name: "Audio",
+    slug: "audio",
+    subcategories: [
+      { name: "Music Packs", slug: "music-packs" },
+      { name: "Loops", slug: "loops" },
+      { name: "FX", slug: "fx" }
+    ]
+  },
+  {
+    name: "Video",
+    slug: "video",
+    subcategories: [
+      { name: "Stock Footage", slug: "stock-footage" },
+      { name: "Templates", slug: "templates" },
+      { name: "Animations", slug: "animations" }
+    ]
+  },
+  {
+    name: "Photography",
+    slug: "photography",
+    subcategories: [
+      { name: "Stock Photos", slug: "stock-photos" },
+      { name: "Lightroom Presets", slug: "lightroom-presets" }
+    ]
+  },
+  {
+    name: "Printables",
+    slug: "printables",
+    subcategories: [
+      { name: "Calendars", slug: "calendars" },
+      { name: "Planners", slug: "planners" },
+      { name: "Worksheets", slug: "worksheets" }
+    ]
+  },
+  {
+    name: "Memberships",
+    slug: "memberships",
+    subcategories: []
   }
+];
 
-  const map = new Map(); // category -> Set(subcats)
+/* Show first 8 categories before the "More ▼" dropdown */
+const SR_VISIBLE_CATEGORIES = 8;
 
-  data.forEach((row) => {
-    const cat = row.category ? String(row.category).trim() : "";
-    const sub = row.subcategory ? String(row.subcategory).trim() : "";
-    if (!cat) return;
 
-    if (!map.has(cat)) map.set(cat, new Set());
-    if (sub) map.get(cat).add(sub);
+/* ==========================================================
+   URL BUILDER
+   ========================================================== */
+function buildCategoryHref(categorySlug, subSlug) {
+  const params = new URLSearchParams();
+  if (categorySlug) params.set("category", categorySlug);
+  if (subSlug) params.set("sub", subSlug);
+  return `/category.html?${params.toString()}`;
+}
+
+
+/* ==========================================================
+   DESKTOP CATEGORY BAR RENDERING
+   ========================================================== */
+function renderDesktopCategories() {
+  const container = document.getElementById("srDesktopCategoryBar");
+  if (!container) return;
+
+  const list = document.createElement("div");
+  list.className = "sr-category-list";
+
+  const mainCats = SR_CATEGORIES.slice(0, SR_VISIBLE_CATEGORIES);
+  const moreCats = SR_CATEGORIES.slice(SR_VISIBLE_CATEGORIES);
+
+  // Main visible categories
+  mainCats.forEach(cat => {
+    const item = document.createElement("div");
+    item.className = "sr-cat-item" + (cat.subcategories.length ? " sr-cat-has-sub" : "");
+
+    const link = document.createElement("a");
+    link.href = buildCategoryHref(cat.slug);
+    link.className = "sr-cat-link";
+    link.textContent = cat.name;
+    item.appendChild(link);
+
+    if (cat.subcategories.length) {
+      const submenu = document.createElement("div");
+      submenu.className = "sr-sub-menu";
+
+      cat.subcategories.forEach(sub => {
+        const a = document.createElement("a");
+        a.href = buildCategoryHref(cat.slug, sub.slug);
+        a.textContent = sub.name;
+        submenu.appendChild(a);
+      });
+
+      item.appendChild(submenu);
+    }
+
+    list.appendChild(item);
   });
 
-  return map;
-}
+  // MORE ▼
+  if (moreCats.length > 0) {
+    const moreItem = document.createElement("div");
+    moreItem.className = "sr-cat-item sr-cat-has-sub";
 
-// ---------- Interaction with product list ----------
+    const button = document.createElement("button");
+    button.className = "sr-cat-button";
+    button.textContent = "More ▾";
+    moreItem.appendChild(button);
 
-function handleCategoryClick(category, subcategory = null) {
-  // Update label over featured grid
-  const labelEl = document.getElementById("mp-current-cat-label");
-  if (labelEl) {
-    if (!category && !subcategory) {
-      labelEl.textContent = "Showing: All categories";
-    } else if (category && !subcategory) {
-      labelEl.textContent = `Showing: ${category}`;
-    } else {
-      labelEl.textContent = `Showing: ${category} › ${subcategory}`;
-    }
-  }
+    const submenu = document.createElement("div");
+    submenu.className = "sr-sub-menu";
 
-  // Update active state in desktop pills
-  if (desktopBar) {
-    desktopBar.querySelectorAll(".mp-cat-pill").forEach((btn) => {
-      const btnCat = btn.dataset.cat || "";
-      const isAll  = btnCat === "all" && !category && !subcategory;
-      const match  = btnCat === category && !subcategory;
-      btn.classList.toggle("is-active", isAll || match);
+    moreCats.forEach(cat => {
+      const link = document.createElement("a");
+      link.href = buildCategoryHref(cat.slug);
+      link.textContent = cat.name;
+      submenu.appendChild(link);
     });
+
+    moreItem.appendChild(submenu);
+    list.appendChild(moreItem);
   }
 
-  // Notify marketplace.js (if it defines this hook)
-  if (typeof window.handleCategoryChange === "function") {
-    window.handleCategoryChange({ category, subcategory });
-  } else {
-    console.log("Category selected:", category, subcategory);
-  }
-
-  // On mobile, close drawer when a subcategory is picked
-  if (window.innerWidth <= 900) {
-    closeDrawer();
-  }
+  container.innerHTML = "";
+  container.appendChild(list);
 }
 
-// ---------- Build desktop bar + mobile drawer ----------
 
-function buildUI(categoryMap) {
-  if (desktopBar) desktopBar.innerHTML = "";
-  if (drawerBody) drawerBody.innerHTML = "";
+/* ==========================================================
+   MOBILE DRAWER CATEGORY RENDERING
+   ========================================================== */
+function renderDrawerCategories() {
+  const container = document.getElementById("srDrawerCategories");
+  if (!container) return;
 
-  // Desktop "All" pill
-  if (desktopBar) {
-    const allBtn = document.createElement("button");
-    allBtn.className = "mp-cat-pill is-active";
-    allBtn.textContent = "All";
-    allBtn.dataset.cat = "all";
-    allBtn.addEventListener("click", () => handleCategoryClick(null, null));
-    desktopBar.appendChild(allBtn);
-  }
+  container.innerHTML = "";
 
-  // Drawer "Browse" title + "All products"
-  if (drawerBody) {
-    const title = document.createElement("div");
-    title.className = "mp-cat-section-title";
-    title.textContent = "Browse";
-    drawerBody.appendChild(title);
+  SR_CATEGORIES.forEach(cat => {
+    const wrap = document.createElement("div");
+    const hasSub = cat.subcategories.length > 0;
 
-    const allBtnMobile = document.createElement("button");
-    allBtnMobile.className = "mp-cat-parent";
-    allBtnMobile.innerHTML = "<span>All products</span>";
-    allBtnMobile.addEventListener("click", () => handleCategoryClick(null, null));
-    drawerBody.appendChild(allBtnMobile);
-  }
+    wrap.className = "sr-drawer-cat" + (hasSub ? " sr-drawer-cat-has-sub" : "");
 
-  // Each category
-  for (const [category, subSet] of categoryMap.entries()) {
-    // Desktop pill
-    if (desktopBar) {
-      const pill = document.createElement("button");
-      pill.className = "mp-cat-pill";
-      pill.dataset.cat = category;
-      pill.textContent = category;
-      pill.addEventListener("click", () => handleCategoryClick(category, null));
-      desktopBar.appendChild(pill);
-    }
+    const link = document.createElement("a");
+    link.className = "sr-drawer-cat-link";
+    link.href = buildCategoryHref(cat.slug);
+    link.textContent = cat.name;
 
-    // Mobile accordion
-    if (!drawerBody) continue;
+    wrap.appendChild(link);
 
-    const parentBtn = document.createElement("button");
-    parentBtn.className = "mp-cat-parent";
-    parentBtn.innerHTML = `<span>${category}</span><span>▸</span>`;
+    if (hasSub) {
+      const subWrap = document.createElement("div");
+      subWrap.className = "sr-drawer-sub";
 
-    const sublist = document.createElement("div");
-    sublist.className = "mp-cat-sublist";
+      cat.subcategories.forEach(sub => {
+        const subLink = document.createElement("a");
+        subLink.href = buildCategoryHref(cat.slug, sub.slug);
+        subLink.textContent = sub.name;
+        subWrap.appendChild(subLink);
+      });
 
-    if (subSet.size) {
-      subSet.forEach((sub) => {
-        const subBtn = document.createElement("button");
-        subBtn.className = "mp-cat-sub";
-        subBtn.textContent = sub;
-        subBtn.addEventListener("click", () =>
-          handleCategoryClick(category, sub)
-        );
-        sublist.appendChild(subBtn);
+      wrap.appendChild(subWrap);
+
+      // Mobile tap → open subcategories
+      link.addEventListener("click", (e) => {
+        e.preventDefault();
+        wrap.classList.toggle("open");
       });
     }
 
-    parentBtn.addEventListener("click", () => {
-      const open = sublist.classList.toggle("is-open");
-      const arrow = parentBtn.querySelector("span:last-child");
-      if (arrow) arrow.textContent = open ? "▾" : "▸";
-    });
-
-    drawerBody.appendChild(parentBtn);
-    drawerBody.appendChild(sublist);
-  }
+    container.appendChild(wrap);
+  });
 }
 
-// ---------- Init on load ----------
 
-(async function initCategories() {
-  try {
-    const map = await fetchCategoryMap();
-    buildUI(map);
-  } catch (e) {
-    console.error("Error initialising categories:", e);
+/* ==========================================================
+   DRAWER + OVERLAY + LOGOUT + CART
+   ========================================================== */
+
+function setupDrawer() {
+  const drawer = document.getElementById("srDrawer");
+  const overlay = document.getElementById("srOverlay");
+  const openBtn = document.getElementById("srHamburgerBtn");
+  const closeBtn = document.getElementById("srCloseDrawerBtn");
+
+  if (!drawer || !overlay || !openBtn || !closeBtn) return;
+
+  const open = () => {
+    drawer.classList.add("open");
+    overlay.classList.add("show");
+  };
+
+  const close = () => {
+    drawer.classList.remove("open");
+    overlay.classList.remove("show");
+  };
+
+  openBtn.addEventListener("click", open);
+  closeBtn.addEventListener("click", close);
+  overlay.addEventListener("click", close);
+}
+
+function setupLogoutButtons() {
+  const logout1 = document.getElementById("srLogoutBtn");
+  const logout2 = document.getElementById("srDrawerLogoutBtn");
+
+  async function doLogout(e) {
+    e.preventDefault();
+
+    // Supabase logout if present
+    if (window.supabase && supabase.auth) {
+      try {
+        await supabase.auth.signOut();
+      } catch (err) {}
+    }
+
+    localStorage.removeItem("sr_user");
+    location.reload();
   }
-})();
+
+  if (logout1) logout1.addEventListener("click", doLogout);
+  if (logout2) logout2.addEventListener("click", doLogout);
+}
+
+function refreshCartCount() {
+  const el = document.getElementById("srCartCount");
+  if (!el) return;
+  const count = localStorage.getItem("sr_cartCount") || 0;
+  el.textContent = count;
+}
+
+async function refreshAuthUI() {
+  let loggedIn = false;
+
+  if (window.supabase && supabase.auth) {
+    try {
+      const { data } = await supabase.auth.getUser();
+      loggedIn = !!data.user;
+    } catch {}
+  } else {
+    loggedIn = !!localStorage.getItem("sr_user");
+  }
+
+  document.querySelectorAll(".sr-logged-in").forEach(el => {
+    el.style.display = loggedIn ? "inline-block" : "none";
+  });
+  document.querySelectorAll(".sr-logged-out").forEach(el => {
+    el.style.display = loggedIn ? "none" : "inline-block";
+  });
+}
+
+
+/* ==========================================================
+   INIT
+   ========================================================== */
+document.addEventListener("DOMContentLoaded", () => {
+  renderDesktopCategories();
+  renderDrawerCategories();
+  setupDrawer();
+  setupLogoutButtons();
+  refreshCartCount();
+  refreshAuthUI();
+});

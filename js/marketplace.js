@@ -1,749 +1,581 @@
+// /js/marketplace.js
+// ES module. Uses the SAME Supabase client as the rest of your site.
+import { supabase } from "/js/auth.js";
 
-// Basic config — replace with your real Supabase URL/key if needed
-const SUPABASE_URL = "https://paqvgsruppgadgguynde.supabase.co";
-const SUPABASE_ANON_KEY =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBhcXZnc3J1cHBnYWRnZ3V5bmRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIzNTg3NTMsImV4cCI6MjA3NzkzNDc1M30.pwEE4WLFu2-tHkmH1fFYYwcEPmLPyavN7ykXdPGQ3AY";
-
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-// Desktop primary cats (after these, everything else goes under More)
-const PRIMARY_DESKTOP_CATS = [
-  "3d",
-  "roblox",
-  "crafts",
-  "design",
-  "drawing-and-painting",
-  "music-and-sound-design",
-  "films",
-];
-
-// filter state
-const filterState = {
-  tag: null,
-  fileType: null,
-  priceMin: null,
-  priceMax: null,
-  ratingMin: null,
-  search: null,
+/**
+ * CATEGORY TREE
+ * You can edit / add subcategories here anytime.
+ */
+const CATEGORY_TREE = {
+  "3D": [
+    "Avatars & Characters",
+    "Clothing & Accessories",
+    "Vehicles",
+    "Weapons",
+    "UI Packs / Game Assets",
+    "Scripts",
+    "Animation",
+    "Terrain / Maps",
+    "Effects",
+    "Tools / Plugins",
+    "Icon Packs"
+  ],
+  "Roblox": [
+    "Avatars & Characters",
+    "Vehicles",
+    "Weapons",
+    "Maps",
+    "UI Packs",
+    "Plugins"
+  ],
+  "Crafts": [
+    "Crochet Patterns",
+    "Knitting Patterns",
+    "Sewing Patterns",
+    "Embroidery",
+    "Quilting",
+    "DIY Guides",
+    "Printables"
+  ],
+  "Design": [
+    "Graphic Templates",
+    "Canva Templates",
+    "Social Media Packs",
+    "Print Templates",
+    "Logo Templates",
+    "UI/UX Kits",
+    "Icon Sets",
+    "Mockups",
+    "Typography",
+    "Resume Templates"
+  ],
+  "Drawing & Painting": [
+    "Procreate Brushes",
+    "Photoshop Brushes",
+    "Clip Studio Brushes",
+    "Digital Illustration",
+    "Reference Packs",
+    "Print-ready Artwork",
+    "Tutorials"
+  ],
+  "Music & Sound Design": [
+    "Sample Packs",
+    "Loops",
+    "Beats",
+    "Vocals",
+    "Sound Effects",
+    "Mixing Templates",
+    "Presets (Serum, Vital, etc)",
+    "MIDI Packs"
+  ],
+  "Films": [
+    "LUTs",
+    "Premiere Pro Templates",
+    "Final Cut Templates",
+    "Motion Graphics",
+    "Overlays",
+    "Stock Footage",
+    "Tutorials"
+  ],
+  // "More" group you asked for:
+  "Audio": [
+    "Meditation Music",
+    "Healing Frequencies",
+    "Subliminal Tracks",
+    "Ambient / Relaxation",
+    "Audiobooks"
+  ],
+  "Recorded Music": [
+    "Albums",
+    "Singles",
+    "Instrumentals",
+    "Remixes"
+  ],
+  "Comics & Graphic Novels": [
+    "Manga",
+    "Webcomics",
+    "Graphic Novels",
+    "Story Collections"
+  ],
+  "Fiction Books": [
+    "Fantasy",
+    "Romance",
+    "Horror",
+    "Thriller",
+    "Sci-Fi",
+    "Mystery",
+    "Adventure"
+  ],
+  "Education": [
+    "Courses",
+    "Ebooks",
+    "Worksheets",
+    "Study Guides",
+    "Teacher Resources"
+  ],
+  "Fitness & Health": [
+    "Workout Guides",
+    "Meal Plans",
+    "Yoga Programs",
+    "Detox / Diet Guides"
+  ],
+  "Photography": [
+    "Lightroom Presets",
+    "Photoshop Presets",
+    "Stock Photos",
+    "Posing Guides",
+    "Background Packs"
+  ],
+  "Writing & Publishing": [
+    "Writing Guides",
+    "Templates",
+    "Book Formatting",
+    "Cover Templates",
+    "Prompt Packs"
+  ],
+  "Business & Money": [
+    "Marketing Guides",
+    "Budget Templates",
+    "Spreadsheets",
+    "Digital Planners",
+    "Side Hustle Guides"
+  ],
+  "Gaming": [
+    "Game Assets",
+    "Mods",
+    "Skins",
+    "Level Design Packs"
+  ],
+  "Software Development": [
+    "Code Templates",
+    "Scripts",
+    "Plugins",
+    "Tools",
+    "Apps"
+  ],
+  "Other": [
+    "Miscellaneous"
+  ]
 };
 
-function getParams() {
-  const params = new URLSearchParams(window.location.search);
-  let catSlug = params.get("cat");
-  let subSlug = params.get("sub");
-  const q = params.get("q") || "";
-  if (catSlug === "all") catSlug = null;
-  return { catSlug, subSlug, q };
+let ALL_PRODUCTS = [];
+let CURRENT_FILTER = {
+  category: null,
+  subcategory: null,
+  search: "",
+  tags: new Set(),
+  types: new Set(),
+  priceMin: null,
+  priceMax: null,
+  ratingMin: null
+};
+
+/* ===========================
+   INIT
+=========================== */
+
+document.addEventListener("DOMContentLoaded", () => {
+  initAuthHeader();
+  initSearch();
+  initFilters();
+  initCategoryDrawer();
+  loadProducts();
+});
+
+/* ===========================
+   Auth header (login vs dashboard)
+=========================== */
+
+async function initAuthHeader() {
+  const root = document;
+  const loggedOut = root.querySelectorAll('[data-when="logged-out"]');
+  const loggedIn = root.querySelectorAll('[data-when="logged-in"]');
+
+  function showLoggedOut() {
+    loggedOut.forEach((el) => (el.style.display = ""));
+    loggedIn.forEach((el) => (el.style.display = "none"));
+  }
+
+  function showLoggedIn() {
+    loggedOut.forEach((el) => (el.style.display = "none"));
+    loggedIn.forEach((el) => (el.style.display = ""));
+  }
+
+  try {
+    const { data, error } = await supabase.auth.getSession();
+    if (error) throw error;
+    if (data && data.session) {
+      showLoggedIn();
+    } else {
+      showLoggedOut();
+    }
+  } catch (err) {
+    console.error("Auth header session error:", err);
+    showLoggedOut();
+  }
 }
 
-function setHeading(catSlug, subSlug) {
-  const titleEl = document.getElementById("mp-products-title");
-  const featTitle = document.getElementById("mp-featured-title");
-  if (!titleEl || !featTitle) return;
+/* ===========================
+   Search
+=========================== */
 
-  const unslug = (s) =>
-    s
-      .replace(/-/g, " ")
-      .replace(/\b\w/g, (c) => c.toUpperCase());
+function initSearch() {
+  const input = document.getElementById("mp-search-input");
+  const clearBtn = document.getElementById("mp-search-clear");
 
-  let base;
-  if (!catSlug && !subSlug) base = "All products";
-  else if (catSlug && !subSlug) base = unslug(catSlug);
-  else base = unslug(catSlug) + " / " + unslug(subSlug);
+  if (!input) return;
 
-  titleEl.textContent = base;
-  featTitle.textContent =
-    catSlug || subSlug ? `Featured in ${base}` : "Featured products";
+  input.addEventListener("input", () => {
+    CURRENT_FILTER.search = input.value.trim();
+    renderProducts();
+  });
+
+  clearBtn.addEventListener("click", () => {
+    input.value = "";
+    CURRENT_FILTER.search = "";
+    renderProducts();
+  });
 }
 
-// ---------- Helpers ----------
+/* ===========================
+   Filters (tags, file types, price, rating)
+=========================== */
 
-function formatSellerDisplay(name, plan) {
-  if (!name) name = "Unknown seller";
-  if (plan === "PRO") {
-    return `${name} <span class="seller-badge-pro">[ ★ PRO ]</span>`;
-  }
-  if (plan === "ULTIMATE") {
-    return `${name} <span class="seller-badge-ultimate">[ 👑 ULTIMATE ]</span>`;
-  }
-  return name;
-}
+function initFilters() {
+  // Tag chips
+  document.querySelectorAll(".mp-chip-tag").forEach((chip) => {
+    chip.addEventListener("click", () => {
+      const tag = chip.dataset.tag;
+      if (!tag) return;
 
-function buildRatingHtml(avg, count) {
-  if (!avg || !count || count <= 0) return "";
-  const score = Number(avg).toFixed(1);
-  return `<div class="mp-product-rating">★ ${score} (${count})</div>`;
-}
-
-function formatPrice(price) {
-  if (typeof price === "number") return "US$" + price.toFixed(2);
-  const n = Number(price);
-  if (isNaN(n)) return "US$0.00";
-  return "US$" + n.toFixed(2);
-}
-
-function applyFiltersToQuery(query) {
-  if (filterState.tag) {
-    query = query.contains("tags", [filterState.tag]);
-  }
-  if (filterState.fileType) {
-    query = query.contains("file_types", [filterState.fileType]);
-  }
-  if (filterState.priceMin !== null) {
-    query = query.gte("price", filterState.priceMin);
-  }
-  if (filterState.priceMax !== null) {
-    query = query.lte("price", filterState.priceMax);
-  }
-  if (filterState.ratingMin !== null) {
-    query = query.gte("rating_avg", filterState.ratingMin);
-  }
-  if (filterState.search) {
-    const like = `%${filterState.search}%`;
-    // simple OR filter on title + description if exists
-    query = query.or(`title.ilike.${like},description.ilike.${like}`);
-  }
-  return query;
-}
-
-// ---------- Product card builders ----------
-
-function buildProductCard(p) {
-  const cover = p.cover_url || "/placeholder-product.png";
-  const sellerHtml = formatSellerDisplay(p.seller_name, p.seller_plan);
-  const ratingHtml = buildRatingHtml(p.rating_avg, p.rating_count);
-  const priceText = formatPrice(p.price);
-  const url = `/product.html?slug=${encodeURIComponent(p.slug || p.id)}`;
-
-  return `
-    <a href="${url}" class="mp-product-card">
-      <div class="mp-product-thumb">
-        <img src="${cover}" alt="${p.title || "Product"}">
-      </div>
-      <div class="mp-product-body">
-        <div class="mp-product-title">${p.title || "Untitled product"}</div>
-        <div class="mp-product-seller">${sellerHtml}</div>
-        ${ratingHtml}
-        <div class="mp-product-footer">
-          <span class="mp-product-price">${priceText}</span>
-          <span class="mp-product-cta">View</span>
-        </div>
-      </div>
-    </a>
-  `;
-}
-
-function buildFeaturedCard(p) {
-  const cover = p.cover_url || "/placeholder-product.png";
-  const sellerHtml = formatSellerDisplay(p.seller_name, p.seller_plan);
-  const priceText = formatPrice(p.price);
-  const url = `/product.html?slug=${encodeURIComponent(p.slug || p.id)}`;
-
-  return `
-    <a href="${url}" class="mp-featured-card">
-      <div class="mp-featured-thumb">
-        <img src="${cover}" alt="${p.title || "Product"}">
-      </div>
-      <div class="mp-featured-body">
-        <div class="mp-featured-title">${p.title || "Untitled product"}</div>
-        <div class="mp-featured-meta">${sellerHtml}</div>
-        <div class="mp-featured-price">${priceText}</div>
-      </div>
-    </a>
-  `;
-}
-
-// ---------- Filters ----------
-
-function initFilters(onChange) {
-  // tags
-  document.querySelectorAll(".mp-chip-tag").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const tag = btn.dataset.tag;
-      if (filterState.tag === tag) {
-        filterState.tag = null;
-        btn.classList.remove("active");
+      if (CURRENT_FILTER.tags.has(tag)) {
+        CURRENT_FILTER.tags.delete(tag);
+        chip.classList.remove("is-active");
       } else {
-        filterState.tag = tag;
-        document
-          .querySelectorAll(".mp-chip-tag")
-          .forEach((b) => b.classList.remove("active"));
-        btn.classList.add("active");
+        CURRENT_FILTER.tags.add(tag);
+        chip.classList.add("is-active");
       }
-      onChange();
+      renderProducts();
     });
   });
 
-  // file types
-  document.querySelectorAll(".mp-chip-type").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const t = btn.dataset.type;
-      if (filterState.fileType === t) {
-        filterState.fileType = null;
-        btn.classList.remove("active");
+  // Type chips
+  document.querySelectorAll(".mp-chip-type").forEach((chip) => {
+    chip.addEventListener("click", () => {
+      const t = chip.dataset.type;
+      if (!t) return;
+      if (CURRENT_FILTER.types.has(t)) {
+        CURRENT_FILTER.types.delete(t);
+        chip.classList.remove("is-active");
       } else {
-        filterState.fileType = t;
-        document
-          .querySelectorAll(".mp-chip-type")
-          .forEach((b) => b.classList.remove("active"));
-        btn.classList.add("active");
+        CURRENT_FILTER.types.add(t);
+        chip.classList.add("is-active");
       }
-      onChange();
+      renderProducts();
     });
   });
 
-  // price
+  // Price
   const minInput = document.getElementById("mp-price-min");
   const maxInput = document.getElementById("mp-price-max");
 
-  function parseIntOrNull(el) {
-    const v = el.value.trim();
-    if (!v) return null;
-    const n = parseInt(v, 10);
-    if (isNaN(n) || n < 0) return null;
-    return n;
-  }
+  minInput?.addEventListener("input", () => {
+    CURRENT_FILTER.priceMin = minInput.value ? parseFloat(minInput.value) : null;
+    renderProducts();
+  });
+  maxInput?.addEventListener("input", () => {
+    CURRENT_FILTER.priceMax = maxInput.value ? parseFloat(maxInput.value) : null;
+    renderProducts();
+  });
 
-  [minInput, maxInput].forEach((input) => {
-    input.addEventListener("change", () => {
-      filterState.priceMin = parseIntOrNull(minInput);
-      filterState.priceMax = parseIntOrNull(maxInput);
-      onChange();
+  // Rating
+  document.querySelectorAll('input[name="mp-rating-min"]').forEach((radio) => {
+    radio.addEventListener("change", () => {
+      const v = radio.value;
+      CURRENT_FILTER.ratingMin = v ? parseInt(v, 10) : null;
+      renderProducts();
     });
   });
 
-  // rating
-  document
-    .querySelectorAll('input[name="mp-rating-min"]')
-    .forEach((radio) => {
-      radio.addEventListener("change", () => {
-        const v = radio.value;
-        filterState.ratingMin = v === "" ? null : parseFloat(v);
-        onChange();
-      });
-    });
+  // Clear filters
+  const clearBtn = document.getElementById("mp-filters-clear");
+  clearBtn.addEventListener("click", () => {
+    CURRENT_FILTER.tags.clear();
+    CURRENT_FILTER.types.clear();
+    CURRENT_FILTER.priceMin = null;
+    CURRENT_FILTER.priceMax = null;
+    CURRENT_FILTER.ratingMin = null;
 
-  // clear
-  document
-    .getElementById("mp-filters-clear")
-    .addEventListener("click", () => {
-      filterState.tag = null;
-      filterState.fileType = null;
-      filterState.priceMin = null;
-      filterState.priceMax = null;
-      filterState.ratingMin = null;
+    document.querySelectorAll(".mp-chip.is-active").forEach((c) =>
+      c.classList.remove("is-active")
+    );
+    minInput.value = "";
+    maxInput.value = "";
+    const anyRating = document.querySelector('input[name="mp-rating-min"][value=""]');
+    if (anyRating) anyRating.checked = true;
 
-      document
-        .querySelectorAll(".mp-chip-tag, .mp-chip-type")
-        .forEach((b) => b.classList.remove("active"));
-      minInput.value = "";
-      maxInput.value = "";
-      document
-        .querySelectorAll('input[name="mp-rating-min"]')
-        .forEach((r) => (r.checked = false));
+    renderProducts();
+  });
 
-      onChange();
-    });
-}
-
-// Mobile filters drawer
-function initFiltersDrawer() {
-  const toggle = document.getElementById("mp-filters-toggle");
-  const sidebar = document.getElementById("mp-filters");
+  // Mobile filters slide out
+  const filters = document.getElementById("mp-filters");
+  const toggleBtn = document.getElementById("mp-filters-toggle");
   const overlay = document.getElementById("mp-filters-overlay");
-  if (!toggle || !sidebar || !overlay) return;
 
-  function open() {
-    sidebar.classList.add("open");
-    overlay.classList.add("show");
+  function openFilters() {
+    filters.classList.add("is-open");
+    overlay.classList.add("is-open");
   }
-  function close() {
-    sidebar.classList.remove("open");
-    overlay.classList.remove("show");
+  function closeFilters() {
+    filters.classList.remove("is-open");
+    overlay.classList.remove("is-open");
   }
 
-  toggle.addEventListener("click", open);
-  overlay.addEventListener("click", close);
+  toggleBtn.addEventListener("click", openFilters);
+  overlay.addEventListener("click", closeFilters);
 }
 
-// ---------- Data loading ----------
+/* ===========================
+   Category Drawer
+=========================== */
 
-async function loadFeatured(catSlug, subSlug) {
-  const track = document.getElementById("mp-featured-track");
-  const empty = document.getElementById("mp-featured-empty");
-  if (!track || !empty) return;
+function initCategoryDrawer() {
+  const drawer = document.getElementById("mp-cat-drawer");
+  const backdrop = document.getElementById("mp-cat-backdrop");
+  const toggle = document.getElementById("mp-cat-toggle");
+  const closeBtn = document.getElementById("mp-cat-close");
+  const body = document.getElementById("mp-cat-drawer-body");
+  const catLabel = document.getElementById("mp-current-cat-label");
 
-  track.innerHTML = "";
-  empty.style.display = "none";
+  // Build drawer DOM
+  body.innerHTML = "";
 
-  let query = supabase
-    .from("products")
-    .select(
-      "id, slug, title, price, cover_url, seller_name, seller_plan, rating_avg, rating_count, category_slug, subcategory_slug, is_featured, is_active"
-    )
-    .eq("is_active", true)
-    .eq("is_featured", true)
-    .limit(10);
+  const allBtn = document.createElement("button");
+  allBtn.type = "button";
+  allBtn.className = "mp-cat-parent";
+  allBtn.dataset.cat = "";
+  allBtn.innerHTML = `<span>All products</span><span>⟲</span>`;
+  body.appendChild(allBtn);
 
-  if (catSlug) query = query.eq("category_slug", catSlug);
-  if (subSlug) query = query.eq("subcategory_slug", subSlug);
-
-  query = applyFiltersToQuery(query);
-
-  const { data, error } = await query;
-  if (error) {
-    console.error("Featured error", error);
-    empty.textContent = "Failed to load featured products.";
-    empty.style.display = "block";
-    return;
-  }
-
-  if (!data || data.length === 0) {
-    empty.style.display = "block";
-    return;
-  }
-
-  data.forEach((p) => {
-    track.insertAdjacentHTML("beforeend", buildFeaturedCard(p));
+  allBtn.addEventListener("click", () => {
+    CURRENT_FILTER.category = null;
+    CURRENT_FILTER.subcategory = null;
+    catLabel.textContent = "Showing: All categories";
+    renderProducts();
+    closeDrawer();
   });
+
+  Object.entries(CATEGORY_TREE).forEach(([category, subs]) => {
+    const parent = document.createElement("button");
+    parent.type = "button";
+    parent.className = "mp-cat-parent";
+    parent.dataset.cat = category;
+    parent.innerHTML = `<span>${category}</span><span>▸</span>`;
+
+    const subWrap = document.createElement("div");
+    subWrap.className = "mp-cat-sublist";
+    subWrap.dataset.forCat = category;
+
+    subs.forEach((sub) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "mp-cat-sub";
+      btn.dataset.cat = category;
+      btn.dataset.subcat = sub;
+      btn.textContent = sub;
+
+      btn.addEventListener("click", () => {
+        CURRENT_FILTER.category = category;
+        CURRENT_FILTER.subcategory = sub;
+        catLabel.textContent = `Showing: ${category} › ${sub}`;
+        renderProducts();
+        closeDrawer();
+      });
+
+      subWrap.appendChild(btn);
+    });
+
+    parent.addEventListener("click", () => {
+      const open = subWrap.classList.toggle("is-open");
+      parent.querySelector("span:last-child").textContent = open ? "▾" : "▸";
+    });
+
+    body.appendChild(parent);
+    body.appendChild(subWrap);
+  });
+
+  function openDrawer() {
+    drawer.classList.add("is-open");
+    backdrop.classList.add("is-open");
+  }
+  function closeDrawer() {
+    drawer.classList.remove("is-open");
+    backdrop.classList.remove("is-open");
+  }
+
+  toggle.addEventListener("click", openDrawer);
+  closeBtn.addEventListener("click", closeDrawer);
+  backdrop.addEventListener("click", closeDrawer);
 }
 
-async function loadProducts(catSlug, subSlug) {
-  const grid = document.getElementById("mp-products-grid");
-  const empty = document.getElementById("mp-products-empty");
-  if (!grid || !empty) return;
+/* ===========================
+   Products: load + render
+=========================== */
+
+async function loadProducts() {
+  const grid = document.getElementById("mp-featured-grid");
+  const empty = document.getElementById("mp-featured-empty");
+
+  grid.innerHTML = "<p class='mp-empty'>Loading products…</p>";
+
+  try {
+    const { data, error } = await supabase
+      .from("products")
+      .select(
+        "id,title,description,price_cents,cover_url,category,subcategory,tags,file_type,avg_rating,ratings_count,created_at"
+      )
+      .eq("is_published", true)
+      .order("created_at", { ascending: false })
+      .limit(50);
+
+    if (error) throw error;
+
+    ALL_PRODUCTS = data || [];
+    if (!ALL_PRODUCTS.length) {
+      grid.innerHTML = "";
+      empty.style.display = "block";
+      return;
+    }
+
+    empty.style.display = "none";
+    renderProducts();
+  } catch (err) {
+    console.error("Error loading products:", err);
+    grid.innerHTML =
+      "<p class='mp-empty'>Could not load products. Please try again later.</p>";
+  }
+}
+
+function renderProducts() {
+  const grid = document.getElementById("mp-featured-grid");
+  const empty = document.getElementById("mp-featured-empty");
+
+  if (!ALL_PRODUCTS.length) {
+    grid.innerHTML = "";
+    empty.style.display = "block";
+    return;
+  }
+
+  const filtered = ALL_PRODUCTS.filter((p) => {
+    // Category / Subcategory
+    if (CURRENT_FILTER.category && p.category !== CURRENT_FILTER.category) {
+      return false;
+    }
+    if (CURRENT_FILTER.subcategory && p.subcategory !== CURRENT_FILTER.subcategory) {
+      return false;
+    }
+
+    // Search
+    if (CURRENT_FILTER.search) {
+      const haystack = `${p.title || ""} ${p.description || ""}`.toLowerCase();
+      if (!haystack.includes(CURRENT_FILTER.search.toLowerCase())) {
+        return false;
+      }
+    }
+
+    // Tags (assume p.tags is array of strings or comma string)
+    if (CURRENT_FILTER.tags.size) {
+      const tags = Array.isArray(p.tags)
+        ? p.tags
+        : typeof p.tags === "string"
+        ? p.tags.split(",").map((t) => t.trim())
+        : [];
+      const lower = tags.map((t) => t.toLowerCase());
+      for (const t of CURRENT_FILTER.tags) {
+        if (!lower.includes(t.toLowerCase())) return false;
+      }
+    }
+
+    // Types (file_type column, eg 'pdf', 'zip')
+    if (CURRENT_FILTER.types.size && p.file_type) {
+      const type = String(p.file_type).toLowerCase();
+      let ok = true;
+      for (const t of CURRENT_FILTER.types) {
+        if (type !== t.toLowerCase()) {
+          ok = false;
+          break;
+        } else {
+          ok = true;
+        }
+      }
+      if (!ok) return false;
+    }
+
+    // Price (price_cents integer)
+    if (CURRENT_FILTER.priceMin != null) {
+      const price = (p.price_cents || 0) / 100;
+      if (price < CURRENT_FILTER.priceMin) return false;
+    }
+    if (CURRENT_FILTER.priceMax != null) {
+      const price = (p.price_cents || 0) / 100;
+      if (price > CURRENT_FILTER.priceMax) return false;
+    }
+
+    // Rating
+    if (CURRENT_FILTER.ratingMin != null) {
+      const rating = p.avg_rating || 0;
+      if (rating < CURRENT_FILTER.ratingMin) return false;
+    }
+
+    return true;
+  });
+
+  // Show max 10 featured on page
+  const toShow = filtered.slice(0, 10);
 
   grid.innerHTML = "";
+
+  if (!toShow.length) {
+    empty.style.display = "block";
+    return;
+  }
+
   empty.style.display = "none";
 
-  let query = supabase
-    .from("products")
-    .select(
-      "id, slug, title, price, cover_url, seller_name, seller_plan, rating_avg, rating_count, category_slug, subcategory_slug, is_active"
-    )
-    .eq("is_active", true);
+  for (const p of toShow) {
+    const card = document.createElement("article");
+    card.className = "mp-product-card";
 
-  if (catSlug) query = query.eq("category_slug", catSlug);
-  if (subSlug) query = query.eq("subcategory_slug", subSlug);
+    const img = document.createElement("img");
+    img.className = "mp-product-cover";
+    img.src = p.cover_url || "/placeholder-cover.png";
+    img.alt = p.title || "Product cover";
+    card.appendChild(img);
 
-  query = applyFiltersToQuery(query);
+    const title = document.createElement("h3");
+    title.className = "mp-product-title";
+    title.textContent = p.title || "Untitled product";
+    card.appendChild(title);
 
-  const { data, error } = await query;
-  if (error) {
-    console.error("Products error", error);
-    empty.textContent = "Failed to load products.";
-    empty.style.display = "block";
-    return;
-  }
+    const price = document.createElement("div");
+    price.className = "mp-product-price";
+    const amount = (p.price_cents || 0) / 100;
+    price.textContent = amount === 0 ? "Free" : `$${amount.toFixed(2)}`;
+    card.appendChild(price);
 
-  if (!data || data.length === 0) {
-    empty.style.display = "block";
-    return;
-  }
-
-  data.forEach((p) => {
-    grid.insertAdjacentHTML("beforeend", buildProductCard(p));
-  });
-}
-
-// Featured horizontal scroll
-function initFeaturedScroll() {
-  const track = document.getElementById("mp-featured-track");
-  const prev = document.getElementById("mp-featured-prev");
-  const next = document.getElementById("mp-featured-next");
-  if (!track || !prev || !next) return;
-
-  const amount = 260;
-  prev.addEventListener("click", () => {
-    track.scrollBy({ left: -amount, behavior: "smooth" });
-  });
-  next.addEventListener("click", () => {
-    track.scrollBy({ left: amount, behavior: "smooth" });
-  });
-}
-
-// ---------- Header auth + cart ----------
-
-function getCartCount() {
-  try {
-    const raw = localStorage.getItem("sr_cart_items");
-    if (!raw) return 0;
-    const arr = JSON.parse(raw);
-    return Array.isArray(arr) ? arr.length : 0;
-  } catch {
-    return 0;
-  }
-}
-
-function updateCartCount() {
-  const count = getCartCount();
-  document.querySelectorAll('[data-role="cart-count"]').forEach((el) => {
+    const meta = document.createElement("div");
+    meta.className = "mp-product-meta";
+    const rating = p.avg_rating || 0;
+    const count = p.ratings_count || 0;
     if (count > 0) {
-      el.style.display = "inline-flex";
-      el.textContent = count;
+      meta.textContent = `★ ${rating.toFixed(1)} · ${count} ratings`;
     } else {
-      el.style.display = "none";
-      el.textContent = "";
+      meta.textContent = p.category && p.subcategory
+        ? `${p.category} • ${p.subcategory}`
+        : "Digital product";
     }
-  });
-}
+    card.appendChild(meta);
 
-function applyAuthState(loggedIn) {
-  document.querySelectorAll('[data-role="login-link"]').forEach((el) => {
-    el.style.display = loggedIn ? "none" : "";
-  });
-  document.querySelectorAll('[data-role="start-link"]').forEach((el) => {
-    el.style.display = loggedIn ? "none" : "";
-  });
-  document.querySelectorAll('[data-role="library-link"]').forEach((el) => {
-    el.style.display = loggedIn ? "" : "none";
-  });
-  document.querySelectorAll('[data-role="dashboard-link"]').forEach((el) => {
-    el.style.display = loggedIn ? "" : "none";
-  });
-}
-
-async function initAuthAndCart() {
-  try {
-    const { data } = await supabase.auth.getSession();
-    applyAuthState(!!data.session);
-    supabase.auth.onAuthStateChange((_event, session) => {
-      applyAuthState(!!session);
-    });
-  } catch (err) {
-    console.error("Auth state error", err);
+    grid.appendChild(card);
   }
-
-  document.querySelectorAll('[data-role="cart-button"]').forEach((btn) => {
-    btn.addEventListener("click", () => {
-      window.location.href = "/checkout.html";
-    });
-  });
-
-  updateCartCount();
 }
-
-// ---------- Category nav from Supabase ----------
-
-const drawerCatMap = {}; // slug -> { name, subs }
-
-async function buildCategoryNav(catSlug) {
-  const bar = document.getElementById("mp-cat-bar");
-  const drawerList = document.getElementById("mp-drawer-cat-list");
-  if (!bar || !drawerList) return;
-
-  bar.innerHTML = "";
-  drawerList.innerHTML = "";
-
-  // All button
-  const allBtn = document.createElement("button");
-  allBtn.className = "mp-cat-pill";
-  allBtn.textContent = "All";
-  allBtn.addEventListener("click", () => {
-    window.location.href = "/marketplace.html";
-  });
-  const allItem = document.createElement("div");
-  allItem.className = "mp-cat-item";
-  allItem.appendChild(allBtn);
-  bar.appendChild(allItem);
-
-  // Load cats + subs
-  const { data: cats, error: catErr } = await supabase
-    .from("categories")
-    .select("id, slug, name, sort_order")
-    .order("sort_order", { ascending: true });
-
-  if (catErr) {
-    console.error("Category error", catErr);
-    return;
-  }
-
-  const { data: subs, error: subErr } = await supabase
-    .from("subcategories")
-    .select("id, category_id, slug, name, sort_order")
-    .order("sort_order", { ascending: true });
-
-  if (subErr) {
-    console.error("Subcategory error", subErr);
-    return;
-  }
-
-  const subsByCat = {};
-  (subs || []).forEach((s) => {
-    if (!subsByCat[s.category_id]) subsByCat[s.category_id] = [];
-    subsByCat[s.category_id].push(s);
-  });
-
-  const primary = [];
-  const more = [];
-
-  (cats || []).forEach((c) => {
-    const entry = {
-      id: c.id,
-      slug: c.slug,
-      name: c.name,
-      subs: subsByCat[c.id] || [],
-    };
-    drawerCatMap[c.slug] = { name: c.name, subs: entry.subs };
-    if (PRIMARY_DESKTOP_CATS.includes(c.slug)) primary.push(entry);
-    else more.push(entry);
-  });
-
-  // desktop primary
-  primary.forEach((c) => {
-    const item = document.createElement("div");
-    item.className = "mp-cat-item";
-
-    const pill = document.createElement("button");
-    pill.className = "mp-cat-pill";
-    pill.textContent = c.name;
-    pill.addEventListener("click", () => {
-      window.location.href = `/marketplace.html?cat=${encodeURIComponent(
-        c.slug
-      )}`;
-    });
-
-    const menu = document.createElement("div");
-    menu.className = "mp-cat-menu";
-
-    if (c.subs.length > 0) {
-      c.subs.forEach((s) => {
-        const a = document.createElement("a");
-        a.href = `/marketplace.html?cat=${encodeURIComponent(
-          c.slug
-        )}&sub=${encodeURIComponent(s.slug)}`;
-        a.textContent = s.name;
-        menu.appendChild(a);
-      });
-    } else {
-      const a = document.createElement("a");
-      a.href = `/marketplace.html?cat=${encodeURIComponent(c.slug)}`;
-      a.textContent = `All ${c.name}`;
-      menu.appendChild(a);
-    }
-
-    item.appendChild(pill);
-    item.appendChild(menu);
-    bar.appendChild(item);
-  });
-
-  // desktop more
-  if (more.length > 0) {
-    const moreItem = document.createElement("div");
-    moreItem.className = "mp-cat-item mp-cat-more";
-
-    const moreBtn = document.createElement("button");
-    moreBtn.className = "mp-cat-more-btn";
-    moreBtn.textContent = "More ▾";
-
-    const menu = document.createElement("div");
-    menu.className = "mp-cat-more-menu";
-
-    more.forEach((c) => {
-      const groupTitle = document.createElement("div");
-      groupTitle.className = "more-group-title";
-      groupTitle.textContent = c.name;
-      menu.appendChild(groupTitle);
-
-      if (c.subs.length > 0) {
-        c.subs.forEach((s) => {
-          const a = document.createElement("a");
-          a.href = `/marketplace.html?cat=${encodeURIComponent(
-            c.slug
-          )}&sub=${encodeURIComponent(s.slug)}`;
-          a.textContent = s.name;
-          menu.appendChild(a);
-        });
-      } else {
-        const a = document.createElement("a");
-        a.href = `/marketplace.html?cat=${encodeURIComponent(c.slug)}`;
-        a.textContent = `All ${c.name}`;
-        menu.appendChild(a);
-      }
-    });
-
-    moreItem.appendChild(moreBtn);
-    moreItem.appendChild(menu);
-    bar.appendChild(moreItem);
-  }
-
-  // mobile drawer list — combine primary + more
-  [...primary, ...more].forEach((c) => {
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.className = "mp-drawer-link";
-    btn.textContent = `${c.name} ›`;
-    btn.dataset.catSlug = c.slug;
-    drawerList.appendChild(btn);
-  });
-
-  // mark active
-  if (!catSlug) return;
-  bar
-    .querySelectorAll(".mp-cat-pill")
-    .forEach((p) => p.classList.remove("active"));
-  bar
-    .querySelectorAll(".mp-cat-item")
-    .forEach((item) => {
-      const pill = item.querySelector(".mp-cat-pill");
-      if (pill && pill.textContent.trim() === "") return;
-    });
-
-  // simpler: highlight pill whose click leads to current catSlug
-  bar.querySelectorAll(".mp-cat-item button.mp-cat-pill").forEach((btn) => {
-    const targetSlug = cats.find((c) => c.name === btn.textContent)?.slug;
-    if (targetSlug && targetSlug === catSlug) {
-      btn.classList.add("active");
-    }
-  });
-}
-
-// ---------- Mobile nav drawer ----------
-
-function initNavDrawer() {
-  const toggle = document.getElementById("mp-menu-toggle");
-  const backdrop = document.getElementById("mp-drawer-backdrop");
-  const drawer = document.getElementById("mp-drawer");
-  const closeBtn = document.getElementById("mp-drawer-close");
-  const backBtn = document.getElementById("mp-drawer-back");
-  const viewMain = document.getElementById("mp-drawer-view-main");
-  const viewSub = document.getElementById("mp-drawer-view-sub");
-  const subTitle = document.getElementById("mp-drawer-sub-title");
-  const subList = document.getElementById("mp-drawer-sub-list");
-  const catList = document.getElementById("mp-drawer-cat-list");
-
-  if (!toggle || !backdrop || !drawer) return;
-
-  function open() {
-    backdrop.classList.add("open");
-  }
-  function close() {
-    backdrop.classList.remove("open");
-    viewMain.style.display = "";
-    viewSub.style.display = "none";
-  }
-
-  toggle.addEventListener("click", open);
-  closeBtn.addEventListener("click", close);
-  backdrop.addEventListener("click", (e) => {
-    if (e.target === backdrop) close();
-  });
-
-  backBtn.addEventListener("click", () => {
-    viewMain.style.display = "";
-    viewSub.style.display = "none";
-  });
-
-  // All products button
-  document
-    .querySelectorAll("[data-drawer-all]")
-    .forEach((btn) =>
-      btn.addEventListener("click", () => {
-        window.location.href = "/marketplace.html";
-      })
-    );
-
-  // Category -> subcats
-  catList.addEventListener("click", (e) => {
-    const btn = e.target.closest(".mp-drawer-link");
-    if (!btn || !btn.dataset.catSlug) return;
-    const slug = btn.dataset.catSlug;
-    const entry = drawerCatMap[slug];
-    if (!entry) return;
-
-    subTitle.textContent = entry.name;
-    subList.innerHTML = "";
-
-    const allLink = document.createElement("a");
-    allLink.href = `/marketplace.html?cat=${encodeURIComponent(slug)}`;
-    allLink.textContent = `All ${entry.name}`;
-    allLink.className = "mp-drawer-link";
-    subList.appendChild(allLink);
-
-    (entry.subs || []).forEach((s) => {
-      const a = document.createElement("a");
-      a.href = `/marketplace.html?cat=${encodeURIComponent(
-        slug
-      )}&sub=${encodeURIComponent(s.slug)}`;
-      a.textContent = s.name;
-      a.className = "mp-drawer-link";
-      subList.appendChild(a);
-    });
-
-    viewMain.style.display = "none";
-    viewSub.style.display = "";
-  });
-}
-
-// ---------- Search clear + sync ----------
-
-function initSearchControls(initialQ) {
-  const form = document.getElementById("mp-search-form");
-  const input = document.getElementById("mp-search-input");
-  const clearBtn = document.getElementById("mp-search-clear");
-  if (!form || !input || !clearBtn) return;
-
-  if (initialQ) input.value = initialQ;
-
-  function sync() {
-    clearBtn.style.display =
-      input.value && input.value.trim().length > 0 ? "inline" : "none";
-  }
-
-  input.addEventListener("input", sync);
-  clearBtn.addEventListener("click", () => {
-    input.value = "";
-    sync();
-    input.focus();
-    // also clear search filter and reload
-    filterState.search = null;
-    const url = new URL(window.location.href);
-    url.searchParams.delete("q");
-    window.history.replaceState({}, "", url.toString());
-    // reload via custom event
-    document.dispatchEvent(new CustomEvent("mp:reload-products"));
-  });
-
-  form.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const q = input.value.trim();
-    filterState.search = q || null;
-
-    const url = new URL(window.location.href);
-    if (q) url.searchParams.set("q", q);
-    else url.searchParams.delete("q");
-    window.history.replaceState({}, "", url.toString());
-
-    document.dispatchEvent(new CustomEvent("mp:reload-products"));
-  });
-
-  sync();
-}
-
-// ---------- INIT ----------
-
-async function initMarketplace() {
-  const { catSlug, subSlug, q } = getParams();
-  filterState.search = q || null;
-  setHeading(catSlug, subSlug);
-
-  await buildCategoryNav(catSlug);
-  initNavDrawer();
-  initAuthAndCart();
-  initFeaturedScroll();
-  initFiltersDrawer();
-
-  const reloadAll = () => {
-    loadFeatured(catSlug, subSlug);
-    loadProducts(catSlug, subSlug);
-  };
-
-  initFilters(reloadAll);
-  initSearchControls(q);
-
-  document.addEventListener("mp:reload-products", reloadAll);
-
-  reloadAll();
-}
-
-document.addEventListener("DOMContentLoaded", initMarketplace);

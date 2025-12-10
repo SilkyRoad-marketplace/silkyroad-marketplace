@@ -9,24 +9,26 @@
 </head>
 
 <body>
+
+  <!-- HEADER WILL LOAD HERE -->
   <div id="header-root"></div>
 
   <main class="page auth-page">
 
-    <!-- FIXED: remove page-card -->
     <div class="auth-card">
 
       <h1>Log in</h1>
       <p class="muted">Access your dashboard and library.</p>
 
+      <!-- GOOGLE LOGIN -->
       <button id="google-login" class="btn btn-full btn-primary" style="margin-top:18px;">
         Continue with Google
       </button>
 
       <div class="auth-divider">or</div>
 
+      <!-- EMAIL LOGIN FORM -->
       <form id="login-form" class="auth-form">
-
         <div class="field">
           <span>Email</span>
           <input id="login-email" type="email" autocomplete="email">
@@ -43,24 +45,70 @@
         </button>
       </form>
 
+      <!-- FORGOT PASSWORD -->
       <button id="forgot-toggle" class="link-forgot">Forgot your password?</button>
 
       <div id="forgot-panel" class="forgot-panel">
         <p class="muted small">Enter your email and we'll send reset instructions.</p>
+
         <div class="field">
           <span>Email</span>
           <input id="forgot-email" type="email">
         </div>
+
         <button id="send-reset" class="btn btn-ghost btn-full">Send reset link</button>
       </div>
 
     </div>
-
   </main>
 
+  <!-- FOOTER WILL LOAD HERE -->
   <div id="footer-root"></div>
-  <script src="/js/header-main.js"></script>
-  <script src="/js/auth.js"></script>
-  <script src="/js/footer.js"></script>
+
+  <!-- IMPORTANT: MUST BE TYPE="module" -->
+  <script type="module" src="/js/header-main.js"></script>
+  <script type="module" src="/js/footer.js"></script>
+
+  <!-- LOGIN LOGIC -->
+  <script type="module">
+    import { emailSignIn, sendPasswordReset, googleAuth } from "/js/auth.js";
+
+    // Google login
+    document.getElementById("google-login").addEventListener("click", () => {
+      googleAuth("https://silkyroad.vercel.app/login.html");
+    });
+
+    // Email login
+    document.getElementById("login-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("login-email").value;
+      const pass = document.getElementById("login-password").value;
+
+      try {
+        await emailSignIn(email, pass);
+        window.location.href = "/dashboard.html";
+      } catch (err) {
+        alert("Login failed: " + err.message);
+      }
+    });
+
+    // Forgot password panel toggle
+    document.getElementById("forgot-toggle").addEventListener("click", () => {
+      document.getElementById("forgot-panel").classList.toggle("open");
+    });
+
+    // Send reset email
+    document.getElementById("send-reset").addEventListener("click", async () => {
+      const email = document.getElementById("forgot-email").value;
+
+      try {
+        await sendPasswordReset(email);
+        alert("Reset link sent. Check your inbox.");
+      } catch (err) {
+        alert("Error: " + err.message);
+      }
+    });
+  </script>
+
 </body>
 </html>

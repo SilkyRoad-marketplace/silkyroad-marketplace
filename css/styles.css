@@ -1117,3 +1117,10 @@ body{
   transform: translateY(0);
   margin-top: 16px;
 }
+/* FORCE HEADER & FOOTER RESTORE */
+.sr-header,
+.sr-footer {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}

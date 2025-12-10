@@ -9,8 +9,7 @@
 </head>
 
 <body>
-
-  <!-- HEADER WILL LOAD HERE -->
+  <!-- Header -->
   <div id="header-root"></div>
 
   <main class="page auth-page">
@@ -20,7 +19,7 @@
       <h1>Log in</h1>
       <p class="muted">Access your dashboard and library.</p>
 
-      <!-- GOOGLE LOGIN -->
+      <!-- GOOGLE LOGIN BUTTON -->
       <button id="google-login" class="btn btn-full btn-primary" style="margin-top:18px;">
         Continue with Google
       </button>
@@ -29,6 +28,7 @@
 
       <!-- EMAIL LOGIN FORM -->
       <form id="login-form" class="auth-form">
+
         <div class="field">
           <span>Email</span>
           <input id="login-email" type="email" autocomplete="email">
@@ -45,7 +45,6 @@
         </button>
       </form>
 
-      <!-- FORGOT PASSWORD -->
       <button id="forgot-toggle" class="link-forgot">Forgot your password?</button>
 
       <div id="forgot-panel" class="forgot-panel">
@@ -60,68 +59,112 @@
       </div>
 
     </div>
+
   </main>
 
-  <!-- FOOTER WILL LOAD HERE -->
+  <!-- Footer -->
   <div id="footer-root"></div>
 
-<!-- FIXED: MUST USE MODULE SCRIPTS -->
-<script type="module" src="/js/header-main.js"></script>
-<script type="module" src="/js/auth.js"></script>
-<script type="module" src="/js/footer.js"></script>
+  <script type="module">
+    import { supabase, emailSignIn, googleAuth, sendPasswordReset } from "/js/auth.js";
 
-<!-- LOGIN PAGE JS -->
-<script type="module">
-  import { emailSignIn, googleAuth, sendPasswordReset } from "/js/auth.js";
+    // =============================
+    // GOOGLE LOGIN
+    // =============================
+    document.getElementById("google-login").addEventListener("click", () => {
+      googleAuth("https://silkyroad.vercel.app/auth-callback.html");
+    });
 
-  // Google Login
-  document.getElementById("google-login").addEventListener("click", () => {
-    googleAuth("https://silkyroad.vercel.app/auth-callback.html");
-  });
+    // =============================
+    // EMAIL LOGIN
+    // =============================
+    document.getElementById("login-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
 
-  // Email Login
-  document.getElementById("login-form").addEventListener("submit", async (e) => {
-    e.preventDefault();
+      const email = document.getElementById("login-email").value.trim();
+      const password = document.getElementById("login-password").value.trim();
 
-    const email = document.getElementById("login-email").value.trim();
-    const password = document.getElementById("login-password").value.trim();
+      if (!email || !password) {
+        alert("Please enter your email and password.");
+        return;
+      }
 
-    try {
-      await emailSignIn(email, password);
-      window.location.href = "/dashboard.html";
-    } catch (err) {
-      alert("Login failed: " + err.message);
+      try {
+        const { data } = await emailSignIn(email, password);
+
+        // Supabase returns no session → wrong credentials
+        if (!data.session) {
+          const user = await fetchUserByEmail(email);
+
+          if (!user) {
+            alert("An account does not exist with that email.");
+          } else {
+            alert("The password you entered is incorrect. Please try again.");
+          }
+          return;
+        }
+
+        // SUCCESS
+        window.location.href = "/dashboard.html";
+
+      } catch (err) {
+        if (err.message.includes("Invalid login credentials")) {
+          alert("Incorrect email or password.");
+        } else {
+          alert("Login failed: " + err.message);
+        }
+      }
+    });
+
+    // =============================
+    // FIND USER BY EMAIL
+    // =============================
+    async function fetchUserByEmail(email) {
+      const { data } = await supabase
+        .from("profiles")
+        .select("id")
+        .eq("email", email)
+        .maybeSingle();
+
+      return data;
     }
-  });
 
-  // Forgot Password
-  document.getElementById("forgot-toggle").addEventListener("click", () => {
-    document.getElementById("forgot-panel").classList.toggle("open");
-  });
+    // =============================
+    // SHOW / HIDE PASSWORD
+    // =============================
+    document.querySelector(".pw-toggle").addEventListener("click", function () {
+      const field = document.getElementById("login-password");
+      field.type = field.type === "password" ? "text" : "password";
+      this.textContent = field.type === "password" ? "Show" : "Hide";
+    });
 
-  document.getElementById("send-reset").addEventListener("click", async () => {
-    const email = document.getElementById("forgot-email").value.trim();
-    try {
-      await sendPasswordReset(email);
-      alert("Reset link sent to your email.");
-    } catch (err) {
-      alert(err.message);
-    }
-  });
+    // =============================
+    // FORGOT PASSWORD PANEL
+    // =============================
+    document.getElementById("forgot-toggle").addEventListener("click", () => {
+      document.getElementById("forgot-panel").classList.toggle("open");
+    });
 
-  // Password Show/Hide
-  document.querySelector(".pw-toggle").addEventListener("click", function () {
-    const pw = document.getElementById("login-password");
-    if (pw.type === "password") {
-      pw.type = "text";
-      this.textContent = "Hide";
-    } else {
-      pw.type = "password";
-      this.textContent = "Show";
-    }
-  });
-</script>
+    document.getElementById("send-reset").addEventListener("click", async () => {
+      const email = document.getElementById("forgot-email").value.trim();
 
+      if (!email) {
+        alert("Please enter your email.");
+        return;
+      }
+
+      try {
+        await sendPasswordReset(email);
+        alert("A password reset link has been sent to your email.");
+      } catch (err) {
+        alert("Error: " + err.message);
+      }
+    });
+  </script>
+
+  <!-- Load shared header + footer -->
+  <script type="module" src="/js/header-main.js"></script>
+  <script type="module" src="/js/footer.js"></script>
 
 </body>
 </html>

@@ -7,90 +7,69 @@
   <link rel="icon" href="/favicon.png">
   <link rel="stylesheet" href="/css/marketplace.css">
 </head>
+
 <body class="mp-body">
 
-  <!-- HEADER -->
-  <header class="mp-header">
-    <div class="mp-header-inner">
+<!-- HEADER -->
+<header class="mp-header">
+  <div class="mp-header-inner">
 
-      <!-- LOGO -->
-      <a href="/index.html" class="mp-logo-link">
-        <img src="/logo.png" alt="Silky Road" class="mp-logo-img">
+    <!-- LOGO -->
+    <a href="/index.html" class="mp-logo-link">
+      <img src="/logo.png" alt="Silky Road" class="mp-logo-img">
+    </a>
+
+    <!-- SEARCH -->
+    <form class="mp-search" id="mp-search-form">
+      <span class="mp-search-icon">🔍</span>
+      <input id="mp-search-input" type="text" placeholder="Search digital products…" autocomplete="off">
+      <button type="button" id="mp-search-clear" class="mp-search-clear">✕</button>
+    </form>
+
+    <!-- HEADER ACTIONS (DESKTOP) -->
+    <div class="mp-header-actions">
+
+      <!-- Logged OUT -->
+      <div data-when="logged-out">
+        <a href="/login.html" class="mp-link">Log in</a>
+        <a href="/sign_up.html" class="mp-btn mp-btn-gold">Start selling</a>
+      </div>
+
+      <!-- Logged IN -->
+      <div data-when="logged-in" style="display:none;">
+        <a href="/library.html" class="mp-link">Library</a>
+        <a href="/dashboard.html" class="mp-btn mp-btn-gold">Dashboard</a>
+      </div>
+
+      <!-- CART BUTTON -->
+      <a href="/cart.html" class="mp-icon-btn" data-role="cart-button" aria-label="Cart">
+        🛒
+        <span class="mp-cart-count" data-role="cart-count" style="display:none;"></span>
       </a>
 
-      <!-- SEARCH BAR -->
-      <form class="mp-search" id="mp-search-form">
-        <span class="mp-search-icon">🔍</span>
-        <input
-          type="text"
-          id="mp-search-input"
-          placeholder="Search digital products…"
-          autocomplete="off"
-        >
-        <button type="button" id="mp-search-clear" class="mp-search-clear" aria-label="Clear search">
-          ✕
-        </button>
-      </form>
-
-      <!-- RIGHT ACTIONS -->
-      <div class="mp-header-actions">
-        <!-- Logged OUT -->
-        <div data-when="logged-out">
-          <a href="/login.html" class="mp-link">Log in</a>
-          <a href="/sign_up.html" class="mp-btn mp-btn-gold">Start selling</a>
-        </div>
-
-        <!-- Logged IN -->
-        <div data-when="logged-in" style="display:none;">
-          <a href="/library.html" class="mp-link">Library</a>
-          <a href="/dashboard.html" class="mp-btn mp-btn-gold">Dashboard</a>
-        </div>
-
-       <a href="/checkout.html" class="mp-icon-btn" data-role="cart-button" aria-label="Cart">
-  🛒
-  <span class="mp-cart-count" data-role="cart-count" style="display:none;"></span>
-</a>
-       </button>
-
-        <!-- CATEGORY DRAWER TOGGLE -->
-        <button
-          type="button"
-          class="mp-cat-toggle"
-          id="mp-cat-toggle"
-          aria-label="Browse categories"
-        >
-          ☰ 
-        </button>
-      </div>
+      <!-- MOBILE HAMBURGER -->
+      <button class="mp-cat-toggle" id="mp-cat-toggle" aria-label="Browse categories">☰</button>
     </div>
-    <!-- DESKTOP CATEGORY BAR -->
-<nav class="mp-cat-bar" id="mp-cat-bar">
-  <div class="mp-cat-bar-inner" id="mp-cat-bar-inner">
-
-    <!-- JS will auto-insert categories here -->
-    <!-- Example render:
-      <button class="mp-cat-pill" data-cat="3d">3D</button>
-      <button class="mp-cat-pill" data-cat="roblox">Roblox</button>
-    -->
   </div>
-</nav>
 
-  </header>
+  <!-- DESKTOP CATEGORY BAR -->
+  <nav class="mp-cat-bar" id="mp-cat-bar">
+    <div class="mp-cat-bar-inner" id="mp-cat-bar-inner"></div>
+  </nav>
+</header>
 
-  <!-- CATEGORY DRAWER + BACKDROP -->
-  <div class="mp-cat-backdrop" id="mp-cat-backdrop"></div>
 
- <!-- MOBILE CATEGORY DRAWER -->
+<!-- MOBILE CATEGORY DRAWER -->
 <div class="mp-cat-backdrop" id="mp-cat-backdrop"></div>
 
 <aside class="mp-cat-drawer" id="mp-cat-drawer">
-  
+
   <div class="mp-cat-drawer-header">
     <span>Browse categories</span>
     <button class="mp-cat-close" id="mp-cat-close">✕</button>
   </div>
 
-  <!-- Account section (mobile only) -->
+  <!-- ACCOUNT LINKS (MOBILE) -->
   <div class="mp-cat-drawer-account">
     <a href="/login.html" class="mp-link" data-when="logged-out">Log in</a>
     <a href="/sign_up.html" class="mp-btn mp-btn-gold" data-when="logged-out">Start selling</a>
@@ -99,111 +78,90 @@
     <a href="/dashboard.html" class="mp-btn mp-btn-gold" data-when="logged-in" style="display:none;">Dashboard</a>
   </div>
 
-  <!-- Accordion category list -->
-  <div class="mp-cat-drawer-body" id="mp-cat-drawer-body">
-    <!-- JS inserts categories + subcategories here -->
-  </div>
-
+  <!-- JS inserts categories here -->
+  <div class="mp-cat-drawer-body" id="mp-cat-drawer-body"></div>
 </aside>
 
-    
-      <span>Browse categories</span>
-      <button type="button" class="mp-cat-close" id="mp-cat-close" aria-label="Close">
-        ✕
-      </button>
-    </div>
 
-    
-      <!-- JS will inject all categories + subcategories here -->
-    </div>
-  </aside>
+<!-- MAIN -->
+<main class="mp-main">
+  <div class="mp-layout">
 
-  <!-- MAIN LAYOUT -->
-  <main class="mp-main">
-    <div class="mp-layout">
+    <!-- FILTERS -->
+    <aside class="mp-filters" id="mp-filters">
+      <h2 class="mp-filters-title">Filters</h2>
 
-      <!-- FILTERS (LEFT) -->
-      <aside class="mp-filters" id="mp-filters">
-        <h2 class="mp-filters-title">Filters</h2>
-
-        <section class="mp-filter-block" id="mp-filter-tags">
-          <h3>Tags</h3>
-          <button class="mp-chip mp-chip-tag" data-tag="ebook">ebook</button>
-          <button class="mp-chip mp-chip-tag" data-tag="template">template</button>
-          <button class="mp-chip mp-chip-tag" data-tag="music">music</button>
-          <button class="mp-chip mp-chip-tag" data-tag="3d">3d</button>
-          <button class="mp-chip mp-chip-tag" data-tag="free">free</button>
-        </section>
-
-        <section class="mp-filter-block" id="mp-filter-types">
-          <h3>Contains</h3>
-          <button class="mp-chip mp-chip-type" data-type="pdf">pdf</button>
-          <button class="mp-chip mp-chip-type" data-type="zip">zip</button>
-          <button class="mp-chip mp-chip-type" data-type="mp4">mp4</button>
-          <button class="mp-chip mp-chip-type" data-type="mp3">mp3</button>
-          <button class="mp-chip mp-chip-type" data-type="rar">rar</button>
-        </section>
-
-        <section class="mp-filter-block">
-          <h3>Price</h3>
-          <label class="mp-field">
-            <span>Min</span>
-            <input id="mp-price-min" type="number" min="0" step="1" inputmode="numeric" pattern="[0-9]*" placeholder="0">
-          </label>
-          <label class="mp-field">
-            <span>Max</span>
-            <input id="mp-price-max" type="number" min="0" step="1" inputmode="numeric" pattern="[0-9]*" placeholder="∞">
-          </label>
-        </section>
-
-        <section class="mp-filter-block">
-          <h3>Rating</h3>
-          <label><input type="radio" name="mp-rating-min" value="4"> ★★★★☆ and up</label>
-          <label><input type="radio" name="mp-rating-min" value="3"> ★★★☆☆ and up</label>
-          <label><input type="radio" name="mp-rating-min" value="2"> ★★☆☆☆ and up</label>
-          <label><input type="radio" name="mp-rating-min" value="1"> ★☆☆☆☆ and up</label>
-          <label><input type="radio" name="mp-rating-min" value=""> Any rating</label>
-        </section>
-
-        <button class="mp-btn mp-btn-ghost mp-filters-clear" id="mp-filters-clear">
-          Clear filters
-        </button>
-      </aside>
-
-      <!-- CONTENT (RIGHT) -->
-      <section class="mp-content">
-
-        <!-- MOBILE FILTERS TOGGLE -->
-        <button class="mp-filters-toggle" id="mp-filters-toggle">Filters</button>
-
-        <!-- FEATURED PRODUCTS ONLY (MAX 10) -->
-        <section class="mp-featured">
-          <div class="mp-section-header">
-            <h2 id="mp-featured-title">Featured products</h2>
-            <p class="mp-section-subtitle" id="mp-current-cat-label">
-              Showing: All categories
-            </p>
-          </div>
-
-          <div class="mp-products-grid" id="mp-featured-grid">
-            <!-- JS will render up to 10 featured products -->
-          </div>
-
-          <p class="mp-empty" id="mp-featured-empty" style="display:none;">
-            No products found in this category yet.
-          </p>
-        </section>
-
+      <section class="mp-filter-block">
+        <h3>Tags</h3>
+        <button class="mp-chip mp-chip-tag" data-tag="ebook">ebook</button>
+        <button class="mp-chip mp-chip-tag" data-tag="template">template</button>
+        <button class="mp-chip mp-chip-tag" data-tag="music">music</button>
+        <button class="mp-chip mp-chip-tag" data-tag="3d">3d</button>
+        <button class="mp-chip mp-chip-tag" data-tag="free">free</button>
       </section>
-    </div>
-  </main>
 
-  <!-- FILTER OVERLAY FOR MOBILE -->
-  <div class="mp-filters-overlay" id="mp-filters-overlay"></div>
+      <section class="mp-filter-block">
+        <h3>Contains</h3>
+        <button class="mp-chip mp-chip-type" data-type="pdf">pdf</button>
+        <button class="mp-chip mp-chip-type" data-type="zip">zip</button>
+        <button class="mp-chip mp-chip-type" data-type="mp4">mp4</button>
+        <button class="mp-chip mp-chip-type" data-type="mp3">mp3</button>
+        <button class="mp-chip mp-chip-type" data-type="rar">rar</button>
+      </section>
 
-  <!-- MAIN JS (uses Supabase client from auth.js) -->
-  <script type="module" src="/js/marketplace.js"></script>
+      <section class="mp-filter-block">
+        <h3>Price</h3>
+        <label class="mp-field">
+          <span>Min</span>
+          <input id="mp-price-min" type="number" placeholder="0">
+        </label>
+        <label class="mp-field">
+          <span>Max</span>
+          <input id="mp-price-max" type="number" placeholder="∞">
+        </label>
+      </section>
+
+      <section class="mp-filter-block mp-filter-rating">
+        <h3>Rating</h3>
+        <label><input type="radio" name="mp-rating-min" value="4"> ★★★★☆ and up</label>
+        <label><input type="radio" name="mp-rating-min" value="3"> ★★★☆☆ and up</label>
+        <label><input type="radio" name="mp-rating-min" value="2"> ★★☆☆☆ and up</label>
+        <label><input type="radio" name="mp-rating-min" value="1"> ★☆☆☆☆ and up</label>
+        <label><input type="radio" name="mp-rating-min" value=""> Any rating</label>
+      </section>
+
+      <button class="mp-btn mp-btn-ghost mp-filters-clear" id="mp-filters-clear">
+        Clear filters
+      </button>
+    </aside>
+
+    <!-- FEATURED PRODUCTS -->
+    <section class="mp-content">
+      <button class="mp-filters-toggle" id="mp-filters-toggle">Filters</button>
+
+      <section class="mp-featured">
+        <div class="mp-section-header">
+          <h2 id="mp-featured-title">Featured products</h2>
+          <p class="mp-section-subtitle" id="mp-current-cat-label">Showing: All categories</p>
+        </div>
+
+        <div class="mp-products-grid" id="mp-featured-grid"></div>
+
+        <p class="mp-empty" id="mp-featured-empty" style="display:none;">
+          No products found in this category yet.
+        </p>
+      </section>
+    </section>
+
+  </div>
+</main>
+
+<!-- MOBILE FILTER OVERLAY -->
+<div class="mp-filters-overlay" id="mp-filters-overlay"></div>
+
+<!-- JS -->
+<script type="module" src="/js/marketplace.js"></script>
 <script type="module" src="/js/marketplace-cats.js"></script>
 
-body>
+</body>
 </html>

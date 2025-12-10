@@ -40,14 +40,19 @@ export async function googleAuth() {
 }
 
 export async function emailSignUp(email, password) {
-  return supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
       emailRedirectTo: "https://silkyroad.vercel.app/verified.html"
     }
   });
+
+  if (error) throw error;
+
+  return data;
 }
+
 
 export async function emailSignIn(email, password) {
   return supabase.auth.signInWithPassword({ email, password });

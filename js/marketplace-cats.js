@@ -1,15 +1,7 @@
 // /js/marketplace-cats.js
 // Builds desktop category bar + mobile drawer from Supabase "products" table
 
-// Uses Supabase CDN (already loaded in marketplace.html)
-const { createClient } = supabase;
-
-// *** Use same project + anon as auth.js ***
-const SUPABASE_URL = "https://paqvgsruppgadgguynde.supabase.co";
-const SUPABASE_ANON =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBhcXZnc3J1cHBnYWRnZ3V5bmRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIzNTg3NTMsImV4cCI6MjA3NzkzNDc1M30.pwEE4WLFu2-tHkmH1fFYYwcEPmLPyavN7ykXdPGQ3AY";
-
-const client = createClient(SUPABASE_URL, SUPABASE_ANON);
+import { supabase } from "./auth.js"; // reuse same client as auth
 
 const desktopBar = document.getElementById("mp-cat-bar-inner");
 const drawerBody = document.getElementById("mp-cat-drawer-body");
@@ -46,7 +38,7 @@ if (backdrop) {
 
 async function fetchCategoryMap() {
   // assumes table "products" with columns "category" and "subcategory"
-  const { data, error } = await client
+  const { data, error } = await supabase
     .from("products")
     .select("category, subcategory");
 
@@ -69,51 +61,63 @@ async function fetchCategoryMap() {
   return map;
 }
 
-// ---------- Render desktop bar + mobile drawer ----------
+// ---------- Handle click (desktop & mobile) ----------
 
 function handleCategoryClick(category, subcategory = null) {
   // Update active state in desktop pills
   if (desktopBar) {
     desktopBar.querySelectorAll(".mp-cat-pill").forEach((btn) => {
+      const cat = btn.dataset.cat || "";
+      const sub = btn.dataset.sub || "";
       const isActive =
-        btn.dataset.cat === category && !subcategory; // top-level pill
+        (category === null && cat === "all") ||
+        (category && !subcategory && cat === category && !sub) ||
+        (category && subcategory && cat === category && sub === subcategory);
+
       btn.classList.toggle("is-active", isActive);
     });
   }
 
-  // Optional: notify other JS if it wants to filter products
+  // Notify main code to filter products
   if (typeof window.handleCategoryChange === "function") {
     window.handleCategoryChange({ category, subcategory });
   } else {
     console.log("Category selected:", category, subcategory);
   }
 
-  // On mobile, close drawer after selecting a subcategory
+  // On mobile, close drawer after selection
   if (window.innerWidth <= 900) {
     closeDrawer();
   }
 }
 
+// ---------- Render desktop bar + mobile drawer ----------
+
 function buildUI(categoryMap) {
   if (desktopBar) desktopBar.innerHTML = "";
   if (drawerBody) drawerBody.innerHTML = "";
 
-  // Add ALL pill first (desktop)
+  // ---- DESKTOP "ALL" pill ----
   if (desktopBar) {
+    const wrap = document.createElement("div");
+    wrap.className = "mp-cat-pill-wrap";
+
     const allBtn = document.createElement("button");
     allBtn.className = "mp-cat-pill is-active";
     allBtn.textContent = "All";
     allBtn.dataset.cat = "all";
     allBtn.addEventListener("click", () => handleCategoryClick(null, null));
-    desktopBar.appendChild(allBtn);
+
+    wrap.appendChild(allBtn);
+    desktopBar.appendChild(wrap);
   }
 
-  // Drawer "All products" section
+  // ---- MOBILE drawer top section title + "All" ----
   if (drawerBody) {
-    const allSection = document.createElement("div");
-    allSection.className = "mp-cat-section-title";
-    allSection.textContent = "Browse";
-    drawerBody.appendChild(allSection);
+    const title = document.createElement("div");
+    title.className = "mp-cat-section-title";
+    title.textContent = "Browse";
+    drawerBody.appendChild(title);
 
     const allBtnMobile = document.createElement("button");
     allBtnMobile.className = "mp-cat-parent";
@@ -122,19 +126,58 @@ function buildUI(categoryMap) {
     drawerBody.appendChild(allBtnMobile);
   }
 
-  // Each category
-  for (const [category, subSet] of categoryMap.entries()) {
-    // ---- Desktop pill ----
+  // Convert map to array so we can loop in a stable order
+  const entries = Array.from(categoryMap.entries()).sort((a, b) =>
+    a[0].localeCompare(b[0])
+  );
+
+  for (const [category, subSet] of entries) {
+    // ---- DESKTOP pill + dropdown ----
     if (desktopBar) {
+      const wrap = document.createElement("div");
+      wrap.className = "mp-cat-pill-wrap";
+
       const pill = document.createElement("button");
       pill.className = "mp-cat-pill";
       pill.dataset.cat = category;
       pill.textContent = category;
       pill.addEventListener("click", () => handleCategoryClick(category, null));
-      desktopBar.appendChild(pill);
+      wrap.appendChild(pill);
+
+      if (subSet.size) {
+        const dropdown = document.createElement("div");
+        dropdown.className = "mp-cat-dropdown";
+
+        // First item: All in this category
+        const allSub = document.createElement("button");
+        allSub.className = "mp-cat-drop-item";
+        allSub.textContent = `All in ${category}`;
+        allSub.dataset.cat = category;
+        allSub.addEventListener("click", () =>
+          handleCategoryClick(category, null)
+        );
+        dropdown.appendChild(allSub);
+
+        // Then each subcategory
+        subSet.forEach((sub) => {
+          const subBtn = document.createElement("button");
+          subBtn.className = "mp-cat-drop-item";
+          subBtn.textContent = sub;
+          subBtn.dataset.cat = category;
+          subBtn.dataset.sub = sub;
+          subBtn.addEventListener("click", () =>
+            handleCategoryClick(category, sub)
+          );
+          dropdown.appendChild(subBtn);
+        });
+
+        wrap.appendChild(dropdown);
+      }
+
+      desktopBar.appendChild(wrap);
     }
 
-    // ---- Mobile accordion ----
+    // ---- MOBILE accordion ----
     if (!drawerBody) continue;
 
     const parentBtn = document.createElement("button");
@@ -144,23 +187,23 @@ function buildUI(categoryMap) {
     const sublist = document.createElement("div");
     sublist.className = "mp-cat-sublist";
 
-    // subcategories
     if (subSet.size) {
       subSet.forEach((sub) => {
-        const subBtn = document.createElement("button");
-        subBtn.className = "mp-cat-sub";
-        subBtn.textContent = sub;
-        subBtn.addEventListener("click", () =>
+        const sbtn = document.createElement("button");
+        sbtn.className = "mp-cat-sub";
+        sbtn.textContent = sub;
+        sbtn.addEventListener("click", () =>
           handleCategoryClick(category, sub)
         );
-        sublist.appendChild(subBtn);
+        sublist.appendChild(sbtn);
       });
     }
 
     // expand / collapse
     parentBtn.addEventListener("click", () => {
       const open = sublist.classList.toggle("is-open");
-      parentBtn.querySelector("span:last-child").textContent = open ? "▾" : "▸";
+      const arrow = parentBtn.querySelector("span:last-child");
+      if (arrow) arrow.textContent = open ? "▾" : "▸";
     });
 
     drawerBody.appendChild(parentBtn);
@@ -168,7 +211,7 @@ function buildUI(categoryMap) {
   }
 }
 
-// ---------- Init on load ----------
+// ---------- Init ----------
 
 (async function initCategories() {
   try {

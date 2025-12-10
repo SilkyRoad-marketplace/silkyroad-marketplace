@@ -7,155 +7,282 @@
   <link rel="icon" href="/favicon.png">
   <link rel="stylesheet" href="/css/marketplace.css">
 </head>
-
 <body class="mp-body">
 
-<!-- HEADER -->
-<header class="mp-header">
-  <div class="mp-header-inner">
+  <!-- HEADER -->
+  <header class="mp-header">
+    <div class="mp-header-inner">
 
-    <!-- LOGO -->
-    <a href="/index.html" class="mp-logo-link">
-      <img src="/logo.png" alt="Silky Road" class="mp-logo-img">
-    </a>
-
-    <!-- SEARCH -->
-    <form class="mp-search" id="mp-search-form">
-      <span class="mp-search-icon">🔍</span>
-      <input id="mp-search-input" type="text" placeholder="Search digital products…" autocomplete="off">
-      <button type="button" id="mp-search-clear" class="mp-search-clear">✕</button>
-    </form>
-
-    <!-- HEADER ACTIONS (DESKTOP) -->
-    <div class="mp-header-actions">
-
-      <!-- Logged OUT -->
-      <div data-when="logged-out">
-        <a href="/login.html" class="mp-link">Log in</a>
-        <a href="/sign_up.html" class="mp-btn mp-btn-gold">Start selling</a>
-      </div>
-
-      <!-- Logged IN -->
-      <div data-when="logged-in" style="display:none;">
-        <a href="/library.html" class="mp-link">Library</a>
-        <a href="/dashboard.html" class="mp-btn mp-btn-gold">Dashboard</a>
-      </div>
-
-      <!-- CART BUTTON -->
-      <a href="/checkout.html" class="mp-icon-btn" data-role="cart-button" aria-label="Cart">
-        🛒
-        <span class="mp-cart-count" data-role="cart-count" style="display:none;"></span>
+      <!-- LOGO -->
+      <a href="/index.html" class="mp-logo-link">
+        <img src="/logo.png" alt="Silky Road" class="mp-logo-img">
       </a>
 
-      <!-- MOBILE HAMBURGER -->
-      <button class="mp-cat-toggle" id="mp-cat-toggle" aria-label="Browse categories">☰</button>
-    </div>
-  </div>
+      <!-- SEARCH BAR -->
+      <form class="mp-search" id="mp-search-form">
+        <span class="mp-search-icon">🔍</span>
+        <input
+          type="text"
+          id="mp-search-input"
+          placeholder="Search digital products…"
+          autocomplete="off"
+        >
+        <button
+          type="button"
+          id="mp-search-clear"
+          class="mp-search-clear"
+          aria-label="Clear search"
+        >
+          ✕
+        </button>
+      </form>
 
-  <!-- DESKTOP CATEGORY BAR -->
-  <nav class="mp-cat-bar" id="mp-cat-bar">
-    <div class="mp-cat-bar-inner" id="mp-cat-bar-inner"></div>
-  </nav>
-</header>
+      <!-- RIGHT ACTIONS -->
+      <div class="mp-header-actions">
 
-
-<!-- MOBILE CATEGORY DRAWER -->
-
-  </div>
-
-  <!-- ACCOUNT LINKS (MOBILE) -->
-  <div class="mp-cat-drawer-account">
-    <a href="/login.html" class="mp-link" data-when="logged-out">Log in</a>
-    <a href="/sign_up.html" class="mp-btn mp-btn-gold" data-when="logged-out">Start selling</a>
-
-    <a href="/library.html" class="mp-link" data-when="logged-in" style="display:none;">Library</a>
-    <a href="/dashboard.html" class="mp-btn mp-btn-gold" data-when="logged-in" style="display:none;">Dashboard</a>
-  </div>
-
-  <!-- JS inserts categories here -->
-  <div class="mp-cat-drawer-body" id="mp-cat-drawer-body"></div>
-</aside>
-
-
-<!-- MAIN -->
-<main class="mp-main">
-  <div class="mp-layout">
-
-    <!-- FILTERS -->
-    <aside class="mp-filters" id="mp-filters">
-      <h2 class="mp-filters-title">Filters</h2>
-
-      <section class="mp-filter-block">
-        <h3>Tags</h3>
-        <button class="mp-chip mp-chip-tag" data-tag="ebook">ebook</button>
-        <button class="mp-chip mp-chip-tag" data-tag="template">template</button>
-        <button class="mp-chip mp-chip-tag" data-tag="music">music</button>
-        <button class="mp-chip mp-chip-tag" data-tag="3d">3d</button>
-        <button class="mp-chip mp-chip-tag" data-tag="free">free</button>
-      </section>
-
-      <section class="mp-filter-block">
-        <h3>Contains</h3>
-        <button class="mp-chip mp-chip-type" data-type="pdf">pdf</button>
-        <button class="mp-chip mp-chip-type" data-type="zip">zip</button>
-        <button class="mp-chip mp-chip-type" data-type="mp4">mp4</button>
-        <button class="mp-chip mp-chip-type" data-type="mp3">mp3</button>
-        <button class="mp-chip mp-chip-type" data-type="rar">rar</button>
-      </section>
-
-      <section class="mp-filter-block">
-        <h3>Price</h3>
-        <label class="mp-field">
-          <span>Min</span>
-          <input id="mp-price-min" type="number" placeholder="0">
-        </label>
-        <label class="mp-field">
-          <span>Max</span>
-          <input id="mp-price-max" type="number" placeholder="∞">
-        </label>
-      </section>
-
-      <section class="mp-filter-block mp-filter-rating">
-        <h3>Rating</h3>
-        <label><input type="radio" name="mp-rating-min" value="4"> ★★★★☆ and up</label>
-        <label><input type="radio" name="mp-rating-min" value="3"> ★★★☆☆ and up</label>
-        <label><input type="radio" name="mp-rating-min" value="2"> ★★☆☆☆ and up</label>
-        <label><input type="radio" name="mp-rating-min" value="1"> ★☆☆☆☆ and up</label>
-        <label><input type="radio" name="mp-rating-min" value=""> Any rating</label>
-      </section>
-
-      <button class="mp-btn mp-btn-ghost mp-filters-clear" id="mp-filters-clear">
-        Clear filters
-      </button>
-    </aside>
-
-    <!-- FEATURED PRODUCTS -->
-    <section class="mp-content">
-      <button class="mp-filters-toggle" id="mp-filters-toggle">Filters</button>
-
-      <section class="mp-featured">
-        <div class="mp-section-header">
-          <h2 id="mp-featured-title">Featured products</h2>
-          <p class="mp-section-subtitle" id="mp-current-cat-label">Showing: All categories</p>
+        <!-- LOGGED OUT -->
+        <div data-when="logged-out">
+          <a href="/login.html" class="mp-link">Log in</a>
+          <a href="/sign_up.html" class="mp-btn mp-btn-gold">Start selling</a>
         </div>
 
-        <div class="mp-products-grid" id="mp-featured-grid"></div>
+        <!-- LOGGED IN -->
+        <div data-when="logged-in" style="display:none;">
+          <a href="/library.html" class="mp-link">Library</a>
+          <a href="/dashboard.html" class="mp-btn mp-btn-gold">Dashboard</a>
+        </div>
 
-        <p class="mp-empty" id="mp-featured-empty" style="display:none;">
-          No products found in this category yet.
-        </p>
+        <!-- CART -->
+        <a href="/cart.html"
+           class="mp-icon-btn"
+           data-role="cart-button"
+           aria-label="Cart">
+          🛒
+          <span class="mp-cart-count"
+                data-role="cart-count"
+                style="display:none;"></span>
+        </a>
+
+        <!-- CATEGORY DRAWER TOGGLE (MOBILE ONLY) -->
+        <button
+          type="button"
+          class="mp-cat-toggle"
+          id="mp-cat-toggle"
+          aria-label="Browse categories"
+        >
+          ☰
+        </button>
+      </div>
+    </div>
+
+    <!-- DESKTOP CATEGORY BAR -->
+    <nav class="mp-cat-bar" id="mp-cat-bar">
+      <div class="mp-cat-bar-inner" id="mp-cat-bar-inner">
+        <!-- JS will inject pills here -->
+      </div>
+    </nav>
+  </header>
+
+  <!-- CATEGORY DRAWER + BACKDROP (MOBILE) -->
+  <div class="mp-cat-backdrop" id="mp-cat-backdrop"></div>
+
+  <aside class="mp-cat-drawer" id="mp-cat-drawer">
+    <div class="mp-cat-drawer-header">
+      <span>Browse categories</span>
+      <button
+        class="mp-cat-close"
+        id="mp-cat-close"
+        type="button"
+        aria-label="Close categories"
+      >
+        ✕
+      </button>
+    </div>
+
+    <!-- ACCOUNT SECTION IN DRAWER (MOBILE) -->
+    <div class="mp-cat-drawer-account">
+      <a href="/login.html" class="mp-link" data-when="logged-out">Log in</a>
+      <a href="/sign_up.html" class="mp-btn mp-btn-gold" data-when="logged-out">
+        Start selling
+      </a>
+
+      <a href="/library.html" class="mp-link" data-when="logged-in" style="display:none;">
+        Library
+      </a>
+      <a href="/dashboard.html" class="mp-btn mp-btn-gold" data-when="logged-in" style="display:none;">
+        Dashboard
+      </a>
+    </div>
+
+    <!-- ACCORDION CATEGORY LIST -->
+    <div class="mp-cat-drawer-body" id="mp-cat-drawer-body">
+      <!-- JS will inject categories + subcategories here -->
+    </div>
+  </aside>
+
+  <!-- MAIN LAYOUT -->
+  <main class="mp-main">
+    <div class="mp-layout">
+
+      <!-- FILTERS (LEFT) -->
+      <aside class="mp-filters" id="mp-filters">
+        <h2 class="mp-filters-title">Filters</h2>
+
+        <section class="mp-filter-block" id="mp-filter-tags">
+          <h3>Tags</h3>
+          <button class="mp-chip mp-chip-tag" data-tag="ebook">ebook</button>
+          <button class="mp-chip mp-chip-tag" data-tag="template">template</button>
+          <button class="mp-chip mp-chip-tag" data-tag="music">music</button>
+          <button class="mp-chip mp-chip-tag" data-tag="3d">3d</button>
+          <button class="mp-chip mp-chip-tag" data-tag="free">free</button>
+        </section>
+
+        <section class="mp-filter-block" id="mp-filter-types">
+          <h3>Contains</h3>
+          <button class="mp-chip mp-chip-type" data-type="pdf">pdf</button>
+          <button class="mp-chip mp-chip-type" data-type="zip">zip</button>
+          <button class="mp-chip mp-chip-type" data-type="mp4">mp4</button>
+          <button class="mp-chip mp-chip-type" data-type="mp3">mp3</button>
+          <button class="mp-chip mp-chip-type" data-type="rar">rar</button>
+        </section>
+
+        <section class="mp-filter-block">
+          <h3>Price</h3>
+          <label class="mp-field">
+            <span>Min</span>
+            <input id="mp-price-min"
+                   type="number"
+                   min="0"
+                   step="1"
+                   inputmode="numeric"
+                   pattern="[0-9]*"
+                   placeholder="0">
+          </label>
+          <label class="mp-field">
+            <span>Max</span>
+            <input id="mp-price-max"
+                   type="number"
+                   min="0"
+                   step="1"
+                   inputmode="numeric"
+                   pattern="[0-9]*"
+                   placeholder="∞">
+          </label>
+        </section>
+
+        <section class="mp-filter-block mp-filter-block-rating">
+          <h3>Rating</h3>
+          <label>
+            <input type="radio" name="mp-rating-min" value="4">
+            ★★★★☆ and up
+          </label>
+          <label>
+            <input type="radio" name="mp-rating-min" value="3">
+            ★★★☆☆ and up
+          </label>
+          <label>
+            <input type="radio" name="mp-rating-min" value="2">
+            ★★☆☆☆ and up
+          </label>
+          <label>
+            <input type="radio" name="mp-rating-min" value="1">
+            ★☆☆☆☆ and up
+          </label>
+          <label>
+            <input type="radio" name="mp-rating-min" value="">
+            Any rating
+          </label>
+        </section>
+
+        <button class="mp-btn mp-btn-ghost mp-filters-clear" id="mp-filters-clear">
+          Clear filters
+        </button>
+      </aside>
+
+      <!-- CONTENT (RIGHT) -->
+      <section class="mp-content">
+
+        <!-- MOBILE FILTERS TOGGLE -->
+        <button class="mp-filters-toggle" id="mp-filters-toggle">Filters</button>
+
+        <!-- FEATURED PRODUCTS (MAX 10) -->
+        <section class="mp-featured">
+          <div class="mp-section-header">
+            <h2 id="mp-featured-title">Featured products</h2>
+            <p class="mp-section-subtitle" id="mp-current-cat-label">
+              Showing: All categories
+            </p>
+          </div>
+
+          <div class="mp-products-grid" id="mp-featured-grid">
+            <!-- JS will render up to 10 featured products -->
+          </div>
+
+          <p class="mp-empty" id="mp-featured-empty" style="display:none;">
+            No products found in this category yet.
+          </p>
+        </section>
+
       </section>
-    </section>
+    </div>
+  </main>
 
-  </div>
-</main>
+  <!-- FILTER OVERLAY FOR MOBILE -->
+  <div class="mp-filters-overlay" id="mp-filters-overlay"></div>
 
-<!-- MOBILE FILTER OVERLAY -->
-<div class="mp-filters-overlay" id="mp-filters-overlay"></div>
+  <!-- Supabase CDN (needed for marketplace-cats.js) -->
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 
-<!-- JS -->
-<script type="module" src="/js/marketplace.js"></script>
-<script type="module" src="/js/marketplace-cats.js"></script>
+  <!-- MAIN JS (products, filters, etc.) -->
+  <script type="module" src="/js/marketplace.js"></script>
+
+  <!-- CATEGORY BAR + DRAWER JS -->
+  <script type="module" src="/js/marketplace-cats.js"></script>
+
+  <!-- SMALL AUTH + CART UI HELPER -->
+  <script type="module">
+    import { supabase } from "/js/auth.js";
+
+    // Show/hide logged in vs logged out blocks
+    const loggedOutBlocks = document.querySelectorAll('[data-when="logged-out"]');
+    const loggedInBlocks  = document.querySelectorAll('[data-when="logged-in"]');
+
+    function showLoggedOut() {
+      loggedOutBlocks.forEach(el => el.style.display = "");
+      loggedInBlocks.forEach(el => el.style.display = "none");
+    }
+
+    function showLoggedIn() {
+      loggedOutBlocks.forEach(el => el.style.display = "none");
+      loggedInBlocks.forEach(el => el.style.display = "");
+    }
+
+    try {
+      const { data, error } = await supabase.auth.getSession();
+      if (error) throw error;
+      if (data && data.session) showLoggedIn();
+      else showLoggedOut();
+    } catch (err) {
+      console.error("Marketplace auth check failed:", err);
+      showLoggedOut();
+    }
+
+    // Simple cart badge using localStorage "silkyroad_cart"
+    const cartCountSpan = document.querySelector('[data-role="cart-count"]');
+    if (cartCountSpan) {
+      try {
+        const raw = localStorage.getItem("silkyroad_cart");
+        const items = raw ? JSON.parse(raw) : [];
+        const count = Array.isArray(items) ? items.length : 0;
+        if (count > 0) {
+          cartCountSpan.textContent = count;
+          cartCountSpan.style.display = "inline-block";
+        }
+      } catch (e) {
+        console.warn("Could not read cart from localStorage", e);
+      }
+    }
+  </script>
 
 </body>
 </html>

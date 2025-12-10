@@ -1,135 +1,124 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="icon" href="/favicon.png">
+  <link rel="stylesheet" href="/css/styles.css">
   <title>Dashboard – Silky Road</title>
-  <link rel="icon" href="/favicon.png" />
-  <link rel="stylesheet" href="/css/styles.css" />
+
+  <style>
+    /* Hide dashboard content until auth is confirmed */
+    #dashboard-content {
+      display: none;
+    }
+  </style>
 </head>
 
 <body>
 
-<!-- ============================================== -->
-<!-- 🔒 AUTH PROTECTION — RUNS BEFORE PAGE LOAD     -->
-<!-- ============================================== -->
-<script type="module">
-  import { supabase } from "/js/auth.js";
+  <!-- HEADER -->
+  <div id="header-root"></div>
 
-  const { data } = await supabase.auth.getSession();
+  <!-- MAIN DASHBOARD CONTENT (initially hidden) -->
+  <main id="dashboard-content" class="dashboard-page">
+    <div class="sr-app-shell">
+      <!-- Sidebar -->
+      <aside class="sr-side-nav">
+        <div class="sr-side-nav-inner">
+          <div class="sr-side-logo">
+            <a href="/index.html">
+              <img src="/logo.png" class="sr-side-logo-img">
+            </a>
+          </div>
 
-  if (!data.session) {
-    // NOT LOGGED IN — redirect to login
-    window.location.replace("/login.html");
-  }
-</script>
+          <nav class="sr-side-nav-menu">
+            <a class="sr-side-link is-active" href="/dashboard.html">Dashboard</a>
+            <a class="sr-side-link" href="/upload.html">Upload Product</a>
+            <a class="sr-side-link" href="/library.html">Your Library</a>
+            <button class="sr-side-link sr-side-link-ghost" id="logout-dashboard">Log out</button>
+          </nav>
 
-<!-- HEADER -->
-<div id="header-root"></div>
-
-<!-- ============================================== -->
-<!-- DASHBOARD LAYOUT                               -->
-<!-- ============================================== -->
-
-<div class="sr-app-shell">
-
-  <!-- SIDEBAR -->
-  <aside class="sr-side-nav" id="sideNav">
-    <div class="sr-side-nav-inner">
-
-      <div class="sr-side-logo">
-        <a href="/index.html">
-          <img src="/logo.png" class="sr-side-logo-img" alt="Silky Road" />
-        </a>
-      </div>
-
-      <nav class="sr-side-nav-menu">
-
-        <a class="sr-side-link is-active" href="/dashboard.html">
-          <span class="sr-side-icon">🏠</span> Dashboard
-        </a>
-
-        <a class="sr-side-link" href="/upload.html">
-          <span class="sr-side-icon">⬆️</span> Upload Product
-        </a>
-
-        <a class="sr-side-link" href="/library.html">
-          <span class="sr-side-icon">📚</span> My Library
-        </a>
-
-        <a class="sr-side-link" href="/marketplace.html">
-          <span class="sr-side-icon">🛒</span> Marketplace
-        </a>
-
-      </nav>
-
-      <div class="sr-side-nav-footer">
-        <button class="sr-side-link" id="logout-dashboard">
-          <span class="sr-side-icon">🚪</span> Log out
-        </button>
-      </div>
-
-    </div>
-  </aside>
-
-  <!-- BACKDROP FOR MOBILE SIDEBAR -->
-  <div class="sr-side-backdrop"></div>
-
-  <!-- MAIN CONTENT -->
-  <main class="sr-app-main">
-    <div class="sr-app-main-inner">
-      
-      <h1 class="sr-app-page-title">Dashboard</h1>
-      <p class="sr-app-intro">Manage your products, sales, and account.</p>
-
-      <div class="sr-app-cards">
-
-        <div class="sr-app-card">
-          <h2>Your Products</h2>
-          <p>Upload and manage all your digital items.</p>
-          <a href="/upload.html" class="sr-app-btn sr-app-btn-gold">Add Product</a>
         </div>
+      </aside>
 
-        <div class="sr-app-card">
-          <h2>Sales & Orders</h2>
-          <p>View purchase history and order details.</p>
-          <a href="/dashboard.html" class="sr-app-btn sr-app-btn-outline">View Orders</a>
+      <!-- Main content -->
+      <div class="sr-app-main">
+        <div class="sr-app-main-inner">
+          <h1 class="sr-app-page-title">Welcome back!</h1>
+          <p class="sr-app-intro">This is your seller dashboard overview.</p>
+
+          <div class="sr-app-cards">
+            <div class="sr-app-card">
+              <h2>Your Products</h2>
+              <p>Manage and edit your digital listings.</p>
+              <a href="/upload.html" class="sr-app-btn sr-app-btn-gold">Upload</a>
+            </div>
+
+            <div class="sr-app-card">
+              <h2>Your Sales</h2>
+              <p>View your purchase history and stats.</p>
+              <a href="/library.html" class="sr-app-btn sr-app-btn-outline">View</a>
+            </div>
+          </div>
+
         </div>
-
-        <div class="sr-app-card">
-          <h2>Library</h2>
-          <p>Your downloaded + purchased items.</p>
-          <a href="/library.html" class="sr-app-btn sr-app-btn-outline">Go to Library</a>
-        </div>
-
       </div>
 
     </div>
   </main>
 
-</div>
+  <!-- FOOTER -->
+  <div id="footer-root"></div>
 
-<!-- FOOTER -->
-<div id="footer-root"></div>
+  <!-- AUTH PROTECTION SCRIPT -->
+  <script type="module">
+    import { supabase } from "/js/auth.js";
 
-<!-- MODULE SCRIPTS -->
-<script type="module" src="/js/header-main.js"></script>
-<script type="module" src="/js/footer.js"></script>
+    async function protectDashboard() {
+      // 1️⃣ Get current session
+      const { data, error } = await supabase.auth.getSession();
 
-<!-- LOGOUT HANDLER -->
-<script type="module">
-  import { supabase } from "/js/auth.js";
+      if (error) {
+        console.error("Dashboard auth error:", error);
+        window.location.href = "/login.html";
+        return;
+      }
 
-  document.getElementById("logout-dashboard").addEventListener("click", async () => {
-    await supabase.auth.signOut();
+      const session = data.session;
 
-    // clear old cached auth UI
-    localStorage.clear();
-    sessionStorage.clear();
+      // 2️⃣ No session → user is logged out
+      if (!session) {
+        window.location.href = "/login.html";
+        return;
+      }
 
-    window.location.replace("/login.html");
-  });
-</script>
+      const user = session.user;
+
+      // 3️⃣ User exists but NOT VERIFIED
+      if (!user.email_confirmed_at) {
+        alert("Your email has not been verified yet.");
+        await supabase.auth.signOut();
+        window.location.href = "/login.html";
+        return;
+      }
+
+      // 4️⃣ Verified user → unlock dashboard
+      document.getElementById("dashboard-content").style.display = "block";
+    }
+
+    protectDashboard();
+
+    // LOGOUT (INSIDE DASHBOARD)
+    document.getElementById("logout-dashboard").addEventListener("click", async () => {
+      await supabase.auth.signOut();
+      window.location.href = "/";
+    });
+  </script>
+
+  <!-- HEADER + FOOTER -->
+  <script type="module" src="/js/header-main.js"></script>
+  <script type="module" src="/js/footer.js"></script>
 
 </body>
 </html>

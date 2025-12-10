@@ -1,106 +1,135 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Dashboard – Silky Road</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <link rel="icon" href="/favicon.png">
-  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="icon" href="/favicon.png" />
+  <link rel="stylesheet" href="/css/styles.css" />
 </head>
-<body class="dashboard-page">
 
-  <!-- MOBILE HEADER (shown only on small screens) -->
-  <header class="sr-app-header-mobile">
-    <a href="/index.html" class="sr-app-logo-link">
-      <img src="/logo.png" alt="Silky Road" class="sr-app-logo-img">
-    </a>
-    <div class="sr-app-header-title">Dashboard</div>
-    <button class="sr-app-header-menu" type="button" id="app-menu-toggle">
-      ☰
-    </button>
-  </header>
+<body>
 
-  <!-- SIDEBAR + MAIN LAYOUT -->
-  <div class="sr-app-shell">
+<!-- ============================================== -->
+<!-- 🔒 AUTH PROTECTION — RUNS BEFORE PAGE LOAD     -->
+<!-- ============================================== -->
+<script type="module">
+  import { supabase } from "/js/auth.js";
 
-    <!-- DESKTOP SIDEBAR + MOBILE DRAWER -->
-    <aside class="sr-side-nav" id="sr-side-nav">
-      <div class="sr-side-nav-inner">
-        <a href="/index.html" class="sr-side-logo">
-          <img src="/logo.png" alt="Silky Road" class="sr-side-logo-img">
+  const { data } = await supabase.auth.getSession();
+
+  if (!data.session) {
+    // NOT LOGGED IN — redirect to login
+    window.location.replace("/login.html");
+  }
+</script>
+
+<!-- HEADER -->
+<div id="header-root"></div>
+
+<!-- ============================================== -->
+<!-- DASHBOARD LAYOUT                               -->
+<!-- ============================================== -->
+
+<div class="sr-app-shell">
+
+  <!-- SIDEBAR -->
+  <aside class="sr-side-nav" id="sideNav">
+    <div class="sr-side-nav-inner">
+
+      <div class="sr-side-logo">
+        <a href="/index.html">
+          <img src="/logo.png" class="sr-side-logo-img" alt="Silky Road" />
+        </a>
+      </div>
+
+      <nav class="sr-side-nav-menu">
+
+        <a class="sr-side-link is-active" href="/dashboard.html">
+          <span class="sr-side-icon">🏠</span> Dashboard
         </a>
 
-        <nav class="sr-side-nav-menu" aria-label="Dashboard navigation">
-          <a href="/dashboard.html" class="sr-side-link is-active">
-            <span class="sr-side-icon">🏠</span>
-            <span>Home</span>
-          </a>
-          <a href="/marketplace.html" class="sr-side-link">
-            <span class="sr-side-icon">🛒</span>
-            <span>Marketplace</span>
-          </a>
-          <a href="/library.html" class="sr-side-link">
-            <span class="sr-side-icon">📚</span>
-            <span>Library</span>
-          </a>
-          <a href="/checkout.html" class="sr-side-link">
-            <span class="sr-side-icon">💳</span>
-            <span>Checkout</span>
-          </a>
-          <a href="/help.html" class="sr-side-link">
-            <span class="sr-side-icon">❓</span>
-            <span>Help</span>
-          </a>
-        </nav>
+        <a class="sr-side-link" href="/upload.html">
+          <span class="sr-side-icon">⬆️</span> Upload Product
+        </a>
 
-        <div class="sr-side-nav-footer">
-          <button type="button" class="sr-side-link sr-side-link-ghost" id="side-logout">
-            <span class="sr-side-icon">⏏</span>
-            <span>Log out</span>
-          </button>
+        <a class="sr-side-link" href="/library.html">
+          <span class="sr-side-icon">📚</span> My Library
+        </a>
+
+        <a class="sr-side-link" href="/marketplace.html">
+          <span class="sr-side-icon">🛒</span> Marketplace
+        </a>
+
+      </nav>
+
+      <div class="sr-side-nav-footer">
+        <button class="sr-side-link" id="logout-dashboard">
+          <span class="sr-side-icon">🚪</span> Log out
+        </button>
+      </div>
+
+    </div>
+  </aside>
+
+  <!-- BACKDROP FOR MOBILE SIDEBAR -->
+  <div class="sr-side-backdrop"></div>
+
+  <!-- MAIN CONTENT -->
+  <main class="sr-app-main">
+    <div class="sr-app-main-inner">
+      
+      <h1 class="sr-app-page-title">Dashboard</h1>
+      <p class="sr-app-intro">Manage your products, sales, and account.</p>
+
+      <div class="sr-app-cards">
+
+        <div class="sr-app-card">
+          <h2>Your Products</h2>
+          <p>Upload and manage all your digital items.</p>
+          <a href="/upload.html" class="sr-app-btn sr-app-btn-gold">Add Product</a>
         </div>
+
+        <div class="sr-app-card">
+          <h2>Sales & Orders</h2>
+          <p>View purchase history and order details.</p>
+          <a href="/dashboard.html" class="sr-app-btn sr-app-btn-outline">View Orders</a>
+        </div>
+
+        <div class="sr-app-card">
+          <h2>Library</h2>
+          <p>Your downloaded + purchased items.</p>
+          <a href="/library.html" class="sr-app-btn sr-app-btn-outline">Go to Library</a>
+        </div>
+
       </div>
-    </aside>
 
-    <!-- BACKDROP FOR MOBILE DRAWER -->
-    <div class="sr-side-backdrop" id="sr-side-backdrop"></div>
+    </div>
+  </main>
 
-    <!-- MAIN CONTENT -->
-    <main class="sr-app-main">
-      <div class="sr-app-main-inner">
-        <h1 class="sr-app-page-title">Dashboard</h1>
+</div>
 
-        <p class="sr-app-intro">
-          Welcome back! Here you’ll manage your products, track sales, and control your creator account.
-        </p>
+<!-- FOOTER -->
+<div id="footer-root"></div>
 
-        <section class="sr-app-cards">
-          <article class="sr-app-card">
-            <h2>New product</h2>
-            <p>Create and publish a new digital product.</p>
-            <a href="/new_product.html" class="sr-app-btn sr-app-btn-gold">Create product</a>
-          </article>
+<!-- MODULE SCRIPTS -->
+<script type="module" src="/js/header-main.js"></script>
+<script type="module" src="/js/footer.js"></script>
 
-          <article class="sr-app-card">
-            <h2>Your products</h2>
-            <p>View and edit the products you already uploaded.</p>
-            <a href="/products.html" class="sr-app-btn sr-app-btn-outline">View products</a>
-          </article>
-        </section>
-      </div>
-    </main>
-  </div>
+<!-- LOGOUT HANDLER -->
+<script type="module">
+  import { supabase } from "/js/auth.js";
 
-  <!-- JS -->
-  <script type="module">
-    import { supabase } from "/js/auth.js";
-    import { initSidebar } from "/js/sidebar.js";
+  document.getElementById("logout-dashboard").addEventListener("click", async () => {
+    await supabase.auth.signOut();
 
-    initSidebar({
-      current: "dashboard",
-      supabase,
-      logoutButtonId: "side-logout"
-    });
-  </script>
+    // clear old cached auth UI
+    localStorage.clear();
+    sessionStorage.clear();
+
+    window.location.replace("/login.html");
+  });
+</script>
+
 </body>
 </html>

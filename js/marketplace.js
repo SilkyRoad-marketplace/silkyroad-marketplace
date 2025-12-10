@@ -1,204 +1,22 @@
 // /js/marketplace.js
-// ES module. Uses the SAME Supabase client as the rest of your site.
-import { supabase } from "/js/auth.js";
+import { supabase } from "./auth.js";
 
-/**
- * CATEGORY TREE
- * You can edit / add subcategories here anytime.
- */
-const CATEGORY_TREE = {
-  "3D": [
-    "Avatars & Characters",
-    "Clothing & Accessories",
-    "Vehicles",
-    "Weapons",
-    "UI Packs / Game Assets",
-    "Scripts",
-    "Animation",
-    "Terrain / Maps",
-    "Effects",
-    "Tools / Plugins",
-    "Icon Packs"
-  ],
-  "Roblox": [
-    "Avatars & Characters",
-    "Vehicles",
-    "Weapons",
-    "Maps",
-    "UI Packs",
-    "Plugins"
-  ],
-  "Crafts": [
-    "Crochet Patterns",
-    "Knitting Patterns",
-    "Sewing Patterns",
-    "Embroidery",
-    "Quilting",
-    "DIY Guides",
-    "Printables"
-  ],
-  "Design": [
-    "Graphic Templates",
-    "Canva Templates",
-    "Social Media Packs",
-    "Print Templates",
-    "Logo Templates",
-    "UI/UX Kits",
-    "Icon Sets",
-    "Mockups",
-    "Typography",
-    "Resume Templates"
-  ],
-  "Drawing & Painting": [
-    "Procreate Brushes",
-    "Photoshop Brushes",
-    "Clip Studio Brushes",
-    "Digital Illustration",
-    "Reference Packs",
-    "Print-ready Artwork",
-    "Tutorials"
-  ],
-  "Music & Sound Design": [
-    "Sample Packs",
-    "Loops",
-    "Beats",
-    "Vocals",
-    "Sound Effects",
-    "Mixing Templates",
-    "Presets (Serum, Vital, etc)",
-    "MIDI Packs"
-  ],
-  "Films": [
-    "LUTs",
-    "Premiere Pro Templates",
-    "Final Cut Templates",
-    "Motion Graphics",
-    "Overlays",
-    "Stock Footage",
-    "Tutorials"
-  ],
-  // "More" group you asked for:
-  "Audio": [
-    "Meditation Music",
-    "Healing Frequencies",
-    "Subliminal Tracks",
-    "Ambient / Relaxation",
-    "Audiobooks"
-  ],
-  "Recorded Music": [
-    "Albums",
-    "Singles",
-    "Instrumentals",
-    "Remixes"
-  ],
-  "Comics & Graphic Novels": [
-    "Manga",
-    "Webcomics",
-    "Graphic Novels",
-    "Story Collections"
-  ],
-  "Fiction Books": [
-    "Fantasy",
-    "Romance",
-    "Horror",
-    "Thriller",
-    "Sci-Fi",
-    "Mystery",
-    "Adventure"
-  ],
-  "Education": [
-    "Courses",
-    "Ebooks",
-    "Worksheets",
-    "Study Guides",
-    "Teacher Resources"
-  ],
-  "Fitness & Health": [
-    "Workout Guides",
-    "Meal Plans",
-    "Yoga Programs",
-    "Detox / Diet Guides"
-  ],
-  "Photography": [
-    "Lightroom Presets",
-    "Photoshop Presets",
-    "Stock Photos",
-    "Posing Guides",
-    "Background Packs"
-  ],
-  "Writing & Publishing": [
-    "Writing Guides",
-    "Templates",
-    "Book Formatting",
-    "Cover Templates",
-    "Prompt Packs"
-  ],
-  "Business & Money": [
-    "Marketing Guides",
-    "Budget Templates",
-    "Spreadsheets",
-    "Digital Planners",
-    "Side Hustle Guides"
-  ],
-  "Gaming": [
-    "Game Assets",
-    "Mods",
-    "Skins",
-    "Level Design Packs"
-  ],
-  "Software Development": [
-    "Code Templates",
-    "Scripts",
-    "Plugins",
-    "Tools",
-    "Apps"
-  ],
-  "Other": [
-    "Miscellaneous"
-  ]
-};
+/* =========================================
+   AUTH UI (header + drawer)
+========================================= */
 
-let ALL_PRODUCTS = [];
-let CURRENT_FILTER = {
-  category: null,
-  subcategory: null,
-  search: "",
-  tags: new Set(),
-  types: new Set(),
-  priceMin: null,
-  priceMax: null,
-  ratingMin: null
-};
-
-/* ===========================
-   INIT
-=========================== */
-
-document.addEventListener("DOMContentLoaded", () => {
-  initAuthHeader();
-  initSearch();
-  initFilters();
-  initCategoryDrawer();
-  loadProducts();
-});
-
-/* ===========================
-   Auth header (login vs dashboard)
-=========================== */
-
-async function initAuthHeader() {
-  const root = document;
-  const loggedOut = root.querySelectorAll('[data-when="logged-out"]');
-  const loggedIn = root.querySelectorAll('[data-when="logged-in"]');
+async function initAuthUI() {
+  const loggedOutBlocks = document.querySelectorAll('[data-when="logged-out"]');
+  const loggedInBlocks = document.querySelectorAll('[data-when="logged-in"]');
 
   function showLoggedOut() {
-    loggedOut.forEach((el) => (el.style.display = ""));
-    loggedIn.forEach((el) => (el.style.display = "none"));
+    loggedOutBlocks.forEach((el) => (el.style.display = ""));
+    loggedInBlocks.forEach((el) => (el.style.display = "none"));
   }
 
   function showLoggedIn() {
-    loggedOut.forEach((el) => (el.style.display = "none"));
-    loggedIn.forEach((el) => (el.style.display = ""));
+    loggedOutBlocks.forEach((el) => (el.style.display = "none"));
+    loggedInBlocks.forEach((el) => (el.style.display = ""));
   }
 
   try {
@@ -209,373 +27,404 @@ async function initAuthHeader() {
     } else {
       showLoggedOut();
     }
+    // also react to changes
+    supabase.auth.onAuthStateChange((_evt, session) => {
+      if (session) showLoggedIn();
+      else showLoggedOut();
+    });
   } catch (err) {
-    console.error("Auth header session error:", err);
+    console.error("Auth UI error:", err);
     showLoggedOut();
   }
 }
 
-/* ===========================
-   Search
-=========================== */
+/* =========================================
+   CART COUNT (localStorage)
+========================================= */
 
-function initSearch() {
-  const input = document.getElementById("mp-search-input");
-  const clearBtn = document.getElementById("mp-search-clear");
+function initCartCount() {
+  const countEls = document.querySelectorAll("[data-role='cart-count']");
+  if (!countEls.length) return;
 
-  if (!input) return;
-
-  input.addEventListener("input", () => {
-    CURRENT_FILTER.search = input.value.trim();
-    renderProducts();
-  });
-
-  clearBtn.addEventListener("click", () => {
-    input.value = "";
-    CURRENT_FILTER.search = "";
-    renderProducts();
-  });
-}
-
-/* ===========================
-   Filters (tags, file types, price, rating)
-=========================== */
-
-function initFilters() {
-  // Tag chips
-  document.querySelectorAll(".mp-chip-tag").forEach((chip) => {
-    chip.addEventListener("click", () => {
-      const tag = chip.dataset.tag;
-      if (!tag) return;
-
-      if (CURRENT_FILTER.tags.has(tag)) {
-        CURRENT_FILTER.tags.delete(tag);
-        chip.classList.remove("is-active");
-      } else {
-        CURRENT_FILTER.tags.add(tag);
-        chip.classList.add("is-active");
+  let total = 0;
+  try {
+    const raw = localStorage.getItem("silkyroad_cart");
+    if (raw) {
+      const cart = JSON.parse(raw);
+      if (Array.isArray(cart)) {
+        total = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
       }
-      renderProducts();
-    });
-  });
-
-  // Type chips
-  document.querySelectorAll(".mp-chip-type").forEach((chip) => {
-    chip.addEventListener("click", () => {
-      const t = chip.dataset.type;
-      if (!t) return;
-      if (CURRENT_FILTER.types.has(t)) {
-        CURRENT_FILTER.types.delete(t);
-        chip.classList.remove("is-active");
-      } else {
-        CURRENT_FILTER.types.add(t);
-        chip.classList.add("is-active");
-      }
-      renderProducts();
-    });
-  });
-
-  // Price
-  const minInput = document.getElementById("mp-price-min");
-  const maxInput = document.getElementById("mp-price-max");
-
-  minInput?.addEventListener("input", () => {
-    CURRENT_FILTER.priceMin = minInput.value ? parseFloat(minInput.value) : null;
-    renderProducts();
-  });
-  maxInput?.addEventListener("input", () => {
-    CURRENT_FILTER.priceMax = maxInput.value ? parseFloat(maxInput.value) : null;
-    renderProducts();
-  });
-
-  // Rating
-  document.querySelectorAll('input[name="mp-rating-min"]').forEach((radio) => {
-    radio.addEventListener("change", () => {
-      const v = radio.value;
-      CURRENT_FILTER.ratingMin = v ? parseInt(v, 10) : null;
-      renderProducts();
-    });
-  });
-
-  // Clear filters
-  const clearBtn = document.getElementById("mp-filters-clear");
-  clearBtn.addEventListener("click", () => {
-    CURRENT_FILTER.tags.clear();
-    CURRENT_FILTER.types.clear();
-    CURRENT_FILTER.priceMin = null;
-    CURRENT_FILTER.priceMax = null;
-    CURRENT_FILTER.ratingMin = null;
-
-    document.querySelectorAll(".mp-chip.is-active").forEach((c) =>
-      c.classList.remove("is-active")
-    );
-    minInput.value = "";
-    maxInput.value = "";
-    const anyRating = document.querySelector('input[name="mp-rating-min"][value=""]');
-    if (anyRating) anyRating.checked = true;
-
-    renderProducts();
-  });
-
-  // Mobile filters slide out
-  const filters = document.getElementById("mp-filters");
-  const toggleBtn = document.getElementById("mp-filters-toggle");
-  const overlay = document.getElementById("mp-filters-overlay");
-
-  function openFilters() {
-    filters.classList.add("is-open");
-    overlay.classList.add("is-open");
-  }
-  function closeFilters() {
-    filters.classList.remove("is-open");
-    overlay.classList.remove("is-open");
+    }
+  } catch (e) {
+    console.warn("Failed to read cart:", e);
   }
 
-  toggleBtn.addEventListener("click", openFilters);
-  overlay.addEventListener("click", closeFilters);
+  countEls.forEach((el) => {
+    if (total > 0) {
+      el.textContent = total;
+      el.style.display = "inline";
+    } else {
+      el.style.display = "none";
+    }
+  });
 }
 
-/* ===========================
-   Category Drawer
-=========================== */
+/* =========================================
+   GLOBAL STATE
+========================================= */
 
-function initCategoryDrawer() {
-  const drawer = document.getElementById("mp-cat-drawer");
-  const backdrop = document.getElementById("mp-cat-backdrop");
-  const toggle = document.getElementById("mp-cat-toggle");
-  const closeBtn = document.getElementById("mp-cat-close");
-  const body = document.getElementById("mp-cat-drawer-body");
-  const catLabel = document.getElementById("mp-current-cat-label");
+let allProducts = [];
+let filteredProducts = [];
+let featuredProducts = [];
 
-  // Build drawer DOM
-  body.innerHTML = "";
+const state = {
+  category: null,
+  subcategory: null,
+  search: "",
+  tags: new Set(),
+  types: new Set(),
+  priceMin: null,
+  priceMax: null,
+  ratingMin: null,
+};
 
-  const allBtn = document.createElement("button");
-  allBtn.type = "button";
-  allBtn.className = "mp-cat-parent";
-  allBtn.dataset.cat = "";
-  allBtn.innerHTML = `<span>All products</span><span>⟲</span>`;
-  body.appendChild(allBtn);
-
-  allBtn.addEventListener("click", () => {
-    CURRENT_FILTER.category = null;
-    CURRENT_FILTER.subcategory = null;
-    catLabel.textContent = "Showing: All categories";
-    renderProducts();
-    closeDrawer();
-  });
-
-  Object.entries(CATEGORY_TREE).forEach(([category, subs]) => {
-    const parent = document.createElement("button");
-    parent.type = "button";
-    parent.className = "mp-cat-parent";
-    parent.dataset.cat = category;
-    parent.innerHTML = `<span>${category}</span><span>▸</span>`;
-
-    const subWrap = document.createElement("div");
-    subWrap.className = "mp-cat-sublist";
-    subWrap.dataset.forCat = category;
-
-    subs.forEach((sub) => {
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = "mp-cat-sub";
-      btn.dataset.cat = category;
-      btn.dataset.subcat = sub;
-      btn.textContent = sub;
-
-      btn.addEventListener("click", () => {
-        CURRENT_FILTER.category = category;
-        CURRENT_FILTER.subcategory = sub;
-        catLabel.textContent = `Showing: ${category} › ${sub}`;
-        renderProducts();
-        closeDrawer();
-      });
-
-      subWrap.appendChild(btn);
-    });
-
-    parent.addEventListener("click", () => {
-      const open = subWrap.classList.toggle("is-open");
-      parent.querySelector("span:last-child").textContent = open ? "▾" : "▸";
-    });
-
-    body.appendChild(parent);
-    body.appendChild(subWrap);
-  });
-
-  function openDrawer() {
-    drawer.classList.add("is-open");
-    backdrop.classList.add("is-open");
-  }
-  function closeDrawer() {
-    drawer.classList.remove("is-open");
-    backdrop.classList.remove("is-open");
-  }
-
-  toggle.addEventListener("click", openDrawer);
-  closeBtn.addEventListener("click", closeDrawer);
-  backdrop.addEventListener("click", closeDrawer);
-}
-
-/* ===========================
-   Products: load + render
-=========================== */
+/* =========================================
+   FETCH PRODUCTS
+========================================= */
 
 async function loadProducts() {
-  const grid = document.getElementById("mp-featured-grid");
-  const empty = document.getElementById("mp-featured-empty");
+  const { data, error } = await supabase
+    .from("products")
+    .select("*")
+    .order("created_at", { ascending: false });
 
-  grid.innerHTML = "<p class='mp-empty'>Loading products…</p>";
-
-  try {
-    const { data, error } = await supabase
-      .from("products")
-      .select(
-        "id,title,description,price_cents,cover_url,category,subcategory,tags,file_type,avg_rating,ratings_count,created_at"
-      )
-      .eq("is_published", true)
-      .order("created_at", { ascending: false })
-      .limit(50);
-
-    if (error) throw error;
-
-    ALL_PRODUCTS = data || [];
-    if (!ALL_PRODUCTS.length) {
-      grid.innerHTML = "";
-      empty.style.display = "block";
-      return;
-    }
-
-    empty.style.display = "none";
-    renderProducts();
-  } catch (err) {
-    console.error("Error loading products:", err);
-    grid.innerHTML =
-      "<p class='mp-empty'>Could not load products. Please try again later.</p>";
+  if (error) {
+    console.error("Failed to load products:", error);
+    allProducts = [];
+  } else {
+    allProducts = data || [];
   }
+
+  // Featured = first 10 (or those flagged later)
+  featuredProducts = allProducts.slice(0, 10);
+  applyFilters();
 }
 
-function renderProducts() {
-  const grid = document.getElementById("mp-featured-grid");
-  const empty = document.getElementById("mp-featured-empty");
+/* =========================================
+   FILTERS
+========================================= */
 
-  if (!ALL_PRODUCTS.length) {
-    grid.innerHTML = "";
-    empty.style.display = "block";
-    return;
-  }
+function applyFilters() {
+  const search = state.search.toLowerCase();
 
-  const filtered = ALL_PRODUCTS.filter((p) => {
-    // Category / Subcategory
-    if (CURRENT_FILTER.category && p.category !== CURRENT_FILTER.category) {
-      return false;
-    }
-    if (CURRENT_FILTER.subcategory && p.subcategory !== CURRENT_FILTER.subcategory) {
-      return false;
-    }
+  filteredProducts = allProducts.filter((p) => {
+    const title = (p.title || p.name || "").toLowerCase();
+    const desc = (p.description || "").toLowerCase();
+    const cat = (p.category || "").toLowerCase();
+    const sub = (p.subcategory || "").toLowerCase();
+    const tags = (Array.isArray(p.tags) ? p.tags.join(" ") : (p.tags || "")).toLowerCase();
+    const type = (p.file_type || p.type || "").toLowerCase();
 
-    // Search
-    if (CURRENT_FILTER.search) {
-      const haystack = `${p.title || ""} ${p.description || ""}`.toLowerCase();
-      if (!haystack.includes(CURRENT_FILTER.search.toLowerCase())) {
-        return false;
-      }
+    // category / subcategory
+    if (state.category && cat !== state.category.toLowerCase()) return false;
+    if (state.subcategory && sub !== state.subcategory.toLowerCase()) return false;
+
+    // search
+    if (search) {
+      const hay = title + " " + desc + " " + cat + " " + sub + " " + tags;
+      if (!hay.includes(search)) return false;
     }
 
-    // Tags (assume p.tags is array of strings or comma string)
-    if (CURRENT_FILTER.tags.size) {
-      const tags = Array.isArray(p.tags)
-        ? p.tags
-        : typeof p.tags === "string"
-        ? p.tags.split(",").map((t) => t.trim())
-        : [];
-      const lower = tags.map((t) => t.toLowerCase());
-      for (const t of CURRENT_FILTER.tags) {
-        if (!lower.includes(t.toLowerCase())) return false;
-      }
+    // tags
+    if (state.tags.size) {
+      let matchTag = false;
+      state.tags.forEach((t) => {
+        if (tags.includes(t.toLowerCase())) matchTag = true;
+      });
+      if (!matchTag) return false;
     }
 
-    // Types (file_type column, eg 'pdf', 'zip')
-    if (CURRENT_FILTER.types.size && p.file_type) {
-      const type = String(p.file_type).toLowerCase();
-      let ok = true;
-      for (const t of CURRENT_FILTER.types) {
-        if (type !== t.toLowerCase()) {
-          ok = false;
-          break;
-        } else {
-          ok = true;
-        }
-      }
-      if (!ok) return false;
+    // file types
+    if (state.types.size) {
+      if (!state.types.has(type)) return false;
     }
 
-    // Price (price_cents integer)
-    if (CURRENT_FILTER.priceMin != null) {
-      const price = (p.price_cents || 0) / 100;
-      if (price < CURRENT_FILTER.priceMin) return false;
-    }
-    if (CURRENT_FILTER.priceMax != null) {
-      const price = (p.price_cents || 0) / 100;
-      if (price > CURRENT_FILTER.priceMax) return false;
-    }
+    // price
+    const priceCents = p.price_cents ?? p.priceCents ?? 0;
+    const price = priceCents / 100;
+    if (state.priceMin != null && price < state.priceMin) return false;
+    if (state.priceMax != null && price > state.priceMax) return false;
 
-    // Rating
-    if (CURRENT_FILTER.ratingMin != null) {
-      const rating = p.avg_rating || 0;
-      if (rating < CURRENT_FILTER.ratingMin) return false;
-    }
+    // rating
+    const rating =
+      p.average_rating ??
+      p.rating ??
+      0;
+    if (state.ratingMin != null && rating < state.ratingMin) return false;
 
     return true;
   });
 
-  // Show max 10 featured on page
-  const toShow = filtered.slice(0, 10);
+  renderFeatured();
+  renderProducts();
+}
+
+/* =========================================
+   RENDERING
+========================================= */
+
+function formatPrice(p) {
+  const cents = p.price_cents ?? p.priceCents ?? 0;
+  const currency = p.currency || "USD";
+  const value = (cents / 100).toFixed(2);
+  return `${currency} ${value}`;
+}
+
+function buildRatingStars(p) {
+  const rating =
+    p.average_rating ??
+    p.rating ??
+    0;
+  const count = p.rating_count ?? p.ratingCount ?? 0;
+
+  if (!rating && !count) return "";
+
+  const full = Math.round(rating);
+  const stars =
+    "★★★★★".slice(0, full) + "☆☆☆☆☆".slice(0, 5 - full);
+
+  return `
+    <div class="mp-product-rating">
+      <span class="mp-stars">${stars}</span>
+      <span class="mp-rating-count">(${count})</span>
+    </div>
+  `;
+}
+
+function renderCard(p) {
+  const grid = document.createElement("article");
+  grid.className = "mp-product-card";
+
+  const title = p.title || p.name || "Untitled product";
+  const cat = p.category || "";
+  const sub = p.subcategory || "";
+  const cover =
+    p.cover_url ||
+    p.coverUrl ||
+    "/placeholder-cover.png";
+
+  const ratingHtml = buildRatingStars(p);
+
+  grid.innerHTML = `
+    <img src="${cover}" alt="${title}" class="mp-product-cover">
+    <h3 class="mp-product-title">${title}</h3>
+    <div class="mp-product-meta">
+      ${cat ? cat : ""}${sub ? " · " + sub : ""}
+    </div>
+    ${ratingHtml}
+    <div class="mp-product-price">${formatPrice(p)}</div>
+  `;
+
+  return grid;
+}
+
+function renderFeatured() {
+  const grid = document.getElementById("mp-featured-grid");
+  const empty = document.getElementById("mp-featured-empty");
+  if (!grid || !empty) return;
 
   grid.innerHTML = "";
+  const list = (state.category || state.subcategory)
+    ? filteredProducts.slice(0, 10)
+    : featuredProducts.slice(0, 10);
 
-  if (!toShow.length) {
+  if (!list.length) {
     empty.style.display = "block";
     return;
   }
-
   empty.style.display = "none";
 
-  for (const p of toShow) {
-    const card = document.createElement("article");
-    card.className = "mp-product-card";
+  list.forEach((p) => grid.appendChild(renderCard(p)));
+}
 
-    const img = document.createElement("img");
-    img.className = "mp-product-cover";
-    img.src = p.cover_url || "/placeholder-cover.png";
-    img.alt = p.title || "Product cover";
-    card.appendChild(img);
+function renderProducts() {
+  const grid = document.getElementById("mp-products-grid");
+  const empty = document.getElementById("mp-products-empty");
+  if (!grid || !empty) return;
 
-    const title = document.createElement("h3");
-    title.className = "mp-product-title";
-    title.textContent = p.title || "Untitled product";
-    card.appendChild(title);
+  grid.innerHTML = "";
 
-    const price = document.createElement("div");
-    price.className = "mp-product-price";
-    const amount = (p.price_cents || 0) / 100;
-    price.textContent = amount === 0 ? "Free" : `$${amount.toFixed(2)}`;
-    card.appendChild(price);
+  if (!filteredProducts.length) {
+    empty.style.display = "block";
+    return;
+  }
+  empty.style.display = "none";
 
-    const meta = document.createElement("div");
-    meta.className = "mp-product-meta";
-    const rating = p.avg_rating || 0;
-    const count = p.ratings_count || 0;
-    if (count > 0) {
-      meta.textContent = `★ ${rating.toFixed(1)} · ${count} ratings`;
-    } else {
-      meta.textContent = p.category && p.subcategory
-        ? `${p.category} • ${p.subcategory}`
-        : "Digital product";
-    }
-    card.appendChild(meta);
+  filteredProducts.forEach((p) => grid.appendChild(renderCard(p)));
+}
 
-    grid.appendChild(card);
+/* =========================================
+   FILTER UI HANDLERS
+========================================= */
+
+function initFilterUI() {
+  const searchInput = document.getElementById("mp-search-input");
+  const searchClear = document.getElementById("mp-search-clear");
+  const filterToggle = document.getElementById("mp-filters-toggle");
+  const filtersPanel = document.getElementById("mp-filters");
+  const filtersOverlay = document.getElementById("mp-filters-overlay");
+  const clearFiltersBtn = document.getElementById("mp-filters-clear");
+
+  // Search
+  if (searchInput) {
+    searchInput.addEventListener("input", () => {
+      state.search = searchInput.value.trim();
+      applyFilters();
+    });
+  }
+  if (searchClear && searchInput) {
+    searchClear.addEventListener("click", () => {
+      searchInput.value = "";
+      state.search = "";
+      applyFilters();
+    });
+  }
+
+  // Tags
+  document.querySelectorAll(".mp-chip-tag").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const tag = (btn.dataset.tag || "").toLowerCase();
+      if (!tag) return;
+      if (state.tags.has(tag)) {
+        state.tags.delete(tag);
+        btn.classList.remove("is-active");
+      } else {
+        state.tags.add(tag);
+        btn.classList.add("is-active");
+      }
+      applyFilters();
+    });
+  });
+
+  // Types
+  document.querySelectorAll(".mp-chip-type").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const t = (btn.dataset.type || "").toLowerCase();
+      if (!t) return;
+      if (state.types.has(t)) {
+        state.types.delete(t);
+        btn.classList.remove("is-active");
+      } else {
+        state.types.add(t);
+        btn.classList.add("is-active");
+      }
+      applyFilters();
+    });
+  });
+
+  // Price inputs
+  const minInput = document.getElementById("mp-price-min");
+  const maxInput = document.getElementById("mp-price-max");
+
+  function parsePrice(val) {
+    const num = Number(val);
+    return Number.isFinite(num) && num >= 0 ? num : null;
+  }
+
+  if (minInput) {
+    minInput.addEventListener("input", () => {
+      state.priceMin = parsePrice(minInput.value);
+      applyFilters();
+    });
+  }
+  if (maxInput) {
+    maxInput.addEventListener("input", () => {
+      state.priceMax = parsePrice(maxInput.value);
+      applyFilters();
+    });
+  }
+
+  // Rating radio
+  document.querySelectorAll('input[name="mp-rating-min"]').forEach((radio) => {
+    radio.addEventListener("change", () => {
+      const val = radio.value;
+      state.ratingMin = val ? Number(val) : null;
+      applyFilters();
+    });
+  });
+
+  // Clear filters
+  if (clearFiltersBtn) {
+    clearFiltersBtn.addEventListener("click", () => {
+      state.search = "";
+      state.tags.clear();
+      state.types.clear();
+      state.priceMin = null;
+      state.priceMax = null;
+      state.ratingMin = null;
+
+      if (searchInput) searchInput.value = "";
+      if (minInput) minInput.value = "";
+      if (maxInput) maxInput.value = "";
+      document.querySelectorAll(".mp-chip").forEach((b) => b.classList.remove("is-active"));
+      document
+        .querySelectorAll('input[name="mp-rating-min"]')
+        .forEach((r) => (r.checked = false));
+
+      applyFilters();
+    });
+  }
+
+  // Filters slide-in (mobile)
+  function openFilters() {
+    if (!filtersPanel || !filtersOverlay) return;
+    filtersPanel.classList.add("is-open");
+    filtersOverlay.classList.add("is-open");
+  }
+
+  function closeFilters() {
+    if (!filtersPanel || !filtersOverlay) return;
+    filtersPanel.classList.remove("is-open");
+    filtersOverlay.classList.remove("is-open");
+  }
+
+  if (filterToggle) {
+    filterToggle.addEventListener("click", openFilters);
+  }
+  if (filtersOverlay) {
+    filtersOverlay.addEventListener("click", closeFilters);
   }
 }
+
+/* =========================================
+   CATEGORY HANDLER (used by marketplace-cats.js)
+========================================= */
+
+window.handleCategoryChange = function ({ category, subcategory }) {
+  state.category = category || null;
+  state.subcategory = subcategory || null;
+
+  const label = document.getElementById("mp-current-cat-label");
+  if (label) {
+    if (!category && !subcategory) {
+      label.textContent = "Showing: All categories";
+    } else if (category && !subcategory) {
+      label.textContent = `Showing: ${category}`;
+    } else {
+      label.textContent = `Showing: ${category} › ${subcategory}`;
+    }
+  }
+
+  applyFilters();
+};
+
+/* =========================================
+   INIT
+========================================= */
+
+(async function initMarketplace() {
+  await initAuthUI();
+  initCartCount();
+  initFilterUI();
+  await loadProducts();
+})();

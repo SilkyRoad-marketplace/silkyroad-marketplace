@@ -6,9 +6,6 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <link rel="icon" href="/favicon.png">
   <link rel="stylesheet" href="/css/marketplace.css">
-
-  <!-- Supabase JS -->
-  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 </head>
 <body class="mp-body">
 
@@ -21,124 +18,73 @@
         <img src="/logo.png" alt="Silky Road" class="mp-logo-img">
       </a>
 
-      <!-- SEARCH -->
+      <!-- SEARCH BAR -->
       <form class="mp-search" id="mp-search-form">
         <span class="mp-search-icon">🔍</span>
         <input
           type="text"
-          name="q"
           id="mp-search-input"
           placeholder="Search digital products…"
           autocomplete="off"
         >
-        <button type="button" class="mp-search-clear" id="mp-search-clear" aria-label="Clear search">✕</button>
+        <button type="button" id="mp-search-clear" class="mp-search-clear" aria-label="Clear search">
+          ✕
+        </button>
       </form>
 
-      <!-- DESKTOP ACTIONS -->
+      <!-- RIGHT ACTIONS -->
       <div class="mp-header-actions">
-        <a href="/login.html" class="mp-link" data-role="login-link">Login</a>
-        <a href="/sign_up.html" class="mp-btn mp-btn-gold" data-role="start-link">Start selling</a>
+        <!-- Logged OUT -->
+        <div data-when="logged-out">
+          <a href="/login.html" class="mp-link">Log in</a>
+          <a href="/sign_up.html" class="mp-btn mp-btn-gold">Start selling</a>
+        </div>
 
-        <a href="/library.html" class="mp-link" data-role="library-link" style="display:none;">Library</a>
-        <a href="/dashboard.html" class="mp-btn mp-btn-gold" data-role="dashboard-link" style="display:none;">Dashboard</a>
+        <!-- Logged IN -->
+        <div data-when="logged-in" style="display:none;">
+          <a href="/library.html" class="mp-link">Library</a>
+          <a href="/dashboard.html" class="mp-btn mp-btn-gold">Dashboard</a>
+        </div>
 
-        <button type="button" class="mp-icon-btn" data-role="cart-button" aria-label="Cart">
+        <!-- Cart (placeholder for now) -->
+        <button type="button" class="mp-icon-btn" aria-label="Cart">
           🛒
-          <span class="mp-cart-count" data-role="cart-count" style="display:none;"></span>
+        </button>
+
+        <!-- CATEGORY DRAWER TOGGLE -->
+        <button
+          type="button"
+          class="mp-cat-toggle"
+          id="mp-cat-toggle"
+          aria-label="Browse categories"
+        >
+          ☰ Categories
         </button>
       </div>
+    </div>
+  </header>
 
-      <!-- MOBILE MENU BUTTON -->
-      <button class="mp-menu-btn" id="mp-menu-toggle" aria-label="Open navigation">
-        ☰
+  <!-- CATEGORY DRAWER + BACKDROP -->
+  <div class="mp-cat-backdrop" id="mp-cat-backdrop"></div>
+
+  <aside class="mp-cat-drawer" id="mp-cat-drawer" aria-label="Browse categories">
+    <div class="mp-cat-drawer-header">
+      <span>Browse categories</span>
+      <button type="button" class="mp-cat-close" id="mp-cat-close" aria-label="Close">
+        ✕
       </button>
     </div>
 
-    <!-- ✅ FIXED CATEGORY BAR WITH CORRECT WRAPPER -->
-    <nav class="mp-cat-bar" id="mp-cat-bar">
-      <div class="mp-cat-bar-inner" id="mp-cat-bar-inner">
-        <!-- JS inserts category pills here -->
-      </div>
-    </nav>
- <header class="mp-header">
-  <div class="mp-header-inner">
-    <!-- logo, search, buttons, etc -->
-  </div>
-
-  <!-- Desktop category bar -->
-  <nav class="mp-cat-bar" id="mp-cat-bar">
-    <div class="mp-cat-bar-inner" id="mp-cat-bar-inner"></div>
-  </nav>
-
-  <!-- ⭐ PASTE NEW MOBILE CATEGORY BAR HERE -->
-  <div class="mobile-cat-wrapper">
-    <div class="mobile-cat-scroll">
-      <button class="m-cat-item" data-cat="All">All</button>
-      <button class="m-cat-item" data-cat="3D">3D</button>
-      <button class="m-cat-item" data-cat="Roblox">Roblox</button>
-      <button class="m-cat-item" data-cat="Crafts">Crafts</button>
-      <button class="m-cat-item" data-cat="Design">Design</button>
-      <button class="m-cat-item" data-cat="DrawingPainting">Drawing & Painting</button>
-      <button class="m-cat-item" data-cat="Music">Music</button>
-      <button class="m-cat-item" data-cat="Films">Films</button>
-      <button class="m-cat-item" data-cat="More">More ▼</button>
+    <div class="mp-cat-drawer-body" id="mp-cat-drawer-body">
+      <!-- JS will inject all categories + subcategories here -->
     </div>
-  </div>
+  </aside>
 
-  <div class="mobile-subcat-wrapper">
-    <div id="mobile-subcat-bar" class="mobile-subcat-bar"></div>
-  </div>
-  <!-- END NEW SECTION -->
-
-</header>
-
-  </header>
-
-  <!-- MOBILE NAV DRAWER -->
-  <div class="mp-drawer-backdrop" id="mp-drawer-backdrop">
-    <aside class="mp-drawer" id="mp-drawer">
-      <div class="mp-drawer-header">
-        <button class="mp-drawer-close" id="mp-drawer-close" type="button">✕</button>
-        <div class="mp-drawer-title">Browse</div>
-      </div>
-
-      <div class="mp-drawer-section mp-drawer-account">
-        <a href="/login.html" class="mp-link" data-role="login-link">Login</a>
-        <a href="/sign_up.html" class="mp-btn mp-btn-gold" data-role="start-link">Start selling</a>
-        <a href="/library.html" class="mp-link" data-role="library-link" style="display:none;">Library</a>
-        <a href="/dashboard.html" class="mp-btn mp-btn-gold" data-role="dashboard-link" style="display:none;">Dashboard</a>
-        <button type="button" class="mp-icon-btn" data-role="cart-button">
-          🛒
-          <span class="mp-cart-count" data-role="cart-count" style="display:none;"></span>
-        </button>
-      </div>
-
-      <div class="mp-drawer-view" id="mp-drawer-view-main">
-        <div class="mp-drawer-section">
-          <button type="button" class="mp-drawer-link" data-cat="all" data-drawer-all>All products</button>
-        </div>
-        <div class="mp-drawer-section" id="mp-drawer-cat-list">
-          <!-- categories inserted here -->
-        </div>
-      </div>
-
-      <div class="mp-drawer-view" id="mp-drawer-view-sub" style="display:none;">
-        <div class="mp-drawer-section mp-drawer-sub-header">
-          <button type="button" class="mp-drawer-back" id="mp-drawer-back">‹ Back</button>
-          <span id="mp-drawer-sub-title"></span>
-        </div>
-        <div class="mp-drawer-section" id="mp-drawer-sub-list">
-          <!-- subcategories inserted here -->
-        </div>
-      </div>
-    </aside>
-  </div>
-
-  <!-- MAIN -->
+  <!-- MAIN LAYOUT -->
   <main class="mp-main">
     <div class="mp-layout">
 
-      <!-- FILTERS -->
+      <!-- FILTERS (LEFT) -->
       <aside class="mp-filters" id="mp-filters">
         <h2 class="mp-filters-title">Filters</h2>
 
@@ -181,47 +127,43 @@
           <label><input type="radio" name="mp-rating-min" value=""> Any rating</label>
         </section>
 
-        <button class="mp-btn mp-btn-ghost mp-filters-clear" id="mp-filters-clear">Clear filters</button>
+        <button class="mp-btn mp-btn-ghost mp-filters-clear" id="mp-filters-clear">
+          Clear filters
+        </button>
       </aside>
 
-      <!-- PRODUCTS CONTENT -->
+      <!-- CONTENT (RIGHT) -->
       <section class="mp-content">
 
+        <!-- MOBILE FILTERS TOGGLE -->
         <button class="mp-filters-toggle" id="mp-filters-toggle">Filters</button>
 
-        <!-- FEATURED -->
+        <!-- FEATURED PRODUCTS ONLY (MAX 10) -->
         <section class="mp-featured">
           <div class="mp-section-header">
             <h2 id="mp-featured-title">Featured products</h2>
-            <div class="mp-featured-arrows">
-              <button class="mp-icon-btn" id="mp-featured-prev">‹</button>
-              <button class="mp-icon-btn" id="mp-featured-next">›</button>
-            </div>
+            <p class="mp-section-subtitle" id="mp-current-cat-label">
+              Showing: All categories
+            </p>
           </div>
-          <div class="mp-featured-track" id="mp-featured-track"></div>
-          <p class="mp-empty" id="mp-featured-empty" style="display:none;">No featured products yet.</p>
-        </section>
 
-        <!-- PRODUCTS -->
-        <section class="mp-products">
-          <div class="mp-section-header">
-            <h2 id="mp-products-title">All products</h2>
+          <div class="mp-products-grid" id="mp-featured-grid">
+            <!-- JS will render up to 10 featured products -->
           </div>
-          <div class="mp-products-grid" id="mp-products-grid"></div>
-          <p class="mp-empty" id="mp-products-empty" style="display:none;">No products found.</p>
+
+          <p class="mp-empty" id="mp-featured-empty" style="display:none;">
+            No products found in this category yet.
+          </p>
         </section>
 
       </section>
     </div>
   </main>
 
-  <!-- FILTER OVERLAY (mobile) -->
+  <!-- FILTER OVERLAY FOR MOBILE -->
   <div class="mp-filters-overlay" id="mp-filters-overlay"></div>
 
-  <!-- MAIN JS -->
-  <script src="/js/marketplace.js"></script>
-
-<!-- ⭐ NEW: CATEGORY ENGINE (desktop + mobile) -->
-  <script src="/js/marketplace-categories.js"></script>
+  <!-- MAIN JS (uses Supabase client from auth.js) -->
+  <script type="module" src="/js/marketplace.js"></script>
 </body>
 </html>

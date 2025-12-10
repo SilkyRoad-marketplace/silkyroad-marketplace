@@ -2,33 +2,107 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Signing you in… – Silky Road Marketplace</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="icon" href="/favicon.png">
   <link rel="stylesheet" href="/css/styles.css">
+  <title>Signing you in… – Silky Road</title>
+
+  <style>
+    .callback-box {
+      text-align: center;
+      padding: 40px 32px;
+      background: radial-gradient(circle at top, #181323 0, #050509 72%);
+      border-radius: 24px;
+      border: 1px solid rgba(244,197,106,0.45);
+      box-shadow: 0 24px 70px rgba(0,0,0,0.95);
+      max-width: 520px;
+      margin: 100px auto;
+    }
+    .spinner {
+      margin: 12px auto 24px;
+      width: 36px;
+      height: 36px;
+      border: 4px solid rgba(244,197,106,0.28);
+      border-top-color: var(--accent-gold);
+      border-radius: 50%;
+      animation: spin 0.85s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    .callback-box p {
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+  </style>
 </head>
-<body class="auth-callback-body">
+
+<body>
+
+  <!-- HEADER -->
+  <div id="header-root"></div>
+
   <main class="page auth-page">
-    <section class="card auth-card">
+    <div class="callback-box">
       <h1>Signing you in…</h1>
-      <p class="muted">Please wait while we finish connecting your account.</p>
-    </section>
+      <div class="spinner"></div>
+      <p class="small">Please wait while we verify your account.</p>
+    </div>
   </main>
 
+  <!-- FOOTER -->
+  <div id="footer-root"></div>
+
+  <!-- LOAD HEADER + FOOTER -->
+  <script type="module" src="/js/header-main.js"></script>
+  <script type="module" src="/js/footer.js"></script>
+
+  <!-- GOOGLE OAUTH CALLBACK LOGIC -->
   <script type="module">
     import { supabase } from "/js/auth.js";
-    async function checkSession() {
-      const { data } = await supabase.auth.getSession();
-      if (data.session) {
-        window.location.href = "/dashboard.html";
-      } else {
-        setTimeout(async () => {
-          const again = await supabase.auth.getSession();
-          if (again.data.session) window.location.href = "/dashboard.html";
-          else window.location.href = "/login.html";
-        }, 1500);
+
+    async function handleOAuthCallback() {
+      // 1️⃣ Supabase automatically loads session from URL
+      const { data, error } = await supabase.auth.getSession();
+
+      if (error) {
+        alert("Auth error: " + error.message);
+        window.location.href = "/login.html";
+        return;
       }
+
+      if (!data.session) {
+        alert("No active session found.");
+        window.location.href = "/login.html";
+        return;
+      }
+
+      const user = data.session.user;
+
+      // 2️⃣ Check if profile exists
+      const { data: existingProfile } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", user.id)
+        .maybeSingle();
+
+      // 3️⃣ If no profile → create it
+      if (!existingProfile) {
+        await supabase.from("profiles").insert([
+          {
+            id: user.id,
+            email: user.email,
+            created_at: new Date().toISOString()
+          }
+        ]);
+      }
+
+      // 4️⃣ Redirect to dashboard
+      window.location.href = "/dashboard.html";
     }
-    checkSession();
+
+    handleOAuthCallback();
   </script>
+
 </body>
 </html>

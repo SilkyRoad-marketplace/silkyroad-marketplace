@@ -2,102 +2,61 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Create account – Silky Road Marketplace</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <link rel="icon" href="/favicon.png">
   <link rel="stylesheet" href="/css/styles.css">
+  <title>Create account – Silky Road</title>
 </head>
+
 <body>
   <div id="header-root"></div>
 
   <main class="page auth-page">
-    <section class="card auth-card">
+
+    <div class="page-card auth-card">
+
       <h1>Create your account</h1>
       <p class="muted">Start selling or buying digital products on Silky Road.</p>
 
-      <button id="signup-google" class="btn btn-primary btn-full">Sign up with Google</button>
+      <button id="google-signup" class="btn btn-full btn-primary" style="margin-top:18px;">
+        Sign up with Google
+      </button>
 
-      <div class="auth-divider"><span>or sign up with email</span></div>
+      <div class="auth-divider">or sign up with email</div>
 
-      <form id="signup-email-form" class="auth-form">
-        <label class="field">
+      <form id="signup-form" class="auth-form">
+
+        <div class="field">
           <span>Email</span>
-          <input type="email" id="signup-email" required>
-        </label>
+          <input id="signup-email" type="email" autocomplete="email">
+        </div>
 
-        <label class="field password-field">
+        <div class="field password-field">
           <span>Password</span>
-          <input type="password" id="signup-password" required>
-          <button type="button" class="pw-toggle" data-target="signup-password">Show</button>
-        </label>
+          <input id="signup-password" type="password" autocomplete="new-password">
+          <button type="button" class="pw-toggle">Show</button>
+        </div>
 
-        <div class="password-strength" id="password-strength">Password strength: —</div>
+        <div id="password-strength" class="password-strength">Password strength: —</div>
 
         <p class="terms-note">
           By creating an account, you agree to our
-          <a href="/terms.html" target="_blank">Terms of Service</a>
-          and
-          <a href="/privacy.html" target="_blank">Privacy Policy</a>.
+          <a href="/terms.html">Terms of Service</a> and
+          <a href="/privacy.html">Privacy Policy</a>.
         </p>
 
-        <button type="submit" class="btn btn-primary btn-full">Create account</button>
+        <button class="btn btn-primary btn-full" type="submit" style="margin-top:14px;">
+          Create account
+        </button>
       </form>
-    </section>
+
+    </div>
+
   </main>
 
   <div id="footer-root"></div>
-
-  <script type="module" src="/js/header-main.js"></script>
-  <script type="module" src="/js/footer.js"></script>
-  <script type="module">
-    import { initAuthUI, googleAuth, emailSignUp } from "/js/auth.js";
-    initAuthUI();
-
-    document.getElementById("signup-google")?.addEventListener("click", async () => {
-      try { await googleAuth("https://silkyroad.vercel.app/auth-callback.html"); }
-      catch (e) { alert("Google sign up failed. Please try again."); console.error(e); }
-    });
-
-    function evaluateStrength(pw) {
-      let score = 0;
-      if (pw.length >= 8) score++;
-      if (/[A-Z]/.test(pw)) score++;
-      if (/[0-9]/.test(pw)) score++;
-      if (/[^A-Za-z0-9]/.test(pw)) score++;
-      if (score <= 1) return "Weak";
-      if (score == 2) return "Okay";
-      if (score == 3) return "Strong";
-      return "Very strong";
-    }
-
-    function wirePasswordToggles() {
-      document.querySelectorAll(".pw-toggle").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          const id = btn.getAttribute("data-target");
-          const input = document.getElementById(id);
-          if (!input) return;
-          if (input.type === "password") { input.type = "text"; btn.textContent = "Hide"; }
-          else { input.type = "password"; btn.textContent = "Show"; }
-        });
-      });
-    }
-    wirePasswordToggles();
-
-    const pwInput = document.getElementById("signup-password");
-    const strengthLabel = document.getElementById("password-strength");
-    pwInput?.addEventListener("input", () => {
-      const val = pwInput.value || "";
-      if (!val) strengthLabel.textContent = "Password strength: —";
-      else strengthLabel.textContent = "Password strength: " + evaluateStrength(val);
-    });
-
-    document.getElementById("signup-email-form")?.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const email = document.getElementById("signup-email").value.trim();
-      const password = pwInput.value;
-      try { await emailSignUp(email, password); window.location.href = "/verified.html"; }
-      catch (err) { console.error(err); alert("Sign up failed. Please try again."); }
-    });
-  </script>
+  <script src="/js/header-main.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/footer.js"></script>
 </body>
 </html>

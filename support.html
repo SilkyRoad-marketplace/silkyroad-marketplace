@@ -65,6 +65,20 @@
       panel.classList.toggle("open");
     });
   </script>
+<script>
+document.getElementById("send-support").addEventListener("click", function () {
+  const email = document.getElementById("support-email").value.trim();
+  const subject = document.getElementById("support-subject").value.trim();
+  const message = document.getElementById("support-message").value.trim();
+
+  if (!email || !subject || !message) {
+    alert("Please fill out all fields.");
+    return;
+  }
+
+  alert("Your message has been sent successfully!");
+});
+</script>
 
 </body>
 </html>

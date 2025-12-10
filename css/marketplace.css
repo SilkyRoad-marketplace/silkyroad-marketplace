@@ -330,3 +330,108 @@
     display: none;
   }
 }
+/* ==========================================================
+   FIX: HEADER LOOK SAME AS INDEX
+   ========================================================== */
+
+/* 1) FIX LOGO SIZE so it matches index.html */
+.sr-header .logo-img {
+    height: 38px;       /* Same size as your index page */
+    width: auto;
+    object-fit: contain;
+}
+
+
+/* 2) FIX HEADER BACKGROUND (you want dark theme) */
+.sr-header {
+    background: #000;               /* Black header */
+    border-bottom: 1px solid #3b3b3b;
+}
+
+/* 3) FIX SEARCH BAR ON DARK MODE */
+.sr-search {
+    background: #111;
+    border: 1px solid #444;
+}
+
+.sr-search-input {
+    color: #fff;
+}
+
+.sr-search-input::placeholder {
+    color: #aaa;
+}
+
+.sr-search-btn {
+    background: #d4af37;     /* Gold */
+    color: #000;
+}
+
+
+/* 4) FIX HEADER LINKS COLOR */
+.sr-auth-link,
+.sr-cart-link {
+    color: #fff !important;
+}
+
+.sr-auth-link:hover,
+.sr-cart-link:hover {
+    color: #d4af37 !important;   /* Gold hover */
+}
+
+/* Start selling badge */
+.sr-start-selling {
+    background: #d4af37 !important;
+    color: #000 !important;
+}
+
+/* 5) FIX CATEGORY BAR FOR DARK THEME */
+.sr-category-bar {
+    background: #111;
+    border: 1px solid #333;
+}
+
+.sr-cat-link,
+.sr-cat-button {
+    color: #fff;
+}
+
+.sr-cat-link:hover,
+.sr-cat-button:hover {
+    background: #333;
+}
+
+/* dropdown */
+.sr-sub-menu {
+    background: #1a1a1a;
+    border: 1px solid #333;
+}
+
+.sr-sub-menu a {
+    color: #fff;
+}
+
+.sr-sub-menu a:hover {
+    background: #2a2a2a;
+}
+
+/* 6) DRAWER FIX FOR DARK MODE */
+.sr-drawer {
+    background: #111;
+    color: #fff;
+    border-right: 1px solid #333;
+}
+
+.sr-drawer a {
+    color: #fff;
+}
+
+.sr-drawer a:hover {
+    color: #d4af37;
+}
+
+/* 7) FIX HAMBURGER & CART ICON VISIBILITY */
+.sr-hamburger,
+.sr-cart-link {
+    color: #fff !important;
+}

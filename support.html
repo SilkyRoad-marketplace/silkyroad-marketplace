@@ -5,30 +5,33 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <link rel="icon" href="/favicon.png">
   <link rel="stylesheet" href="/css/styles.css">
-  <title>Contact Support – Silky Road</title>
+  <title>Support – Silky Road</title>
 </head>
 
 <body>
+  <!-- Dynamic Header -->
   <div id="header-root"></div>
 
-  <main class="page">
+  <main class="page auth-page">
 
-    <div class="page-card">
+    <div class="auth-card">
 
-      <h1>Contact Support</h1>
-      <p class="muted">Need a hand? We're here for you.</p>
-      <p class="muted">Got a question about selling, payouts, or your products? Send us a message and we'll get back to you shortly.</p>
+      <h1>Support</h1>
+      <p class="muted">We're here to help. Describe your issue below.</p>
 
-      <button id="open-support" class="btn btn-primary" style="margin-bottom:20px;">
+      <!-- CONTACT SUPPORT BUTTON -->
+      <button id="support-toggle" class="btn btn-primary btn-full" style="margin-top:18px;">
         Contact support
       </button>
 
-      <div id="support-modal" class="support-form-card">
-        <h2>How can we help you today?</h2>
+      <!-- PANEL: HIDDEN UNTIL CLICKED -->
+      <div id="support-panel" class="support-panel">
+
+        <h2 style="margin-top:0;">How can we help you today?</h2>
 
         <div class="field">
           <span>Your email address</span>
-          <input id="support-email" type="email">
+          <input id="support-email" type="email" autocomplete="email">
         </div>
 
         <div class="field">
@@ -41,18 +44,27 @@
           <textarea id="support-message" rows="5"></textarea>
         </div>
 
-        <button class="btn btn-primary btn-full" id="support-send">
-          Send message
-        </button>
+        <button id="send-support" class="btn btn-ghost btn-full">Send message</button>
+
       </div>
 
     </div>
 
   </main>
 
+  <!-- Dynamic Footer -->
   <div id="footer-root"></div>
+
   <script src="/js/header-main.js"></script>
   <script src="/js/footer.js"></script>
-  <script src="/js/support.js"></script>
+
+  <!-- SUPPORT PANEL JS -->
+  <script>
+    document.getElementById("support-toggle").addEventListener("click", function () {
+      const panel = document.getElementById("support-panel");
+      panel.classList.toggle("open");
+    });
+  </script>
+
 </body>
 </html>

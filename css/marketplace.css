@@ -616,3 +616,62 @@ body.mp-body {
     display: inline-flex;
   }
 }
+/* ===============================
+   CATEGORY BAR (DESKTOP)
+================================== */
+
+.mp-cat-bar {
+  width: 100%;
+  background: rgba(10, 10, 18, 0.92);
+  border-top: 1px solid rgba(244, 197, 106, 0.25);
+  border-bottom: 1px solid rgba(244, 197, 106, 0.25);
+  padding: 6px 0;
+  display: flex;
+  justify-content: center;
+}
+
+.mp-cat-bar-inner {
+  max-width: 1120px;
+  width: 100%;
+  padding: 0 16px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.mp-cat-bar-inner::-webkit-scrollbar {
+  display: none;
+}
+
+.mp-cat-pill {
+  padding: 6px 12px;
+  white-space: nowrap;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  background: rgba(8, 7, 14, 0.8);
+  border-radius: 999px;
+  border: 1px solid rgba(244, 197, 106, 0.35);
+  cursor: pointer;
+}
+
+.mp-cat-pill:hover {
+  color: var(--accent-gold);
+  border-color: var(--accent-gold);
+}
+
+.mp-cat-pill.active {
+  background: radial-gradient(circle at top, #ffe9b7 0, #f4c56a 55%);
+  color: #140b05;
+}
+
+/* ===============================
+   MOBILE — hide desktop bar
+================================== */
+
+@media (max-width: 900px) {
+  .mp-cat-bar {
+    display: none;
+  }
+}

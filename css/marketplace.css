@@ -42,9 +42,9 @@ body.mp-body {
 ================================== */
 
 .mp-header {
-  position: relative;            /* << header scrolls together with page */
-  z-index: 40;
-  backdrop-filter: blur(16px);
+  /* NOT fixed: header scrolls with page */
+  position: relative;
+  z-index: 20;
   background: linear-gradient(135deg, rgba(5, 5, 9, 0.96), rgba(10, 10, 18, 0.98));
   border-bottom: 1px solid rgba(244, 197, 106, 0.38);
   box-shadow: 0 14px 40px rgba(0, 0, 0, 0.8);
@@ -103,7 +103,7 @@ body.mp-body {
   font-size: 0.9rem;
 }
 
-/* Header actions (desktop) */
+/* Header actions */
 
 .mp-header-actions {
   display: flex;
@@ -156,61 +156,39 @@ body.mp-body {
 
 .mp-icon-btn {
   font-size: 0.9rem;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
+  text-decoration: none;
 }
 
 /* Cart badge */
 
 .mp-cart-count {
-  position: absolute;
-  top: -6px;
-  right: -6px;
+  display: inline-block;
   min-width: 16px;
-  height: 16px;
-  padding: 0 3px;
+  padding: 0 4px;
+  margin-left: 4px;
   border-radius: 999px;
-  background: #ff4b6a;
+  background: var(--danger);
   color: #fff;
-  font-size: 0.68rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Category toggle (mobile hamburger) */
-
-.mp-cat-toggle {
-  display: none;              /* hidden on desktop */
-  border-radius: 999px;
-  border: 1px solid rgba(244, 197, 106, 0.45);
-  background: rgba(9, 7, 16, 0.9);
-  color: var(--accent-gold);
-  padding: 6px 10px;
-  font-size: 1rem;
-  cursor: pointer;
+  font-size: 0.7rem;
+  text-align: center;
 }
 
 /* ===============================
-   DESKTOP CATEGORY BAR
+   Desktop category bar
 ================================== */
 
 .mp-cat-bar {
-  border-top: 1px solid rgba(244, 197, 106, 0.28);
-  border-bottom: 1px solid rgba(244, 197, 106, 0.15);
-  background: radial-gradient(circle at top, #151320 0, #050509 70%);
+  border-top: 1px solid rgba(244, 197, 106, 0.25);
+  background: radial-gradient(circle at top, #151320 0, #050509 80%);
 }
 
 .mp-cat-bar-inner {
   max-width: 1120px;
   margin: 0 auto;
-  padding: 8px 16px 10px;
+  padding: 6px 16px 10px;
   display: flex;
-  align-items: center;
-  gap: 10px;
-  overflow-x: auto;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .mp-cat-pill {
@@ -218,10 +196,13 @@ body.mp-body {
   border: 1px solid rgba(244, 197, 106, 0.45);
   background: rgba(8, 7, 14, 0.9);
   color: var(--text-muted);
+  font-size: 0.8rem;
   padding: 4px 12px;
-  font-size: 0.82rem;
   cursor: pointer;
-  white-space: nowrap;
+}
+
+.mp-cat-pill:hover {
+  color: var(--accent-gold);
 }
 
 .mp-cat-pill.is-active {
@@ -229,8 +210,21 @@ body.mp-body {
   color: #170c05;
 }
 
+/* Category toggle (mobile only) */
+
+.mp-cat-toggle {
+  display: none; /* shown only on mobile */
+  border-radius: 999px;
+  border: 1px solid rgba(244, 197, 106, 0.45);
+  background: rgba(9, 7, 16, 0.9);
+  color: var(--accent-gold);
+  padding: 6px 12px;
+  font-size: 0.86rem;
+  cursor: pointer;
+}
+
 /* ===============================
-   MOBILE CATEGORY DRAWER
+   Category drawer (mobile)
 ================================== */
 
 .mp-cat-backdrop {
@@ -240,7 +234,7 @@ body.mp-body {
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.22s ease-out;
-  z-index: 35;
+  z-index: 30;
 }
 
 .mp-cat-backdrop.is-open {
@@ -274,7 +268,7 @@ body.mp-body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
   font-size: 0.9rem;
   font-weight: 600;
 }
@@ -291,7 +285,7 @@ body.mp-body {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .mp-cat-drawer-body {
@@ -308,7 +302,7 @@ body.mp-body {
   margin: 10px 0 4px;
 }
 
-/* Parent category */
+/* Parent category button */
 
 .mp-cat-parent {
   width: 100%;
@@ -420,22 +414,6 @@ body.mp-body {
   color: #170c05;
 }
 
-/* Rating alignment */
-
-.mp-filter-rating label {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.82rem;
-  color: var(--text-muted);
-}
-
-.mp-filter-rating input[type="radio"] {
-  margin: 0;
-}
-
-/* Price inputs */
-
 .mp-field {
   display: flex;
   flex-direction: column;
@@ -456,6 +434,23 @@ body.mp-body {
   padding: 6px 8px;
   font-size: 0.82rem;
 }
+
+/* Rating block – align stars neatly left */
+
+.mp-filter-block-rating label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.mp-filter-block-rating input[type="radio"] {
+  margin: 0;
+  accent-color: var(--accent-gold);
+}
+
+/* Clear filters button */
 
 .mp-filters-clear {
   margin-top: 10px;
@@ -500,7 +495,9 @@ body.mp-body {
   background: radial-gradient(circle at top, #181323 0, #050509 75%);
   border-radius: 18px;
   border: 1px solid rgba(244, 197, 106, 0.4);
-  box-shadow: 0 16px 45px rgba(0, 0, 0, 0.95), 0 0 22px rgba(247, 201, 120, 0.16);
+  box-shadow:
+    0 16px 45px rgba(0, 0, 0, 0.95),
+    0 0 22px rgba(247, 201, 120, 0.16);
   padding: 12px 12px 14px;
   display: flex;
   flex-direction: column;
@@ -560,7 +557,7 @@ body.mp-body {
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.22s ease-out;
-  z-index: 30;
+  z-index: 25;
 }
 
 .mp-filters-overlay.is-open {
@@ -578,18 +575,13 @@ body.mp-body {
     gap: 8px;
   }
 
-  /* Hide desktop actions, show hamburger */
-  .mp-header-actions {
+  /* Hide desktop category bar, show drawer button */
+  .mp-cat-bar {
     display: none;
   }
 
   .mp-cat-toggle {
     display: inline-flex;
-  }
-
-  /* Hide horizontal category bar on mobile */
-  .mp-cat-bar {
-    display: none;
   }
 
   .mp-layout {
@@ -598,11 +590,11 @@ body.mp-body {
 
   .mp-filters {
     position: fixed;
-    top: 64px;
+    top: 60px;
     left: -260px;
     width: 240px;
     max-width: 80%;
-    height: calc(100vh - 64px);
+    height: calc(100vh - 60px);
     overflow-y: auto;
     z-index: 32;
     transition: left 0.22s ease-out;
@@ -614,123 +606,5 @@ body.mp-body {
 
   .mp-filters-toggle {
     display: inline-flex;
-  }
-}
-/* ===============================
-   CATEGORY BAR (DESKTOP)
-================================== */
-
-.mp-cat-bar {
-  width: 100%;
-  background: rgba(10, 10, 18, 0.92);
-  border-top: 1px solid rgba(244, 197, 106, 0.25);
-  border-bottom: 1px solid rgba(244, 197, 106, 0.25);
-  padding: 6px 0;
-  display: flex;
-  justify-content: center;
-}
-
-.mp-cat-bar-inner {
-  max-width: 1120px;
-  width: 100%;
-  padding: 0 16px;
-  display: flex;
-  gap: 10px;
-  flex-wrap: nowrap;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-
-.mp-cat-bar-inner::-webkit-scrollbar {
-  display: none;
-}
-
-.mp-cat-pill {
-  padding: 6px 12px;
-  white-space: nowrap;
-  font-size: 0.85rem;
-  color: var(--text-muted);
-  background: rgba(8, 7, 14, 0.8);
-  border-radius: 999px;
-  border: 1px solid rgba(244, 197, 106, 0.35);
-  cursor: pointer;
-}
-
-.mp-cat-pill:hover {
-  color: var(--accent-gold);
-  border-color: var(--accent-gold);
-}
-
-.mp-cat-pill.active {
-  background: radial-gradient(circle at top, #ffe9b7 0, #f4c56a 55%);
-  color: #140b05;
-}
-
-/* ===============================
-   MOBILE — hide desktop bar
-================================== */
-
-@media (max-width: 900px) {
-  .mp-cat-bar {
-    display: none;
-  }
-}
-/* =========================================
-   DESKTOP CATEGORY BAR (VISIBLE)
-========================================= */
-
-.mp-cat-bar {
-  width: 100%;
-  background: rgba(10, 10, 18, 0.92);
-  border-top: 1px solid rgba(244, 197, 106, 0.22);
-  border-bottom: 1px solid rgba(244, 197, 106, 0.22);
-  padding: 10px 0;
-  display: flex;
-  justify-content: center;
-  position: sticky;
-  top: 64px; /* sits under header */
-  z-index: 30;
-}
-
-.mp-cat-bar-inner {
-  max-width: 1120px;
-  width: 100%;
-  padding: 0 16px;
-  display: flex;
-  gap: 10px;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-
-.mp-cat-bar-inner::-webkit-scrollbar {
-  display: none;
-}
-
-.mp-cat-pill {
-  padding: 6px 14px;
-  background: rgba(20, 16, 32, 0.8);
-  border-radius: 999px;
-  border: 1px solid rgba(244, 197, 106, 0.4);
-  color: var(--text-muted);
-  font-size: 0.86rem;
-  white-space: nowrap;
-  cursor: pointer;
-}
-
-.mp-cat-pill:hover {
-  border-color: var(--accent-gold);
-  color: var(--accent-gold);
-}
-
-.mp-cat-pill.is-active {
-  background: radial-gradient(circle at top, #ffe7b1 0, #f4c56a 55%);
-  color: #140b05;
-  border-color: transparent;
-}
-
-/* Hide desktop bar on mobile */
-@media (max-width: 900px) {
-  .mp-cat-bar {
-    display: none;
   }
 }

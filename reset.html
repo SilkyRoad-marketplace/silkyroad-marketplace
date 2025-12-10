@@ -9,32 +9,94 @@
 </head>
 
 <body>
+
+  <!-- HEADER -->
   <div id="header-root"></div>
 
   <main class="page auth-page">
-    <div class="page-card">
+
+    <div class="auth-card">
 
       <h1>Reset your password</h1>
-      <p class="muted">Enter your new password below.</p>
+      <p class="muted">Enter a new password to continue.</p>
 
       <form id="reset-form" class="auth-form">
+
+        <!-- NEW PASSWORD -->
         <div class="field password-field">
           <span>New password</span>
-          <input id="new-password" type="password">
-          <button type="button" class="pw-toggle">Show</button>
+          <input id="new-password" type="password" autocomplete="new-password">
+          <button type="button" class="pw-toggle" data-target="new-password">Show</button>
+        </div>
+
+        <!-- CONFIRM PASSWORD -->
+        <div class="field password-field">
+          <span>Confirm new password</span>
+          <input id="confirm-password" type="password" autocomplete="new-password">
+          <button type="button" class="pw-toggle" data-target="confirm-password">Show</button>
         </div>
 
         <button class="btn btn-primary btn-full" type="submit">
           Update password
         </button>
+
       </form>
 
     </div>
+
   </main>
 
+  <!-- FOOTER -->
   <div id="footer-root"></div>
-  <script src="/js/header-main.js"></script>
-  <script src="/js/auth.js"></script>
-  <script src="/js/footer.js"></script>
+
+  <!-- MODULE SCRIPTS ARE REQUIRED -->
+  <script type="module" src="/js/header-main.js"></script>
+  <script type="module" src="/js/footer.js"></script>
+
+  <!-- RESET PASSWORD LOGIC -->
+  <script type="module">
+    import { updatePassword } from "/js/auth.js";
+
+    // Show/Hide password buttons
+    document.querySelectorAll(".pw-toggle").forEach(btn => {
+      btn.addEventListener("click", function () {
+        const input = document.getElementById(this.dataset.target);
+        if (input.type === "password") {
+          input.type = "text";
+          this.textContent = "Hide";
+        } else {
+          input.type = "password";
+          this.textContent = "Show";
+        }
+      });
+    });
+
+    // Handle password update
+    document.getElementById("reset-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const pw1 = document.getElementById("new-password").value.trim();
+      const pw2 = document.getElementById("confirm-password").value.trim();
+
+      if (!pw1 || !pw2) {
+        alert("Please fill out both password fields.");
+        return;
+      }
+
+      if (pw1 !== pw2) {
+        alert("Passwords do not match.");
+        return;
+      }
+
+      try {
+        await updatePassword(pw1);
+        alert("Password updated successfully! Please log in again.");
+        window.location.href = "/login.html";
+      } catch (err) {
+        alert("Error: " + err.message);
+      }
+    });
+  </script>
+
 </body>
 </html>

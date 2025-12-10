@@ -44,7 +44,7 @@ export async function emailSignUp(email, password) {
     email,
     password,
     options: {
-      emailRedirectTo: "https://silkyroad.vercel.app/auth-callback.html"
+      emailRedirectTo: "https://silkyroad.vercel.app/verified.html"
     }
   });
 }

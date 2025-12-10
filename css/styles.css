@@ -1575,3 +1575,69 @@ body{
 .nav-backdrop.visible {
   display: block;
 }
+/* ============================
+   Responsive header + mobile drawer
+   ============================ */
+
+/* Backdrop for mobile menu */
+.nav-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s ease-out;
+  z-index: 40;
+}
+
+.nav-backdrop.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Mobile drawer (slides from LEFT) */
+.nav-mobile-panel {
+  position: fixed;
+  top: 64px; /* approx header height */
+  left: 0;
+  width: 260px;
+  max-width: 80%;
+  height: calc(100vh - 64px);
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  border-top: 1px solid rgba(244, 197, 106, 0.4);
+  background: radial-gradient(circle at top, #151320 0, #050509 70%);
+  box-shadow: 16px 0 40px rgba(0, 0, 0, 0.9);
+  transform: translateX(-100%);
+  opacity: 0;
+  transition: transform 0.22s ease-out, opacity 0.22s ease-out;
+  z-index: 45;
+}
+
+.nav-mobile-panel.open {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+/* Desktop vs mobile layout */
+@media (max-width: 768px) {
+  .sr-header-inner {
+    padding: 10px 0;
+  }
+
+  .nav-main,
+  .nav-actions {
+    display: none;
+  }
+
+  .nav-toggle {
+    display: flex;
+  }
+}
+
+@media (min-width: 769px) {
+  .nav-backdrop {
+    display: none;
+  }
+}

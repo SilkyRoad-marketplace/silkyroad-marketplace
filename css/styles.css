@@ -1641,3 +1641,55 @@ body{
     display: none;
   }
 }
+/* ================================
+   DESKTOP AUTH / SUPPORT PAGE CARDS
+   Option B — Subtle professional style
+================================ */
+
+@media (min-width: 769px) {
+
+  .auth-card,
+  .support-card,
+  .form-card,
+  .help-card {
+    max-width: 520px;
+    width: 100%;
+    margin: 80px auto;
+    padding: 40px;
+    background: rgba(0,0,0,0.25);
+    border: 1px solid rgba(244,197,106,0.20);
+    border-radius: 18px;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+  }
+}
+
+/* ================================
+   FOOTER FIX — LINKS & ALIGNMENT
+================================ */
+
+footer a,
+.sr-footer-links a {
+  color: #bfbfbf !important;
+  text-decoration: none;
+}
+
+footer a:hover,
+.sr-footer-links a:hover {
+  color: #ffcc66 !important;
+}
+
+footer,
+.sr-footer {
+  padding: 20px 30px;
+  font-size: 14px;
+  color: #cccccc;
+}
+
+.sr-footer-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}

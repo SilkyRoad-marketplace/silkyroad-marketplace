@@ -9,11 +9,11 @@
 </head>
 
 <body>
-  <!-- Header injected -->
+
+  <!-- HEADER -->
   <div id="header-root"></div>
 
   <main class="page auth-page">
-
     <div class="auth-card">
 
       <h1>Log in</h1>
@@ -47,9 +47,8 @@
 
       <button id="forgot-toggle" class="link-forgot">Forgot your password?</button>
 
-      <!-- RESET PANEL -->
       <div id="forgot-panel" class="forgot-panel">
-        <p class="muted small">Enter your email and we’ll send reset instructions.</p>
+        <p class="muted small">Enter your email and we'll send reset instructions.</p>
 
         <div class="field">
           <span>Email</span>
@@ -59,27 +58,30 @@
         <button id="send-reset" class="btn btn-ghost btn-full">Send reset link</button>
       </div>
 
-    </div>
+      <p id="verify-warning" class="small" style="color:#f6b84e; display:none; margin-top:12px;">
+        Your email is not verified. Please check your inbox.
+        <br><br>
+        <button id="resend-verification" class="btn btn-ghost btn-full">Resend verification email</button>
+      </p>
 
+    </div>
   </main>
 
   <!-- FOOTER -->
   <div id="footer-root"></div>
 
-  <!-- AUTH LOGIC -->
+  <!-- LOGIN LOGIC -->
   <script type="module">
     import { supabase, emailSignIn, googleAuth, sendPasswordReset } from "/js/auth.js";
 
-    // -----------------------------
     // GOOGLE LOGIN
-    // -----------------------------
     document.getElementById("google-login").addEventListener("click", () => {
       googleAuth("https://silkyroad.vercel.app/auth-callback.html");
     });
 
-    // -----------------------------
-    // EMAIL LOGIN
-    // -----------------------------
+    // ==========================
+    // EMAIL LOGIN HANDLING
+    // ==========================
     document.getElementById("login-form").addEventListener("submit", async (e) => {
       e.preventDefault();
 
@@ -87,49 +89,74 @@
       const password = document.getElementById("login-password").value.trim();
 
       if (!email || !password) {
-        alert("Please enter both email and password.");
+        alert("Please enter your email and password.");
         return;
       }
 
       try {
-        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+        const { data, error } = await emailSignIn(email, password);
 
-        if (error) {
-          if (error.message.includes("Invalid login credentials")) {
-            alert("The password you entered is incorrect.");
-            return;
-          }
-          alert("Login failed: " + error.message);
+        if (error && error.message.includes("Invalid login credentials")) {
+          alert("Incorrect email or password.");
           return;
         }
 
-        // SUCCESS
+        const session = data.session;
+
+        if (!session) {
+          alert("Login failed. Please try again.");
+          return;
+        }
+
+        const user = session.user;
+
+        // CHECK EMAIL VERIFICATION STATUS
+        if (!user.email_confirmed_at) {
+          document.getElementById("verify-warning").style.display = "block";
+          await supabase.auth.signOut();
+          return;
+        }
+
+        // SUCCESS — redirect to dashboard
         window.location.href = "/dashboard.html";
 
       } catch (err) {
-        alert("Error: " + err.message);
+        alert("Login error: " + err.message);
       }
     });
 
-    // -----------------------------
-    // PASSWORD VISIBILITY TOGGLE
-    // -----------------------------
-    document.querySelector(".pw-toggle").addEventListener("click", function () {
-      const field = document.getElementById("login-password");
-      field.type = field.type === "password" ? "text" : "password";
-      this.textContent = field.type === "password" ? "Show" : "Hide";
+    // ==========================
+    // RESEND VERIFICATION EMAIL
+    // ==========================
+    document.getElementById("resend-verification").addEventListener("click", async () => {
+      const email = document.getElementById("login-email").value.trim();
+
+      if (!email) {
+        alert("Enter your email above first.");
+        return;
+      }
+
+      try {
+        const { error } = await supabase.auth.resend({
+          type: "signup",
+          email: email,
+        });
+
+        if (error) throw error;
+
+        alert("A new verification email has been sent.");
+      } catch (err) {
+        alert("Error sending verification email: " + err.message);
+      }
     });
 
-    // -----------------------------
-    // FORGOT PASSWORD (OPEN PANEL)
-    // -----------------------------
+    // ==========================
+    // FORGOT PASSWORD
+    // ==========================
     document.getElementById("forgot-toggle").addEventListener("click", () => {
       document.getElementById("forgot-panel").classList.toggle("open");
     });
 
-    // -----------------------------
-    // SEND RESET EMAIL
-    // -----------------------------
     document.getElementById("send-reset").addEventListener("click", async () => {
       const email = document.getElementById("forgot-email").value.trim();
 
@@ -140,14 +167,23 @@
 
       try {
         await sendPasswordReset(email);
-        alert("Reset link sent. Please check your email.");
+        alert("A reset link has been sent to your email.");
       } catch (err) {
         alert("Error: " + err.message);
       }
     });
+
+    // ==========================
+    // SHOW / HIDE PASSWORD
+    // ==========================
+    document.querySelector(".pw-toggle").addEventListener("click", function () {
+      const field = document.getElementById("login-password");
+      field.type = field.type === "password" ? "text" : "password";
+      this.textContent = field.type === "password" ? "Show" : "Hide";
+    });
   </script>
 
-  <!-- Inject header + footer -->
+  <!-- HEADER & FOOTER -->
   <script type="module" src="/js/header-main.js"></script>
   <script type="module" src="/js/footer.js"></script>
 

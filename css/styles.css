@@ -1133,3 +1133,44 @@ body{
   visibility:visible;
   opacity:1;
 }
+/* MOBILE DRAWER LAYOUT FIX */
+.nav-mobile-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 20px 18px;
+}
+
+.nav-mobile-links {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.nav-mobile-links a {
+  color: var(--text-main);
+  text-decoration: none;
+  font-size: 1rem;
+  padding: 8px 0;
+}
+
+.nav-mobile-links a:hover {
+  color: var(--accent-gold);
+}
+
+.nav-mobile-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Close button inside drawer */
+.mobile-close-btn {
+  align-self: flex-end;
+  background: none;
+  border: none;
+  font-size: 1.8rem;
+  color: var(--accent-gold);
+  cursor: pointer;
+  margin-bottom: 10px;
+}

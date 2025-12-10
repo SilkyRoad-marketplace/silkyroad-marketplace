@@ -1,319 +1,189 @@
-// /js/marketplace-categories.js
-// Unified category + subcategory navigation for marketplace
-(function () {
-  // -------------------------------
-  // CATEGORY CONFIG
-  // -------------------------------
-  const CATEGORY_CONFIG = {
-    all: {
-      id: "all",
-      label: "All",
-      urlCategory: "All",
-      subs: []
-    },
-    "3d": {
-      id: "3d",
-      label: "3D",
-      urlCategory: "3D",
-      subs: [
-        "Avatars & Characters",
-        "Buildings & Props",
-        "Clothing & Accessories",
-        "Vehicles",
-        "Weapons",
-        "UI Packs",
-        "Game Assets",
-        "Scripts",
-        "Animation",
-        "Terrain / Maps",
-        "Effects",
-        "Tools / Plugins",
-        "Icon Packs"
-      ]
-    },
-    roblox: {
-      id: "roblox",
-      label: "Roblox",
-      urlCategory: "Roblox",
-      subs: [
-        "Avatars",
-        "Characters",
-        "Clothing",
-        "Vehicles",
-        "Weapons",
-        "UI Packs",
-        "Game Assets",
-        "Scripts",
-        "Animation",
-        "Terrain / Maps",
-        "Effects",
-        "Tools / Plugins",
-        "Icon Packs"
-      ]
-    },
-    crafts: {
-      id: "crafts",
-      label: "Crafts",
-      urlCategory: "Crafts",
-      subs: [
-        "Crochet Patterns",
-        "Knitting Patterns",
-        "Sewing Patterns",
-        "Embroidery",
-        "Quilting",
-        "Printables",
-        "DIY Guides",
-        "Templates"
-      ]
-    },
-    design: {
-      id: "design",
-      label: "Design",
-      urlCategory: "Design",
-      subs: [
-        "Graphic Templates",
-        "Canva Templates",
-        "Social Media Packs",
-        "Print Templates",
-        "Logo Templates",
-        "UI/UX Kits",
-        "Icon Sets",
-        "Mockups",
-        "Typography",
-        "Resume Templates"
-      ]
-    },
-    drawing: {
-      id: "drawing",
-      label: "Drawing & Painting",
-      urlCategory: "Drawing & Painting",
-      subs: [
-        "Procreate Brushes",
-        "Photoshop Brushes",
-        "Clip Studio Brushes",
-        "Digital Illustration",
-        "Tutorials",
-        "Reference Packs",
-        "Print-ready Artwork"
-      ]
-    },
-    music: {
-      id: "music",
-      label: "Music & Sound Design",
-      urlCategory: "Music & Sound Design",
-      subs: [
-        "Sample Packs",
-        "Loops",
-        "Beats",
-        "Vocals",
-        "Sound Effects",
-        "Mixing Templates",
-        "Presets (Serum, Vital, etc.)",
-        "MIDI Packs"
-      ]
-    },
-    films: {
-      id: "films",
-      label: "Films",
-      urlCategory: "Films",
-      subs: [
-        "LUTs",
-        "Premiere Pro Templates",
-        "Final Cut Templates",
-        "Motion Graphics",
-        "Overlays",
-        "Stock Footage",
-        "Tutorials"
-      ]
-    }
-  };
+// /js/marketplace-cats.js
+// Builds desktop category bar + mobile drawer from Supabase "products" table
 
-  const CATEGORY_ORDER = ["all", "3d", "roblox", "crafts", "design", "drawing", "music", "films"];
-  let activeCatId = "all";
+// Supabase CDN is loaded in marketplace.html so global "supabase" exists.
+const { createClient } = supabase;
 
-  // -------------------------------
-  // DESKTOP BAR
-  // -------------------------------
-  function buildDesktopCategories() {
-    const wrapper = document.getElementById("mp-cat-bar-inner");
-    if (!wrapper) return;
+// Use same project as auth.js
+const SUPABASE_URL = "https://paqvgsruppgadgguynde.supabase.co";
+const SUPABASE_ANON =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBhcXZnc3J1cHBnYWRnZ3V5bmRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIzNTg3NTMsImV4cCI6MjA3NzkzNDc1M30.pwEE4WLFu2-tHkmH1fFYYwcEPmLPyavN7ykXdPGQ3AY";
 
-    wrapper.innerHTML = "";
+const client = createClient(SUPABASE_URL, SUPABASE_ANON);
 
-    const topRow = document.createElement("div");
-    topRow.className = "mp-cat-row mp-cat-row-main";
+// DOM refs
+const desktopBar  = document.getElementById("mp-cat-bar-inner");
+const drawerBody  = document.getElementById("mp-cat-drawer-body");
+const drawer      = document.getElementById("mp-cat-drawer");
+const backdrop    = document.getElementById("mp-cat-backdrop");
+const btnToggle   = document.getElementById("mp-cat-toggle");
+const btnClose    = document.getElementById("mp-cat-close");
 
-    const subRow = document.createElement("div");
-    subRow.className = "mp-cat-row mp-cat-row-sub";
-    subRow.id = "mp-cat-sub-row";
+// ---------- Drawer open / close ----------
 
-    CATEGORY_ORDER.forEach((id) => {
-      const cfg = CATEGORY_CONFIG[id];
-      if (!cfg) return;
+function openDrawer() {
+  if (!drawer || !backdrop) return;
+  drawer.classList.add("is-open");
+  backdrop.classList.add("is-open");
+}
 
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = "mp-cat-pill";
-      btn.textContent = cfg.label;
-      btn.dataset.catId = id;
+function closeDrawer() {
+  if (!drawer || !backdrop) return;
+  drawer.classList.remove("is-open");
+  backdrop.classList.remove("is-open");
+}
 
-      if (id === activeCatId) {
-        btn.classList.add("is-active");
-      }
+if (btnToggle) btnToggle.addEventListener("click", openDrawer);
+if (btnClose)  btnClose.addEventListener("click", closeDrawer);
+if (backdrop)  backdrop.addEventListener("click", closeDrawer);
 
-      btn.addEventListener("click", () => {
-        if (activeCatId === id) return;
-        activeCatId = id;
-        updateActiveDesktopPills();
-        renderDesktopSubRow();
-        updateProductsTitle();
-      });
+// ---------- Fetch category map from Supabase ----------
 
-      topRow.appendChild(btn);
-    });
+async function fetchCategoryMap() {
+  // assumes table "products" with columns "category" and "subcategory"
+  const { data, error } = await client
+    .from("products")
+    .select("category, subcategory");
 
-    wrapper.appendChild(topRow);
-    wrapper.appendChild(subRow);
-
-    renderDesktopSubRow();
+  if (error) {
+    console.error("Failed to load categories:", error);
+    return new Map();
   }
 
-  function updateActiveDesktopPills() {
-    document.querySelectorAll(".mp-cat-pill").forEach((el) => {
-      const id = el.dataset.catId;
-      if (id === activeCatId) {
-        el.classList.add("is-active");
-      } else {
-        el.classList.remove("is-active");
-      }
-    });
-  }
+  const map = new Map(); // category -> Set(subcats)
 
-  function renderDesktopSubRow() {
-    const row = document.getElementById("mp-cat-sub-row");
-    if (!row) return;
+  data.forEach((row) => {
+    const cat = row.category ? String(row.category).trim() : "";
+    const sub = row.subcategory ? String(row.subcategory).trim() : "";
+    if (!cat) return;
 
-    const cfg = CATEGORY_CONFIG[activeCatId];
-    row.innerHTML = "";
-
-    if (!cfg || !cfg.subs || cfg.subs.length === 0) {
-      row.style.display = "none";
-      return;
-    }
-
-    row.style.display = "flex";
-
-    cfg.subs.forEach((sub) => {
-      const link = document.createElement("a");
-      link.className = "mp-cat-sub-pill";
-      link.textContent = sub;
-      link.href =
-        "/category.html?category=" +
-        encodeURIComponent(cfg.urlCategory) +
-        "&sub=" +
-        encodeURIComponent(sub);
-      row.appendChild(link);
-    });
-  }
-
-  function updateProductsTitle() {
-    const title = document.getElementById("mp-products-title");
-    if (!title) return;
-
-    if (activeCatId === "all") {
-      title.textContent = "All products";
-    } else {
-      const cfg = CATEGORY_CONFIG[activeCatId];
-      title.textContent = cfg ? cfg.label : "Products";
-    }
-  }
-
-  // -------------------------------
-  // MOBILE DRAWER
-  // -------------------------------
-  function buildMobileCategories() {
-    const list = document.getElementById("mp-drawer-cat-list");
-    if (!list) return;
-
-    list.innerHTML = "";
-
-    CATEGORY_ORDER.forEach((id) => {
-      if (id === "all") return; // 'All products' button already in HTML
-
-      const cfg = CATEGORY_CONFIG[id];
-      if (!cfg) return;
-
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = "mp-drawer-link";
-      btn.textContent = cfg.label;
-      btn.dataset.catId = id;
-
-      btn.addEventListener("click", () => {
-        openSubDrawer(id);
-      });
-
-      list.appendChild(btn);
-    });
-
-    const allBtn = document.querySelector("[data-drawer-all]");
-    if (allBtn) {
-      allBtn.addEventListener("click", () => {
-        activeCatId = "all";
-        updateActiveDesktopPills();
-        renderDesktopSubRow();
-        updateProductsTitle();
-      });
-    }
-
-    const backBtn = document.getElementById("mp-drawer-back");
-    const mainView = document.getElementById("mp-drawer-view-main");
-    const subView = document.getElementById("mp-drawer-view-sub");
-
-    if (backBtn && mainView && subView) {
-      backBtn.addEventListener("click", () => {
-        subView.style.display = "none";
-        mainView.style.display = "block";
-      });
-    }
-  }
-
-  function openSubDrawer(catId) {
-    const cfg = CATEGORY_CONFIG[catId];
-    if (!cfg) return;
-
-    const mainView = document.getElementById("mp-drawer-view-main");
-    const subView = document.getElementById("mp-drawer-view-sub");
-    const title = document.getElementById("mp-drawer-sub-title");
-    const list = document.getElementById("mp-drawer-sub-list");
-
-    if (!mainView || !subView || !title || !list) return;
-
-    mainView.style.display = "none";
-    subView.style.display = "block";
-
-    title.textContent = cfg.label;
-    list.innerHTML = "";
-
-    cfg.subs.forEach((sub) => {
-      const link = document.createElement("a");
-      link.className = "mp-drawer-link";
-      link.textContent = sub;
-      link.href =
-        "/category.html?category=" +
-        encodeURIComponent(cfg.urlCategory) +
-        "&sub=" +
-        encodeURIComponent(sub);
-      list.appendChild(link);
-    });
-  }
-
-  // -------------------------------
-  // INIT
-  // -------------------------------
-  document.addEventListener("DOMContentLoaded", () => {
-    buildDesktopCategories();
-    buildMobileCategories();
-    updateProductsTitle();
+    if (!map.has(cat)) map.set(cat, new Set());
+    if (sub) map.get(cat).add(sub);
   });
+
+  return map;
+}
+
+// ---------- Interaction with product list ----------
+
+function handleCategoryClick(category, subcategory = null) {
+  // Update label over featured grid
+  const labelEl = document.getElementById("mp-current-cat-label");
+  if (labelEl) {
+    if (!category && !subcategory) {
+      labelEl.textContent = "Showing: All categories";
+    } else if (category && !subcategory) {
+      labelEl.textContent = `Showing: ${category}`;
+    } else {
+      labelEl.textContent = `Showing: ${category} › ${subcategory}`;
+    }
+  }
+
+  // Update active state in desktop pills
+  if (desktopBar) {
+    desktopBar.querySelectorAll(".mp-cat-pill").forEach((btn) => {
+      const btnCat = btn.dataset.cat || "";
+      const isAll  = btnCat === "all" && !category && !subcategory;
+      const match  = btnCat === category && !subcategory;
+      btn.classList.toggle("is-active", isAll || match);
+    });
+  }
+
+  // Notify marketplace.js (if it defines this hook)
+  if (typeof window.handleCategoryChange === "function") {
+    window.handleCategoryChange({ category, subcategory });
+  } else {
+    console.log("Category selected:", category, subcategory);
+  }
+
+  // On mobile, close drawer when a subcategory is picked
+  if (window.innerWidth <= 900) {
+    closeDrawer();
+  }
+}
+
+// ---------- Build desktop bar + mobile drawer ----------
+
+function buildUI(categoryMap) {
+  if (desktopBar) desktopBar.innerHTML = "";
+  if (drawerBody) drawerBody.innerHTML = "";
+
+  // Desktop "All" pill
+  if (desktopBar) {
+    const allBtn = document.createElement("button");
+    allBtn.className = "mp-cat-pill is-active";
+    allBtn.textContent = "All";
+    allBtn.dataset.cat = "all";
+    allBtn.addEventListener("click", () => handleCategoryClick(null, null));
+    desktopBar.appendChild(allBtn);
+  }
+
+  // Drawer "Browse" title + "All products"
+  if (drawerBody) {
+    const title = document.createElement("div");
+    title.className = "mp-cat-section-title";
+    title.textContent = "Browse";
+    drawerBody.appendChild(title);
+
+    const allBtnMobile = document.createElement("button");
+    allBtnMobile.className = "mp-cat-parent";
+    allBtnMobile.innerHTML = "<span>All products</span>";
+    allBtnMobile.addEventListener("click", () => handleCategoryClick(null, null));
+    drawerBody.appendChild(allBtnMobile);
+  }
+
+  // Each category
+  for (const [category, subSet] of categoryMap.entries()) {
+    // Desktop pill
+    if (desktopBar) {
+      const pill = document.createElement("button");
+      pill.className = "mp-cat-pill";
+      pill.dataset.cat = category;
+      pill.textContent = category;
+      pill.addEventListener("click", () => handleCategoryClick(category, null));
+      desktopBar.appendChild(pill);
+    }
+
+    // Mobile accordion
+    if (!drawerBody) continue;
+
+    const parentBtn = document.createElement("button");
+    parentBtn.className = "mp-cat-parent";
+    parentBtn.innerHTML = `<span>${category}</span><span>▸</span>`;
+
+    const sublist = document.createElement("div");
+    sublist.className = "mp-cat-sublist";
+
+    if (subSet.size) {
+      subSet.forEach((sub) => {
+        const subBtn = document.createElement("button");
+        subBtn.className = "mp-cat-sub";
+        subBtn.textContent = sub;
+        subBtn.addEventListener("click", () =>
+          handleCategoryClick(category, sub)
+        );
+        sublist.appendChild(subBtn);
+      });
+    }
+
+    parentBtn.addEventListener("click", () => {
+      const open = sublist.classList.toggle("is-open");
+      const arrow = parentBtn.querySelector("span:last-child");
+      if (arrow) arrow.textContent = open ? "▾" : "▸";
+    });
+
+    drawerBody.appendChild(parentBtn);
+    drawerBody.appendChild(sublist);
+  }
+}
+
+// ---------- Init on load ----------
+
+(async function initCategories() {
+  try {
+    const map = await fetchCategoryMap();
+    buildUI(map);
+  } catch (e) {
+    console.error("Error initialising categories:", e);
+  }
 })();

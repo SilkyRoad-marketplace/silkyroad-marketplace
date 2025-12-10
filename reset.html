@@ -2,69 +2,39 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Reset password – Silky Road Marketplace</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <link rel="icon" href="/favicon.png">
   <link rel="stylesheet" href="/css/styles.css">
+  <title>Reset password – Silky Road</title>
 </head>
+
 <body>
   <div id="header-root"></div>
+
   <main class="page auth-page">
-    <section class="card auth-card">
+    <div class="page-card">
+
       <h1>Reset your password</h1>
-      <p class="muted">Choose a new password for your account.</p>
+      <p class="muted">Enter your new password below.</p>
 
       <form id="reset-form" class="auth-form">
-        <label class="field password-field">
+        <div class="field password-field">
           <span>New password</span>
-          <input type="password" id="reset-password" required>
-          <button type="button" class="pw-toggle" data-target="reset-password">Show</button>
-        </label>
+          <input id="new-password" type="password">
+          <button type="button" class="pw-toggle">Show</button>
+        </div>
 
-        <label class="field password-field">
-          <span>Confirm new password</span>
-          <input type="password" id="reset-password-confirm" required>
-          <button type="button" class="pw-toggle" data-target="reset-password-confirm">Show</button>
-        </label>
-
-        <button type="submit" class="btn btn-primary btn-full">Update password</button>
+        <button class="btn btn-primary btn-full" type="submit">
+          Update password
+        </button>
       </form>
-    </section>
+
+    </div>
   </main>
+
   <div id="footer-root"></div>
-  <script type="module" src="/js/header-main.js"></script>
-  <script type="module" src="/js/footer.js"></script>
-  <script type="module">
-    import { initAuthUI, updatePassword } from "/js/auth.js";
-    initAuthUI();
-
-    function wirePasswordToggles() {
-      document.querySelectorAll(".pw-toggle").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          const id = btn.getAttribute("data-target");
-          const input = document.getElementById(id);
-          if (!input) return;
-          if (input.type === "password") { input.type = "text"; btn.textContent = "Hide"; }
-          else { input.type = "password"; btn.textContent = "Show"; }
-        });
-      });
-    }
-    wirePasswordToggles();
-
-    document.getElementById("reset-form")?.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const pw = document.getElementById("reset-password").value;
-      const pw2 = document.getElementById("reset-password-confirm").value;
-      if (pw !== pw2) { alert("Passwords do not match."); return; }
-      try {
-        await updatePassword(pw);
-        alert("Password updated. You can now log in.");
-        window.location.href = "/login.html";
-      } catch (err) {
-        console.error(err);
-        alert("Failed to update password. Please try again.");
-      }
-    });
-  </script>
+  <script src="/js/header-main.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/footer.js"></script>
 </body>
 </html>

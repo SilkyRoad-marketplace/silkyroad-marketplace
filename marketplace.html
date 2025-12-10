@@ -59,24 +59,61 @@
           id="mp-cat-toggle"
           aria-label="Browse categories"
         >
-          ☰ Categories
+          ☰ 
         </button>
       </div>
     </div>
+    <!-- DESKTOP CATEGORY BAR -->
+<nav class="mp-cat-bar" id="mp-cat-bar">
+  <div class="mp-cat-bar-inner" id="mp-cat-bar-inner">
+
+    <!-- JS will auto-insert categories here -->
+    <!-- Example render:
+      <button class="mp-cat-pill" data-cat="3d">3D</button>
+      <button class="mp-cat-pill" data-cat="roblox">Roblox</button>
+    -->
+  </div>
+</nav>
+
   </header>
 
   <!-- CATEGORY DRAWER + BACKDROP -->
   <div class="mp-cat-backdrop" id="mp-cat-backdrop"></div>
 
-  <aside class="mp-cat-drawer" id="mp-cat-drawer" aria-label="Browse categories">
-    <div class="mp-cat-drawer-header">
+ <!-- MOBILE CATEGORY DRAWER -->
+<div class="mp-cat-backdrop" id="mp-cat-backdrop"></div>
+
+<aside class="mp-cat-drawer" id="mp-cat-drawer">
+  
+  <div class="mp-cat-drawer-header">
+    <span>Browse categories</span>
+    <button class="mp-cat-close" id="mp-cat-close">✕</button>
+  </div>
+
+  <!-- Account section (mobile only) -->
+  <div class="mp-cat-drawer-account">
+    <a href="/login.html" class="mp-link" data-when="logged-out">Log in</a>
+    <a href="/sign_up.html" class="mp-btn mp-btn-gold" data-when="logged-out">Start selling</a>
+
+    <a href="/library.html" class="mp-link" data-when="logged-in" style="display:none;">Library</a>
+    <a href="/dashboard.html" class="mp-btn mp-btn-gold" data-when="logged-in" style="display:none;">Dashboard</a>
+  </div>
+
+  <!-- Accordion category list -->
+  <div class="mp-cat-drawer-body" id="mp-cat-drawer-body">
+    <!-- JS inserts categories + subcategories here -->
+  </div>
+
+</aside>
+
+    
       <span>Browse categories</span>
       <button type="button" class="mp-cat-close" id="mp-cat-close" aria-label="Close">
         ✕
       </button>
     </div>
 
-    <div class="mp-cat-drawer-body" id="mp-cat-drawer-body">
+    
       <!-- JS will inject all categories + subcategories here -->
     </div>
   </aside>

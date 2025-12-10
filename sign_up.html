@@ -5,12 +5,12 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <link rel="icon" href="/favicon.png">
   <link rel="stylesheet" href="/css/styles.css">
-  <title>Create account – Silky Road</title>
+  <title>Create your account – Silky Road</title>
 </head>
 
 <body>
 
-  <!-- HEADER LOADS HERE -->
+  <!-- HEADER -->
   <div id="header-root"></div>
 
   <main class="page auth-page">
@@ -18,7 +18,7 @@
     <div class="auth-card">
 
       <h1>Create your account</h1>
-      <p class="muted">Start selling digital products instantly.</p>
+      <p class="muted">Sign up to start selling or buying digital products.</p>
 
       <!-- GOOGLE SIGN UP -->
       <button id="google-signup" class="btn btn-full btn-primary" style="margin-top:18px;">
@@ -28,85 +28,82 @@
       <div class="auth-divider">or</div>
 
       <!-- EMAIL SIGN UP -->
-      <form id="signup-form" class="auth-form">
+      <form id="sign-up-form" class="auth-form">
 
         <div class="field">
           <span>Email</span>
-          <input id="signup-email" type="email" autocomplete="email">
+          <input id="sign-up-email" type="email" autocomplete="email">
         </div>
 
         <div class="field password-field">
           <span>Password</span>
-          <input id="signup-password" type="password" autocomplete="new-password">
+          <input id="sign-up-password" type="password" autocomplete="new-password">
           <button type="button" class="pw-toggle">Show</button>
         </div>
 
-        <p class="password-strength">Use at least 6 characters.</p>
-
-        <button type="submit" class="btn btn-primary btn-full" style="margin-top:10px;">
+        <button type="submit" class="btn btn-primary btn-full" style="margin-top:12px;">
           Create account
         </button>
-
-        <p class="terms-note">
-          By creating an account, you agree to our
-          <a href="/terms.html">Terms</a> and
-          <a href="/privacy.html">Privacy Policy</a>.
-        </p>
-
       </form>
+
+      <p id="signup-success" class="muted small" style="margin-top:10px; display:none;">
+        ✔ A verification email has been sent. Please check your inbox.
+      </p>
 
     </div>
 
   </main>
 
-  <!-- FOOTER LOADS HERE -->
+  <!-- FOOTER -->
   <div id="footer-root"></div>
 
-  <!-- FIXED: MUST BE MODULE -->
-  <script type="module" src="/js/header-main.js"></script>
-  <script type="module" src="/js/footer.js"></script>
-
-  <!-- SIGN UP LOGIC -->
+  <!-- SCRIPT -->
   <script type="module">
-    import { emailSignUp, googleAuth } from "/js/auth.js";
+    import { emailSignUp, googleAuth, supabase } from "/js/auth.js";
 
-    // Google sign-up
+    // GOOGLE SIGNUP
     document.getElementById("google-signup").addEventListener("click", () => {
       googleAuth("https://silkyroad.vercel.app/auth-callback.html");
     });
 
-    // Email sign-up
-    document.getElementById("signup-form").addEventListener("submit", async (e) => {
+    // EMAIL SIGN-UP
+    document.getElementById("sign-up-form").addEventListener("submit", async (e) => {
       e.preventDefault();
 
-      const email = document.getElementById("signup-email").value.trim();
-      const password = document.getElementById("signup-password").value.trim();
+      const email = document.getElementById("sign-up-email").value.trim();
+      const password = document.getElementById("sign-up-password").value.trim();
 
       if (!email || !password) {
-        alert("Please enter your email and password.");
+        alert("Please enter an email and password.");
         return;
       }
 
       try {
         await emailSignUp(email, password);
-        alert("Check your email to verify your account.");
+
+        // Show success
+        document.getElementById("signup-success").style.display = "block";
+
       } catch (err) {
-        alert("Sign-up failed: " + err.message);
+        if (err.message.includes("User already registered")) {
+          alert("This email is already registered. Try logging in instead.");
+        } else {
+          alert("Sign up failed: " + err.message);
+        }
       }
     });
 
-    // Password show/hide toggle
+    // PASSWORD SHOW/HIDE
     document.querySelector(".pw-toggle").addEventListener("click", function () {
-      const input = document.getElementById("signup-password");
-      if (input.type === "password") {
-        input.type = "text";
-        this.textContent = "Hide";
-      } else {
-        input.type = "password";
-        this.textContent = "Show";
-      }
+      const field = document.getElementById("sign-up-password");
+      field.type = field.type === "password" ? "text" : "password";
+      this.textContent = field.type === "password" ? "Show" : "Hide";
     });
   </script>
+
+  <!-- Shared header + footer -->
+  <script type="module" src="/js/header-main.js"></script>
+  <script type="module" src="/js/footer.js"></script>
 
 </body>
 </html>

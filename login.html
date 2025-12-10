@@ -65,50 +65,63 @@
   <!-- FOOTER WILL LOAD HERE -->
   <div id="footer-root"></div>
 
-  <!-- IMPORTANT: MUST BE TYPE="module" -->
-  <script type="module" src="/js/header-main.js"></script>
-  <script type="module" src="/js/footer.js"></script>
+<!-- FIXED: MUST USE MODULE SCRIPTS -->
+<script type="module" src="/js/header-main.js"></script>
+<script type="module" src="/js/auth.js"></script>
+<script type="module" src="/js/footer.js"></script>
 
-  <!-- LOGIN LOGIC -->
-  <script type="module">
-    import { emailSignIn, sendPasswordReset, googleAuth } from "/js/auth.js";
+<!-- LOGIN PAGE JS -->
+<script type="module">
+  import { emailSignIn, googleAuth, sendPasswordReset } from "/js/auth.js";
 
-    // Google login
-    document.getElementById("google-login").addEventListener("click", () => {
-      googleAuth("https://silkyroad.vercel.app/login.html");
-    });
+  // Google Login
+  document.getElementById("google-login").addEventListener("click", () => {
+    googleAuth("https://silkyroad.vercel.app/auth-callback.html");
+  });
 
-    // Email login
-    document.getElementById("login-form").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const email = document.getElementById("login-email").value;
-      const pass = document.getElementById("login-password").value;
+  // Email Login
+  document.getElementById("login-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-      try {
-        await emailSignIn(email, pass);
-        window.location.href = "/dashboard.html";
-      } catch (err) {
-        alert("Login failed: " + err.message);
-      }
-    });
+    const email = document.getElementById("login-email").value.trim();
+    const password = document.getElementById("login-password").value.trim();
 
-    // Forgot password panel toggle
-    document.getElementById("forgot-toggle").addEventListener("click", () => {
-      document.getElementById("forgot-panel").classList.toggle("open");
-    });
+    try {
+      await emailSignIn(email, password);
+      window.location.href = "/dashboard.html";
+    } catch (err) {
+      alert("Login failed: " + err.message);
+    }
+  });
 
-    // Send reset email
-    document.getElementById("send-reset").addEventListener("click", async () => {
-      const email = document.getElementById("forgot-email").value;
+  // Forgot Password
+  document.getElementById("forgot-toggle").addEventListener("click", () => {
+    document.getElementById("forgot-panel").classList.toggle("open");
+  });
 
-      try {
-        await sendPasswordReset(email);
-        alert("Reset link sent. Check your inbox.");
-      } catch (err) {
-        alert("Error: " + err.message);
-      }
-    });
-  </script>
+  document.getElementById("send-reset").addEventListener("click", async () => {
+    const email = document.getElementById("forgot-email").value.trim();
+    try {
+      await sendPasswordReset(email);
+      alert("Reset link sent to your email.");
+    } catch (err) {
+      alert(err.message);
+    }
+  });
+
+  // Password Show/Hide
+  document.querySelector(".pw-toggle").addEventListener("click", function () {
+    const pw = document.getElementById("login-password");
+    if (pw.type === "password") {
+      pw.type = "text";
+      this.textContent = "Hide";
+    } else {
+      pw.type = "password";
+      this.textContent = "Show";
+    }
+  });
+</script>
+
 
 </body>
 </html>

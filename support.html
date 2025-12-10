@@ -2,94 +2,57 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Support – Silky Road Marketplace</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <link rel="icon" href="/favicon.png">
   <link rel="stylesheet" href="/css/styles.css">
+  <title>Contact Support – Silky Road</title>
 </head>
+
 <body>
   <div id="header-root"></div>
 
   <main class="page">
-    <section class="page-header">
+
+    <div class="page-card">
+
       <h1>Contact Support</h1>
       <p class="muted">Need a hand? We're here for you.</p>
-    </section>
+      <p class="muted">Got a question about selling, payouts, or your products? Send us a message and we'll get back to you shortly.</p>
 
-    <section class="text-block">
-      <p>Got a question about selling, payouts, or your products? Send us a message and we'll get back to you shortly.</p>
-      <button id="open-support-modal" class="btn btn-primary">Contact support</button>
-    </section>
+      <button id="open-support" class="btn btn-primary" style="margin-bottom:20px;">
+        Contact support
+      </button>
 
-    <!-- Support Modal -->
-    <div id="support-modal" class="modal-backdrop">
-      <div class="modal">
-        <button class="modal-close" id="support-close" aria-label="Close">&times;</button>
+      <div id="support-modal" class="support-form-card">
         <h2>How can we help you today?</h2>
 
-        <!-- Web3Forms – 100% working version -->
-        <form action="https://api.web3forms.com/submit" method="POST" id="support-form" class="support-form">
+        <div class="field">
+          <span>Your email address</span>
+          <input id="support-email" type="email">
+        </div>
 
-          <!-- Your VERIFIED Web3Forms Access Key -->
-          <input type="hidden" name="access_key" value="561267cf-451d-4159-b0ec-6ab62a636953">
+        <div class="field">
+          <span>Subject</span>
+          <input id="support-subject" type="text">
+        </div>
 
-          <!-- Where you receive messages -->
-          <input type="hidden" name="to_email" value="silkyroad.marketplace@gmail.com">
+        <div class="field">
+          <span>Tell us about your issue or question...</span>
+          <textarea id="support-message" rows="5"></textarea>
+        </div>
 
-          <label class="field">
-            <span>Your email address</span>
-            <input type="email" name="from" id="support-email" required>
-          </label>
-
-          <label class="field">
-            <span>Subject</span>
-            <input type="text" name="subject" id="support-subject" required>
-          </label>
-
-          <label class="field">
-            <span>Tell us about your issue or question…</span>
-            <textarea name="message" id="support-message" rows="5" required></textarea>
-          </label>
-
-          <button type="submit" class="btn btn-primary btn-full">Send message</button>
-        </form>
+        <button class="btn btn-primary btn-full" id="support-send">
+          Send message
+        </button>
       </div>
+
     </div>
+
   </main>
 
   <div id="footer-root"></div>
-
-  <script type="module" src="/js/header-main.js"></script>
-  <script type="module" src="/js/footer.js"></script>
-
-  <script>
-    // Open modal
-    const openBtn = document.getElementById("open-support-modal");
-    const modal = document.getElementById("support-modal");
-    const closeBtn = document.getElementById("support-close");
-
-    openBtn.addEventListener("click", () => {
-      modal.classList.add("open");
-    });
-
-    // Close modal
-    closeBtn.addEventListener("click", () => {
-      modal.classList.remove("open");
-    });
-
-    // Click outside to close
-    modal.addEventListener("click", (e) => {
-      if (e.target === modal) modal.classList.remove("open");
-    });
-
-    // Success popup after form submission
-    document.getElementById("support-form").addEventListener("submit", function() {
-      setTimeout(() => {
-        alert("Your message has been sent. Thank you!");
-        modal.classList.remove("open");
-      }, 400);
-    });
-  </script>
-
+  <script src="/js/header-main.js"></script>
+  <script src="/js/footer.js"></script>
+  <script src="/js/support.js"></script>
 </body>
 </html>

@@ -1101,3 +1101,19 @@ body{
     font-size: 1.7rem;
   }
 }
+/* FINAL FIX — Support panel hidden by default */
+.support-panel {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: max-height .25s ease, opacity .25s ease, transform .25s ease;
+  margin-top: 0;
+}
+
+.support-panel.open {
+  max-height: 600px;
+  opacity: 1;
+  transform: translateY(0);
+  margin-top: 16px;
+}

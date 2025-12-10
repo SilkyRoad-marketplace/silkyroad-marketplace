@@ -48,37 +48,34 @@
   <div class="nav-backdrop" data-nav-backdrop></div>
 
   <!-- Mobile drawer (slides from LEFT) -->
-  <div class="nav-mobile-panel" data-nav-panel>
-    <nav class="nav-mobile-section" aria-label="Mobile navigation">
-      <a href="/marketplace.html" class="nav-link">Marketplace</a>
-      <a href="/pricing.html" class="nav-link">Pricing</a>
-      <a href="/about.html" class="nav-link">About</a>
+  <!-- Mobile backdrop -->
+<div class="nav-backdrop" data-nav-backdrop></div>
 
-      <!-- Log in only when logged out -->
-      <a href="/login.html" class="nav-link" data-when="logged-out">
-        Log in
-      </a>
-    </nav>
+<!-- Mobile drawer -->
+<div class="nav-mobile-panel" data-nav-panel>
 
-    <!-- Logged out actions -->
-    <div class="nav-mobile-section" data-when="logged-out">
-      <a href="/sign_up.html" class="btn btn-primary btn-full">
-        Start selling
-      </a>
-    </div>
+  <!-- Close button -->
+  <button class="mobile-close-btn" type="button" aria-label="Close menu">
+    ✕
+  </button>
 
-    <!-- Logged in actions -->
-    <div class="nav-mobile-section" data-when="logged-in">
-      <a href="/dashboard.html" class="btn btn-primary btn-full">
-        Dashboard
-      </a>
-      <button
-        type="button"
-        class="btn btn-ghost btn-full"
-        id="btn-logout-main-mobile"
-      >
-        Log out
-      </button>
-    </div>
+  <nav class="nav-mobile-links">
+    <a href="/marketplace.html">Marketplace</a>
+    <a href="/pricing.html">Pricing</a>
+    <a href="/about.html">About</a>
+
+    <a href="/login.html" data-when="logged-out">Log in</a>
+  </nav>
+
+  <div class="nav-mobile-actions" data-when="logged-out">
+    <a href="/sign_up.html" class="btn btn-primary btn-full">Start selling</a>
   </div>
+
+  <div class="nav-mobile-actions" data-when="logged-in">
+    <a href="/dashboard.html" class="btn btn-primary btn-full">Dashboard</a>
+    <button type="button" class="btn btn-ghost btn-full" id="btn-logout-main-mobile">Log out</button>
+  </div>
+
+</div>
+
 </header>

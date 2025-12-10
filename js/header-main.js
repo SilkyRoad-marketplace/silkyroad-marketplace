@@ -1,5 +1,5 @@
 // /js/header-main.js
-import { supabase } from "./auth.js";
+import { supabase, initAuthUI } from "./auth.js";   // ← ADDED initAuthUI
 
 async function loadHeaderMain() {
   const root = document.getElementById("header-root");
@@ -20,13 +20,13 @@ async function initHeaderMain() {
   const header = document.querySelector(".sr-header");
   if (!header) return;
 
-  // --- Mobile drawer elements ---
+  // ==============================
+  // MOBILE DRAWER
+  // ==============================
   const navToggle = header.querySelector(".nav-toggle");
   const navPanel = header.querySelector("[data-nav-panel]");
   const navBackdrop = header.querySelector("[data-nav-backdrop]");
   const mobileLinks = header.querySelectorAll(".nav-mobile-panel a");
-
-  // NEW close button inside drawer (✕)
   const closeBtn = header.querySelector(".mobile-close-btn");
 
   function openMobile() {
@@ -43,29 +43,27 @@ async function initHeaderMain() {
     if (navToggle) navToggle.setAttribute("aria-expanded", "false");
   }
 
-  // Hamburger toggle
   if (navToggle && navPanel) {
     navToggle.addEventListener("click", () => {
       navPanel.classList.contains("open") ? closeMobile() : openMobile();
     });
   }
 
-  // Backdrop closes the drawer
   if (navBackdrop) {
     navBackdrop.addEventListener("click", closeMobile);
   }
 
-  // Clicking any mobile link closes drawer
   mobileLinks.forEach((link) => {
     link.addEventListener("click", closeMobile);
   });
 
-  // NEW — clicking ✕ close button closes drawer
   if (closeBtn) {
     closeBtn.addEventListener("click", closeMobile);
   }
 
-  // --- Auth visibility (logged in vs logged out) ---
+  // ==============================
+  // LOGIN vs LOGGED-IN UI
+  // ==============================
   const loggedOutBlocks = header.querySelectorAll('[data-when="logged-out"]');
   const loggedInBlocks = header.querySelectorAll('[data-when="logged-in"]');
 
@@ -93,7 +91,9 @@ async function initHeaderMain() {
     showLoggedOut();
   }
 
-  // --- Logout buttons ---
+  // ==============================
+  // LOGOUT BUTTONS
+  // ==============================
   const logoutButtons = header.querySelectorAll(
     "#btn-logout-main, #btn-logout-main-mobile"
   );
@@ -109,6 +109,9 @@ async function initHeaderMain() {
       window.location.href = "/";
     });
   });
+
+  // ⭐ VERY IMPORTANT — Make auth UI react on page load
+  initAuthUI();  // ← ADDED!!
 }
 
 // run on load

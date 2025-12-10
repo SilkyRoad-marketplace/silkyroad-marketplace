@@ -9,7 +9,10 @@
 </head>
 
 <body>
- 
+
+  <!-- DYNAMIC HEADER (must exist!) -->
+  <div id="header-root"></div>
+
   <main class="page auth-page">
 
     <div class="auth-card">
@@ -23,28 +26,31 @@
       </button>
 
       <!-- PANEL: HIDDEN UNTIL CLICKED -->
-      <div id="support-panel" class="support-panel">
+      <form id="support-panel" class="support-panel">
 
         <h2 style="margin-top:0;">How can we help you today?</h2>
 
+        <!-- Web3Forms required field -->
+        <input type="hidden" name="access_key" value="561267cf-451d-4159-b0ec-6ab62a636953">
+
         <div class="field">
           <span>Your email address</span>
-          <input id="support-email" type="email" autocomplete="email">
+          <input name="email" id="support-email" type="email" autocomplete="email" required>
         </div>
 
         <div class="field">
           <span>Subject</span>
-          <input id="support-subject" type="text">
+          <input name="subject" id="support-subject" type="text" required>
         </div>
 
         <div class="field">
           <span>Tell us about your issue or question...</span>
-          <textarea id="support-message" rows="5"></textarea>
+          <textarea name="message" id="support-message" rows="5" required></textarea>
         </div>
 
-        <button id="send-support" class="btn btn-ghost btn-full">Send message</button>
+        <button type="submit" class="btn btn-ghost btn-full">Send message</button>
 
-      </div>
+      </form>
 
     </div>
 
@@ -53,30 +59,43 @@
   <!-- Dynamic Footer -->
   <div id="footer-root"></div>
 
+  <!-- Load header/footer scripts -->
   <script type="module" src="/js/header-main.js"></script>
   <script type="module" src="/js/footer.js"></script>
 
-  <!-- SUPPORT PANEL JS -->
+  <!-- TOGGLE PANEL -->
   <script>
-    document.getElementById("support-toggle").addEventListener("click", function () {
-      const panel = document.getElementById("support-panel");
-      panel.classList.toggle("open");
+    document.getElementById("support-toggle").addEventListener("click", () => {
+      document.getElementById("support-panel").classList.toggle("open");
     });
   </script>
-<script>
-document.getElementById("send-support").addEventListener("click", function () {
-  const email = document.getElementById("support-email").value.trim();
-  const subject = document.getElementById("support-subject").value.trim();
-  const message = document.getElementById("support-message").value.trim();
 
-  if (!email || !subject || !message) {
-    alert("Please fill out all fields.");
-    return;
-  }
+  <!-- WEB3FORMS SUBMISSION -->
+  <script>
+    const supportForm = document.getElementById("support-panel");
 
-  alert("Your message has been sent successfully!");
-});
-</script>
+    supportForm.addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      const formData = new FormData(supportForm);
+
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        body: formData
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        alert("Your message has been sent successfully!");
+        supportForm.reset();
+        supportForm.classList.remove("open");
+      } else {
+        alert("Failed to send message. Please try again later.");
+        console.error(result);
+      }
+    });
+  </script>
 
 </body>
 </html>

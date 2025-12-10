@@ -1706,4 +1706,12 @@ footer,
       0 24px 70px rgba(0,0,0,0.95),
       0 0 30px rgba(247,201,120,0.22);
   }
+/* Restore header & footer visibility */
+.sr-header,
+.sr-footer {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
 }

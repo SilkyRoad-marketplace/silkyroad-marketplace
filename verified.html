@@ -2,22 +2,113 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Email verified – Silky Road Marketplace</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <link rel="icon" href="/favicon.png">
   <link rel="stylesheet" href="/css/styles.css">
+  <title>Email Verified – Silky Road</title>
+
+  <style>
+    .verify-box {
+      text-align: center;
+      padding: 40px 32px;
+      background: radial-gradient(circle at top,#181323 0,#050509 72%);
+      border-radius: 24px;
+      border: 1px solid rgba(244,197,106,0.45);
+      box-shadow: 0 24px 70px rgba(0,0,0,0.95);
+      max-width: 520px;
+      margin: 100px auto;
+    }
+    .verify-box h1 {
+      margin-bottom: 12px;
+    }
+    .verify-box p {
+      color: var(--text-muted);
+      margin-bottom: 24px;
+    }
+    .verify-email {
+      font-weight: 600;
+      color: var(--accent-gold);
+    }
+  </style>
 </head>
+
 <body>
+
+  <!-- HEADER -->
   <div id="header-root"></div>
+
   <main class="page auth-page">
-    <section class="card auth-card">
-      <h1>Email verified</h1>
-      <p class="muted">Your email has been verified successfully. You can now access your dashboard.</p>
-      <a href="/dashboard.html" class="btn btn-primary btn-full">Go to dashboard</a>
-    </section>
+    <div class="verify-box">
+      <h1>Email Verified ✔</h1>
+      <p>Your email <span class="verify-email" id="verified-email">loading…</span> is now confirmed.</p>
+
+      <p class="small" style="margin-bottom: 24px;">
+        Redirecting you to the login page in <span id="countdown">5</span> seconds…
+      </p>
+
+      <a href="/login.html" class="btn btn-primary btn-full">Go to Login Now</a>
+    </div>
   </main>
+
+  <!-- FOOTER -->
   <div id="footer-root"></div>
+
+  <!-- HEADER + FOOTER SCRIPTS -->
   <script type="module" src="/js/header-main.js"></script>
   <script type="module" src="/js/footer.js"></script>
+
+  <!-- VERIFICATION LOGIC -->
+  <script type="module">
+    import { supabase } from "/js/auth.js";
+
+    async function handleVerified() {
+      // 1️⃣ Get current session — user should be logged in after clicking email link
+      const { data: sessionData } = await supabase.auth.getSession();
+
+      if (!sessionData.session) {
+        document.getElementById("verified-email").textContent = "unknown";
+        return;
+      }
+
+      const user = sessionData.session.user;
+
+      // Display email on page
+      document.getElementById("verified-email").textContent = user.email;
+
+      // 2️⃣ Check if profile exists
+      const { data: existingProfile } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", user.id)
+        .maybeSingle();
+
+      // 3️⃣ If no profile → create one
+      if (!existingProfile) {
+        await supabase.from("profiles").insert([
+          {
+            id: user.id,
+            email: user.email,
+            created_at: new Date().toISOString()
+          }
+        ]);
+      }
+
+      // 4️⃣ Auto-redirect with countdown
+      let timeLeft = 5;
+      const countdownEl = document.getElementById("countdown");
+
+      const timer = setInterval(() => {
+        timeLeft--;
+        countdownEl.textContent = timeLeft;
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          window.location.href = "/login.html";
+        }
+      }, 1000);
+    }
+
+    handleVerified();
+  </script>
+
 </body>
 </html>

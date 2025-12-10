@@ -26,6 +26,9 @@ async function initHeaderMain() {
   const navBackdrop = header.querySelector("[data-nav-backdrop]");
   const mobileLinks = header.querySelectorAll(".nav-mobile-panel a");
 
+  // NEW close button inside drawer (✕)
+  const closeBtn = header.querySelector(".mobile-close-btn");
+
   function openMobile() {
     if (!navPanel) return;
     navPanel.classList.add("open");
@@ -40,29 +43,29 @@ async function initHeaderMain() {
     if (navToggle) navToggle.setAttribute("aria-expanded", "false");
   }
 
+  // Hamburger toggle
   if (navToggle && navPanel) {
     navToggle.addEventListener("click", () => {
-      if (navPanel.classList.contains("open")) {
-        closeMobile();
-      } else {
-        openMobile();
-      }
+      navPanel.classList.contains("open") ? closeMobile() : openMobile();
     });
   }
 
+  // Backdrop closes the drawer
   if (navBackdrop) {
-    navBackdrop.addEventListener("click", () => {
-      closeMobile();
-    });
+    navBackdrop.addEventListener("click", closeMobile);
   }
 
+  // Clicking any mobile link closes drawer
   mobileLinks.forEach((link) => {
-    link.addEventListener("click", () => {
-      closeMobile();
-    });
+    link.addEventListener("click", closeMobile);
   });
 
-  // --- Auth visibility (logged-in vs logged-out) ---
+  // NEW — clicking ✕ close button closes drawer
+  if (closeBtn) {
+    closeBtn.addEventListener("click", closeMobile);
+  }
+
+  // --- Auth visibility (logged in vs logged out) ---
   const loggedOutBlocks = header.querySelectorAll('[data-when="logged-out"]');
   const loggedInBlocks = header.querySelectorAll('[data-when="logged-in"]');
 
@@ -90,7 +93,7 @@ async function initHeaderMain() {
     showLoggedOut();
   }
 
-  // --- Logout buttons (desktop + mobile) ---
+  // --- Logout buttons ---
   const logoutButtons = header.querySelectorAll(
     "#btn-logout-main, #btn-logout-main-mobile"
   );
@@ -103,7 +106,7 @@ async function initHeaderMain() {
         console.error("Error during logout:", err);
       }
       showLoggedOut();
-      window.location.href = "/"; // back to home
+      window.location.href = "/";
     });
   });
 }

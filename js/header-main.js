@@ -1,6 +1,7 @@
 // /js/header-main.js
-import { supabase, initAuthUI } from "./auth.js";   // ← ADDED initAuthUI
+import { supabase } from "./auth.js";
 
+// Load header HTML
 async function loadHeaderMain() {
   const root = document.getElementById("header-root");
   if (!root) return;
@@ -16,54 +17,51 @@ async function loadHeaderMain() {
   }
 }
 
+// Initialize header logic
 async function initHeaderMain() {
   const header = document.querySelector(".sr-header");
   if (!header) return;
 
-  // ==============================
-  // MOBILE DRAWER
-  // ==============================
+  // ==========================
+  // MOBILE DRAWER CONTROL
+  // ==========================
   const navToggle = header.querySelector(".nav-toggle");
   const navPanel = header.querySelector("[data-nav-panel]");
   const navBackdrop = header.querySelector("[data-nav-backdrop]");
-  const mobileLinks = header.querySelectorAll(".nav-mobile-panel a");
   const closeBtn = header.querySelector(".mobile-close-btn");
+  const mobileLinks = header.querySelectorAll(".nav-mobile-panel a");
 
   function openMobile() {
-    if (!navPanel) return;
-    navPanel.classList.add("open");
-    if (navBackdrop) navBackdrop.classList.add("visible");
-    if (navToggle) navToggle.setAttribute("aria-expanded", "true");
+    navPanel?.classList.add("open");
+    navBackdrop?.classList.add("visible");
+    navToggle?.setAttribute("aria-expanded", "true");
   }
 
   function closeMobile() {
-    if (!navPanel) return;
-    navPanel.classList.remove("open");
-    if (navBackdrop) navBackdrop.classList.remove("visible");
-    if (navToggle) navToggle.setAttribute("aria-expanded", "false");
+    navPanel?.classList.remove("open");
+    navBackdrop?.classList.remove("visible");
+    navToggle?.setAttribute("aria-expanded", "false");
   }
 
-  if (navToggle && navPanel) {
-    navToggle.addEventListener("click", () => {
-      navPanel.classList.contains("open") ? closeMobile() : openMobile();
-    });
-  }
+  // Hamburger toggle
+  navToggle?.addEventListener("click", () => {
+    navPanel.classList.contains("open") ? closeMobile() : openMobile();
+  });
 
-  if (navBackdrop) {
-    navBackdrop.addEventListener("click", closeMobile);
-  }
+  // Backdrop closes drawer
+  navBackdrop?.addEventListener("click", closeMobile);
 
+  // Close when clicking any mobile link
   mobileLinks.forEach((link) => {
     link.addEventListener("click", closeMobile);
   });
 
-  if (closeBtn) {
-    closeBtn.addEventListener("click", closeMobile);
-  }
+  // Close button "X"
+  closeBtn?.addEventListener("click", closeMobile);
 
-  // ==============================
-  // LOGIN vs LOGGED-IN UI
-  // ==============================
+  // ==========================
+  // AUTH UI STATE HANDLING
+  // ==========================
   const loggedOutBlocks = header.querySelectorAll('[data-when="logged-out"]');
   const loggedInBlocks = header.querySelectorAll('[data-when="logged-in"]');
 
@@ -77,23 +75,23 @@ async function initHeaderMain() {
     loggedInBlocks.forEach((el) => (el.style.display = ""));
   }
 
+  // Check login state
   try {
-    const { data, error } = await supabase.auth.getSession();
-    if (error) throw error;
+    const { data } = await supabase.auth.getSession();
 
-    if (data && data.session) {
+    if (data?.session) {
       showLoggedIn();
     } else {
       showLoggedOut();
     }
   } catch (err) {
-    console.error("Error checking auth session in header:", err);
+    console.error("Auth session error:", err);
     showLoggedOut();
   }
 
-  // ==============================
-  // LOGOUT BUTTONS
-  // ==============================
+  // ==========================
+  // LOGOUT BUTTONS — FULL FIX
+  // ==========================
   const logoutButtons = header.querySelectorAll(
     "#btn-logout-main, #btn-logout-main-mobile"
   );
@@ -103,16 +101,18 @@ async function initHeaderMain() {
       try {
         await supabase.auth.signOut();
       } catch (err) {
-        console.error("Error during logout:", err);
+        console.error("Logout error:", err);
       }
-      showLoggedOut();
-      window.location.href = "/";
+
+      // Clear stale cached UI
+      localStorage.clear();
+      sessionStorage.clear();
+
+      // Force fresh reload so mobile drawer updates instantly
+      window.location.replace("/");
     });
   });
-
-  // ⭐ VERY IMPORTANT — Make auth UI react on page load
-  initAuthUI();  // ← ADDED!!
 }
 
-// run on load
+// Run on load
 loadHeaderMain();

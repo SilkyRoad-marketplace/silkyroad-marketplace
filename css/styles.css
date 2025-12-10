@@ -1693,42 +1693,17 @@ footer,
   flex-wrap: wrap;
   gap: 10px;
 }
-/* =========================================
-   UNIVERSAL PAGE CARD (MATCH MOBILE STYLE)
-========================================= */
-
+/* AUTH DESKTOP: Restore wide glowing card */
 @media (min-width: 769px) {
-
-  /* Wrapper for entire page content */
-  .page-card {
-    max-width: 560px;
+  .auth-card {
+    max-width: 580px;
     margin: 80px auto;
-    padding: 40px;
-    background: radial-gradient(circle at top, #191325 0%, #050509 70%);
-    border-radius: 22px;
+    padding: 40px 42px;
+    background: radial-gradient(circle at top, #181323 0%, #050509 72%);
+    border-radius: 26px;
     border: 1px solid rgba(244,197,106,0.45);
     box-shadow:
-      0 22px 60px rgba(0,0,0,0.85),
-      0 0 32px rgba(247,201,120,0.28);
-  }
-
-  /* Make Help Center items match mobile spacing */
-  .help-list a {
-    display: block;
-    margin-top: 14px;
-    font-weight: 600;
-    color: #d9c2ff;
-    text-decoration: underline;
-  }
-
-  .help-list p {
-    margin-top: 4px;
-    color: #b7a6e6;
-    font-size: 0.9rem;
-  }
-
-  /* Support form card */
-  .support-form-card {
-    margin-top: 32px;
+      0 24px 70px rgba(0,0,0,0.95),
+      0 0 30px rgba(247,201,120,0.22);
   }
 }

@@ -2,99 +2,64 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Log in – Silky Road Marketplace</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <link rel="icon" href="/favicon.png">
   <link rel="stylesheet" href="/css/styles.css">
+  <title>Log in – Silky Road</title>
 </head>
+
 <body>
   <div id="header-root"></div>
 
   <main class="page auth-page">
-    <section class="card auth-card">
+
+    <div class="page-card auth-card">
+
       <h1>Log in</h1>
       <p class="muted">Access your dashboard and library.</p>
 
-      <button id="login-google" class="btn btn-primary btn-full">Continue with Google</button>
+      <button id="google-login" class="btn btn-full btn-primary" style="margin-top:18px;">
+        Continue with Google
+      </button>
 
-      <div class="auth-divider"><span>or</span></div>
+      <div class="auth-divider">or</div>
 
-      <form id="login-email-form" class="auth-form">
-        <label class="field">
+      <form id="login-form" class="auth-form">
+
+        <div class="field">
           <span>Email</span>
-          <input type="email" id="login-email" required>
-        </label>
+          <input id="login-email" type="email" autocomplete="email">
+        </div>
 
-        <label class="field password-field">
+        <div class="field password-field">
           <span>Password</span>
-          <input type="password" id="login-password" required>
-          <button type="button" class="pw-toggle" data-target="login-password">Show</button>
-        </label>
+          <input id="login-password" type="password" autocomplete="current-password">
+          <button type="button" class="pw-toggle">Show</button>
+        </div>
 
-        <button type="submit" class="btn btn-primary btn-full">Log in</button>
+        <button type="submit" class="btn btn-primary btn-full" style="margin-top:10px;">
+          Log in
+        </button>
       </form>
 
-      <button class="link-forgot" id="forgot-toggle">Forgot your password?</button>
+      <button id="forgot-toggle" class="link-forgot">Forgot your password?</button>
 
       <div id="forgot-panel" class="forgot-panel">
-        <p class="muted small">Enter your email and we&apos;ll send reset instructions.</p>
-        <form id="forgot-form">
-          <label class="field">
-            <span>Email</span>
-            <input type="email" id="forgot-email" required>
-          </label>
-          <button type="submit" class="btn btn-ghost btn-full">Send reset link</button>
-        </form>
+        <p class="muted small">Enter your email and we'll send reset instructions.</p>
+        <div class="field">
+          <span>Email</span>
+          <input id="forgot-email" type="email">
+        </div>
+        <button id="send-reset" class="btn btn-ghost btn-full">Send reset link</button>
       </div>
-    </section>
+
+    </div>
+
   </main>
 
   <div id="footer-root"></div>
-
-  <script type="module" src="/js/header-main.js"></script>
-  <script type="module" src="/js/footer.js"></script>
-  <script type="module">
-    import { initAuthUI, googleAuth, emailSignIn, sendPasswordReset } from "/js/auth.js";
-    initAuthUI();
-
-    document.getElementById("login-google")?.addEventListener("click", async () => {
-      try { await googleAuth("https://silkyroad.vercel.app/auth-callback.html"); }
-      catch (e) { alert("Google login failed."); console.error(e); }
-    });
-
-    function wirePasswordToggles() {
-      document.querySelectorAll(".pw-toggle").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          const id = btn.getAttribute("data-target");
-          const input = document.getElementById(id);
-          if (!input) return;
-          if (input.type === "password") { input.type = "text"; btn.textContent = "Hide"; }
-          else { input.type = "password"; btn.textContent = "Show"; }
-        });
-      });
-    }
-    wirePasswordToggles();
-
-    document.getElementById("login-email-form")?.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const email = document.getElementById("login-email").value.trim();
-      const password = document.getElementById("login-password").value;
-      try { await emailSignIn(email, password); window.location.href = "/dashboard.html"; }
-      catch (err) { console.error(err); alert("Login failed. Please check your details."); }
-    });
-
-    const forgotToggle = document.getElementById("forgot-toggle");
-    const forgotPanel = document.getElementById("forgot-panel");
-    forgotToggle?.addEventListener("click", () => {
-      forgotPanel.classList.toggle("open");
-    });
-
-    document.getElementById("forgot-form")?.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const email = document.getElementById("forgot-email").value.trim();
-      try { await sendPasswordReset(email); alert("If this email exists, a reset link has been sent."); }
-      catch (err) { console.error(err); alert("Failed to send reset email."); }
-    });
-  </script>
+  <script src="/js/header-main.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/footer.js"></script>
 </body>
 </html>

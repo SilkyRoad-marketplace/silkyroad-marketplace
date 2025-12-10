@@ -9,21 +9,25 @@
 </head>
 
 <body>
+
+  <!-- HEADER LOADS HERE -->
   <div id="header-root"></div>
 
   <main class="page auth-page">
 
-    <div class="page-card auth-card">
+    <div class="auth-card">
 
       <h1>Create your account</h1>
-      <p class="muted">Start selling or buying digital products on Silky Road.</p>
+      <p class="muted">Start selling digital products instantly.</p>
 
+      <!-- GOOGLE SIGN UP -->
       <button id="google-signup" class="btn btn-full btn-primary" style="margin-top:18px;">
-        Sign up with Google
+        Continue with Google
       </button>
 
-      <div class="auth-divider">or sign up with email</div>
+      <div class="auth-divider">or</div>
 
+      <!-- EMAIL SIGN UP -->
       <form id="signup-form" class="auth-form">
 
         <div class="field">
@@ -37,26 +41,72 @@
           <button type="button" class="pw-toggle">Show</button>
         </div>
 
-        <div id="password-strength" class="password-strength">Password strength: —</div>
+        <p class="password-strength">Use at least 6 characters.</p>
+
+        <button type="submit" class="btn btn-primary btn-full" style="margin-top:10px;">
+          Create account
+        </button>
 
         <p class="terms-note">
           By creating an account, you agree to our
-          <a href="/terms.html">Terms of Service</a> and
+          <a href="/terms.html">Terms</a> and
           <a href="/privacy.html">Privacy Policy</a>.
         </p>
 
-        <button class="btn btn-primary btn-full" type="submit" style="margin-top:14px;">
-          Create account
-        </button>
       </form>
 
     </div>
 
   </main>
 
+  <!-- FOOTER LOADS HERE -->
   <div id="footer-root"></div>
-  <script src="/js/header-main.js"></script>
-  <script src="/js/auth.js"></script>
-  <script src="/js/footer.js"></script>
+
+  <!-- FIXED: MUST BE MODULE -->
+  <script type="module" src="/js/header-main.js"></script>
+  <script type="module" src="/js/footer.js"></script>
+
+  <!-- SIGN UP LOGIC -->
+  <script type="module">
+    import { emailSignUp, googleAuth } from "/js/auth.js";
+
+    // Google sign-up
+    document.getElementById("google-signup").addEventListener("click", () => {
+      googleAuth("https://silkyroad.vercel.app/auth-callback.html");
+    });
+
+    // Email sign-up
+    document.getElementById("signup-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const email = document.getElementById("signup-email").value.trim();
+      const password = document.getElementById("signup-password").value.trim();
+
+      if (!email || !password) {
+        alert("Please enter your email and password.");
+        return;
+      }
+
+      try {
+        await emailSignUp(email, password);
+        alert("Check your email to verify your account.");
+      } catch (err) {
+        alert("Sign-up failed: " + err.message);
+      }
+    });
+
+    // Password show/hide toggle
+    document.querySelector(".pw-toggle").addEventListener("click", function () {
+      const input = document.getElementById("signup-password");
+      if (input.type === "password") {
+        input.type = "text";
+        this.textContent = "Hide";
+      } else {
+        input.type = "password";
+        this.textContent = "Show";
+      }
+    });
+  </script>
+
 </body>
 </html>

@@ -788,3 +788,104 @@
     left: 0;
   }
 }
+/* ================================
+   CATEGORY BAR (DESKTOP)
+================================ */
+
+.mp-cat-bar {
+  border-top: 1px solid rgba(244,197,106,0.4);
+  border-bottom: 1px solid rgba(244,197,106,0.35);
+  background: radial-gradient(circle at top, #181323 0, #050509 70%);
+}
+
+.mp-cat-bar-inner {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 10px 16px 12px;
+}
+
+.mp-cat-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.mp-cat-row-sub {
+  margin-top: 8px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(244,197,106,0.25);
+}
+
+.mp-cat-pill,
+.mp-cat-sub-pill {
+  border: 1px solid transparent;
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 0.85rem;
+  background: rgba(10,8,18,0.9);
+  color: #d1c6ff;
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background .18s ease, color .18s ease, border-color .18s ease,
+              box-shadow .18s ease;
+}
+
+.mp-cat-pill.is-active {
+  background: radial-gradient(circle at top, #ffe9b7 0, #f4c56a 60%);
+  color: #251209;
+  border-color: rgba(244,197,106,0.9);
+  box-shadow: 0 0 0 1px rgba(244,197,106,0.8),
+              0 10px 30px rgba(0,0,0,0.9);
+}
+
+.mp-cat-pill:hover:not(.is-active),
+.mp-cat-sub-pill:hover {
+  background: radial-gradient(circle at top, rgba(244,197,106,0.18), transparent 70%);
+  color: #f7c978;
+  border-color: rgba(244,197,106,0.6);
+}
+
+/* On small screens we hide desktop bar (mobile uses drawer) */
+@media (max-width: 900px) {
+  .mp-cat-bar {
+    display: none;
+  }
+}
+
+/* ================================
+   MOBILE DRAWER CATEGORY LISTS
+================================ */
+
+.mp-drawer-section .mp-drawer-link {
+  display: block;
+  width: 100%;
+  padding: 8px 4px;
+  text-align: left;
+  border: none;
+  background: transparent;
+  color: #f5f1ff;
+  font-size: 0.95rem;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.mp-drawer-section .mp-drawer-link:hover {
+  color: #f7c978;
+}
+
+/* Sub-header in drawer when viewing subcategories */
+.mp-drawer-sub-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid rgba(244,197,106,0.35);
+  padding-bottom: 6px;
+}
+
+.mp-drawer-back {
+  border: none;
+  background: transparent;
+  color: #f5f1ff;
+  cursor: pointer;
+}

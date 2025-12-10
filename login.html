@@ -9,7 +9,7 @@
 </head>
 
 <body>
-  <!-- Header -->
+  <!-- Header injected -->
   <div id="header-root"></div>
 
   <main class="page auth-page">
@@ -19,7 +19,7 @@
       <h1>Log in</h1>
       <p class="muted">Access your dashboard and library.</p>
 
-      <!-- GOOGLE LOGIN BUTTON -->
+      <!-- GOOGLE LOGIN -->
       <button id="google-login" class="btn btn-full btn-primary" style="margin-top:18px;">
         Continue with Google
       </button>
@@ -47,8 +47,9 @@
 
       <button id="forgot-toggle" class="link-forgot">Forgot your password?</button>
 
+      <!-- RESET PANEL -->
       <div id="forgot-panel" class="forgot-panel">
-        <p class="muted small">Enter your email and we'll send reset instructions.</p>
+        <p class="muted small">Enter your email and we’ll send reset instructions.</p>
 
         <div class="field">
           <span>Email</span>
@@ -62,22 +63,23 @@
 
   </main>
 
-  <!-- Footer -->
+  <!-- FOOTER -->
   <div id="footer-root"></div>
 
+  <!-- AUTH LOGIC -->
   <script type="module">
     import { supabase, emailSignIn, googleAuth, sendPasswordReset } from "/js/auth.js";
 
-    // =============================
+    // -----------------------------
     // GOOGLE LOGIN
-    // =============================
+    // -----------------------------
     document.getElementById("google-login").addEventListener("click", () => {
       googleAuth("https://silkyroad.vercel.app/auth-callback.html");
     });
 
-    // =============================
+    // -----------------------------
     // EMAIL LOGIN
-    // =============================
+    // -----------------------------
     document.getElementById("login-form").addEventListener("submit", async (e) => {
       e.preventDefault();
 
@@ -85,22 +87,19 @@
       const password = document.getElementById("login-password").value.trim();
 
       if (!email || !password) {
-        alert("Please enter your email and password.");
+        alert("Please enter both email and password.");
         return;
       }
 
       try {
-        const { data } = await emailSignIn(email, password);
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
-        // Supabase returns no session → wrong credentials
-        if (!data.session) {
-          const user = await fetchUserByEmail(email);
-
-          if (!user) {
-            alert("An account does not exist with that email.");
-          } else {
-            alert("The password you entered is incorrect. Please try again.");
+        if (error) {
+          if (error.message.includes("Invalid login credentials")) {
+            alert("The password you entered is incorrect.");
+            return;
           }
+          alert("Login failed: " + error.message);
           return;
         }
 
@@ -108,43 +107,29 @@
         window.location.href = "/dashboard.html";
 
       } catch (err) {
-        if (err.message.includes("Invalid login credentials")) {
-          alert("Incorrect email or password.");
-        } else {
-          alert("Login failed: " + err.message);
-        }
+        alert("Error: " + err.message);
       }
     });
 
-    // =============================
-    // FIND USER BY EMAIL
-    // =============================
-    async function fetchUserByEmail(email) {
-      const { data } = await supabase
-        .from("profiles")
-        .select("id")
-        .eq("email", email)
-        .maybeSingle();
-
-      return data;
-    }
-
-    // =============================
-    // SHOW / HIDE PASSWORD
-    // =============================
+    // -----------------------------
+    // PASSWORD VISIBILITY TOGGLE
+    // -----------------------------
     document.querySelector(".pw-toggle").addEventListener("click", function () {
       const field = document.getElementById("login-password");
       field.type = field.type === "password" ? "text" : "password";
       this.textContent = field.type === "password" ? "Show" : "Hide";
     });
 
-    // =============================
-    // FORGOT PASSWORD PANEL
-    // =============================
+    // -----------------------------
+    // FORGOT PASSWORD (OPEN PANEL)
+    // -----------------------------
     document.getElementById("forgot-toggle").addEventListener("click", () => {
       document.getElementById("forgot-panel").classList.toggle("open");
     });
 
+    // -----------------------------
+    // SEND RESET EMAIL
+    // -----------------------------
     document.getElementById("send-reset").addEventListener("click", async () => {
       const email = document.getElementById("forgot-email").value.trim();
 
@@ -155,14 +140,14 @@
 
       try {
         await sendPasswordReset(email);
-        alert("A password reset link has been sent to your email.");
+        alert("Reset link sent. Please check your email.");
       } catch (err) {
         alert("Error: " + err.message);
       }
     });
   </script>
 
-  <!-- Load shared header + footer -->
+  <!-- Inject header + footer -->
   <script type="module" src="/js/header-main.js"></script>
   <script type="module" src="/js/footer.js"></script>
 

@@ -1,44 +1,51 @@
 // /js/marketplace-cats.js
-// FINAL VERSION — supports:
+// FINAL VERSION — MP SYSTEM
 // A1 = Full width
 // B1 = Hover dropdown
 // C1 = Show EXACTLY 8 categories, rest → More
-// Works with sr-* HTML + CSS (header-market.html + marketplace.css)
+// Works with mp-* HTML + CSS (marketplace.html + marketplace.css)
 
 import { supabase } from "./auth.js";
 
-// Desktop
-const desktopBar = document.getElementById("srDesktopCategoryBar");
+/* ===============================
+   ELEMENT REFERENCES (MP)
+=============================== */
 
-// Drawer (mobile/tablet)
-const drawer = document.getElementById("srDrawer");
-const drawerCats = document.getElementById("srDrawerCategories");
-const overlay = document.getElementById("srOverlay");
+// Desktop category bar
+const desktopBar = document.getElementById("mp-cat-bar-inner");
 
-const btnOpen = document.getElementById("srHamburgerBtn");
-const btnClose = document.getElementById("srCloseDrawerBtn");
+// Mobile drawer
+const drawer = document.getElementById("mp-cat-drawer");
+const drawerCats = document.getElementById("mp-cat-drawer-body");
+const backdrop = document.getElementById("mp-cat-backdrop");
 
-// ----------------------------------------
-// Drawer Open / Close
-// ----------------------------------------
+// Buttons
+const btnOpen = document.getElementById("mp-cat-toggle");
+const btnClose = document.getElementById("mp-cat-close");
+
+/* ===============================
+   DRAWER OPEN / CLOSE
+=============================== */
 
 function openDrawer() {
+  if (!drawer || !backdrop) return;
   drawer.classList.add("is-open");
-  overlay.classList.add("is-active");
+  backdrop.classList.add("is-open");
 }
 
 function closeDrawer() {
+  if (!drawer || !backdrop) return;
   drawer.classList.remove("is-open");
-  overlay.classList.remove("is-active");
+  backdrop.classList.remove("is-open");
 }
 
 if (btnOpen) btnOpen.addEventListener("click", openDrawer);
 if (btnClose) btnClose.addEventListener("click", closeDrawer);
-if (overlay) overlay.addEventListener("click", closeDrawer);
+if (backdrop) backdrop.addEventListener("click", closeDrawer);
 
-// ----------------------------------------
-// Fetch categories from Supabase
-// ----------------------------------------
+/* ===============================
+   FETCH CATEGORIES
+=============================== */
 
 async function fetchCategoryData() {
   const { data, error } = await supabase
@@ -50,219 +57,192 @@ async function fetchCategoryData() {
     return new Map();
   }
 
-  const catMap = new Map();
+  const map = new Map();
 
   data.forEach((row) => {
-    const cat = row.category?.trim() || "";
-    const sub = row.subcategory?.trim() || "";
+    const cat = row.category?.trim();
+    const sub = row.subcategory?.trim();
 
     if (!cat) return;
-
-    if (!catMap.has(cat)) catMap.set(cat, new Set());
-    if (sub) catMap.get(cat).add(sub);
+    if (!map.has(cat)) map.set(cat, new Set());
+    if (sub) map.get(cat).add(sub);
   });
 
-  return catMap;
+  return map;
 }
 
-// ----------------------------------------
-// Handle category click
-// ----------------------------------------
+/* ===============================
+   CATEGORY CLICK HANDLER
+=============================== */
 
 function handleCategoryClick(category, subcategory = null) {
-  // Update desktop active state
+  // Desktop active state
   if (desktopBar) {
-    desktopBar.querySelectorAll(".sr-cat-pill").forEach((pill) => {
+    desktopBar.querySelectorAll(".mp-cat-pill").forEach((pill) => {
       const cat = pill.dataset.cat || "";
       const sub = pill.dataset.sub || "";
 
       let active = false;
-
       if (!category && cat === "all") active = true;
       if (category && !subcategory && cat === category && !sub) active = true;
       if (category && subcategory && cat === category && sub === subcategory)
         active = true;
 
-      pill.classList.toggle("active", active);
+      pill.classList.toggle("is-active", active);
     });
   }
 
-  // Notify main page
+  // Notify marketplace.js
   if (typeof window.handleCategoryChange === "function") {
     window.handleCategoryChange({ category, subcategory });
   }
 
-  // Mobile drawer closing
+  // Close drawer on mobile
   if (window.innerWidth <= 900) closeDrawer();
 }
 
-// ----------------------------------------
-// Build UI (Desktop + Mobile)
-// ----------------------------------------
+/* ===============================
+   BUILD UI
+=============================== */
 
-function buildUI(catMap) {
+function buildUI(map) {
   if (desktopBar) desktopBar.innerHTML = "";
   if (drawerCats) drawerCats.innerHTML = "";
 
-  // Convert map to sorted array
-  const entries = Array.from(catMap.entries()).sort((a, b) =>
+  const entries = Array.from(map.entries()).sort((a, b) =>
     a[0].localeCompare(b[0])
   );
 
-  // ------------------------------------
-  // "All" pill + drawer entry
-  // ------------------------------------
+  /* ---------- ALL ---------- */
 
   // Desktop "All"
   if (desktopBar) {
     const all = document.createElement("button");
-    all.className = "sr-cat-pill active";
+    all.className = "mp-cat-pill is-active";
     all.dataset.cat = "all";
     all.textContent = "All";
-    all.addEventListener("click", () => handleCategoryClick(null, null));
+    all.onclick = () => handleCategoryClick(null, null);
     desktopBar.appendChild(all);
   }
 
   // Mobile "All"
   if (drawerCats) {
-    const allMobile = document.createElement("div");
-    allMobile.className = "sr-cat-parent";
+    const allMobile = document.createElement("button");
+    allMobile.className = "mp-cat-parent";
     allMobile.innerHTML = `<span>All products</span>`;
-    allMobile.addEventListener("click", () => handleCategoryClick(null, null));
+    allMobile.onclick = () => handleCategoryClick(null, null);
     drawerCats.appendChild(allMobile);
   }
 
-  // ------------------------------------
-  // LIMIT = EXACTLY 8 visible categories
-  // ------------------------------------
-  const VISIBLE_LIMIT = 8;
+  /* ---------- LIMIT ---------- */
 
-  const visibleCategories = entries.slice(0, VISIBLE_LIMIT);
-  const extraCategories = entries.slice(VISIBLE_LIMIT);
+  const LIMIT = 8;
+  const visible = entries.slice(0, LIMIT);
+  const extra = entries.slice(LIMIT);
 
-  // ------------------------------------
-  // DESKTOP: Build visible categories
-  // ------------------------------------
-  visibleCategories.forEach(([category, subSet]) => {
-    const pillWrap = document.createElement("div");
-    pillWrap.className = "sr-cat-pill-wrap";
+  /* ---------- DESKTOP MAIN ---------- */
+
+  visible.forEach(([category, subs]) => {
+    const wrap = document.createElement("div");
+    wrap.className = "mp-cat-pill-wrap";
 
     const pill = document.createElement("button");
-    pill.className = "sr-cat-pill";
+    pill.className = "mp-cat-pill";
     pill.dataset.cat = category;
     pill.textContent = category;
+    pill.onclick = () => handleCategoryClick(category, null);
+    wrap.appendChild(pill);
 
-    pill.addEventListener("click", () => handleCategoryClick(category, null));
-    pillWrap.appendChild(pill);
-
-    // Dropdown for subcategories
-    if (subSet.size > 0) {
+    if (subs.size) {
       const drop = document.createElement("div");
-      drop.className = "sr-cat-dropdown";
+      drop.className = "mp-cat-dropdown";
 
-      // "All in category"
       const allBtn = document.createElement("button");
-      allBtn.className = "sr-cat-drop-item";
+      allBtn.className = "mp-cat-drop-item";
       allBtn.textContent = `All in ${category}`;
-      allBtn.addEventListener("click", () =>
-        handleCategoryClick(category, null)
-      );
+      allBtn.onclick = () => handleCategoryClick(category, null);
       drop.appendChild(allBtn);
 
-      // Subcategories
-      subSet.forEach((sub) => {
-        const btn = document.createElement("button");
-        btn.className = "sr-cat-drop-item";
-        btn.textContent = sub;
-        btn.dataset.sub = sub;
-        btn.addEventListener("click", () =>
-          handleCategoryClick(category, sub)
-        );
-        drop.appendChild(btn);
+      subs.forEach((sub) => {
+        const b = document.createElement("button");
+        b.className = "mp-cat-drop-item";
+        b.dataset.sub = sub;
+        b.textContent = sub;
+        b.onclick = () => handleCategoryClick(category, sub);
+        drop.appendChild(b);
       });
 
-      pillWrap.appendChild(drop);
+      wrap.appendChild(drop);
     }
 
-    desktopBar.appendChild(pillWrap);
+    desktopBar.appendChild(wrap);
   });
 
-  // ------------------------------------
-  // DESKTOP: MORE CATEGORY
-  // ------------------------------------
-  if (extraCategories.length > 0) {
-    const moreWrap = document.createElement("div");
-    moreWrap.className = "sr-cat-pill-wrap";
+  /* ---------- DESKTOP MORE ---------- */
 
-    const morePill = document.createElement("button");
-    morePill.className = "sr-cat-pill";
-    morePill.dataset.cat = "more";
-    morePill.textContent = "More";
-    moreWrap.appendChild(morePill);
+  if (extra.length) {
+    const wrap = document.createElement("div");
+    wrap.className = "mp-cat-pill-wrap";
+
+    const pill = document.createElement("button");
+    pill.className = "mp-cat-pill";
+    pill.textContent = "More";
+    wrap.appendChild(pill);
 
     const drop = document.createElement("div");
-    drop.className = "sr-cat-dropdown";
+    drop.className = "mp-cat-dropdown";
 
-    extraCategories.forEach(([category, subSet]) => {
-      // Category name inside "More"
+    extra.forEach(([category, subs]) => {
       const catBtn = document.createElement("button");
-      catBtn.className = "sr-cat-drop-item";
+      catBtn.className = "mp-cat-drop-item";
       catBtn.textContent = category;
-      catBtn.addEventListener("click", () =>
-        handleCategoryClick(category, null)
-      );
+      catBtn.onclick = () => handleCategoryClick(category, null);
       drop.appendChild(catBtn);
 
-      // Subcategories
-      subSet.forEach((sub) => {
-        const subBtn = document.createElement("button");
-        subBtn.className = "sr-cat-drop-item";
-        subBtn.textContent = `— ${sub}`;
-        subBtn.addEventListener("click", () =>
-          handleCategoryClick(category, sub)
-        );
-        drop.appendChild(subBtn);
+      subs.forEach((sub) => {
+        const sb = document.createElement("button");
+        sb.className = "mp-cat-drop-item";
+        sb.textContent = `— ${sub}`;
+        sb.onclick = () => handleCategoryClick(category, sub);
+        drop.appendChild(sb);
       });
     });
 
-    moreWrap.appendChild(drop);
-    desktopBar.appendChild(moreWrap);
+    wrap.appendChild(drop);
+    desktopBar.appendChild(wrap);
   }
 
-  // ------------------------------------
-  // MOBILE / TABLET drawer
-  // ------------------------------------
+  /* ---------- MOBILE DRAWER ---------- */
 
-  entries.forEach(([category, subSet]) => {
-    const parent = document.createElement("div");
-    parent.className = "sr-cat-parent";
+  entries.forEach(([category, subs]) => {
+    const parent = document.createElement("button");
+    parent.className = "mp-cat-parent";
     parent.innerHTML = `<span>${category}</span><span>▸</span>`;
 
     const subList = document.createElement("div");
-    subList.className = "sr-sublist";
+    subList.className = "mp-cat-sublist";
 
-    subSet.forEach((sub) => {
-      const s = document.createElement("div");
-      s.className = "sr-cat-sub";
+    subs.forEach((sub) => {
+      const s = document.createElement("button");
+      s.className = "mp-cat-sub";
       s.textContent = sub;
-      s.addEventListener("click", () => handleCategoryClick(category, sub));
+      s.onclick = () => handleCategoryClick(category, sub);
       subList.appendChild(s);
     });
 
-    // Expand/collapse
-    parent.addEventListener("click", () => {
-      const open = subList.classList.toggle("open");
+    parent.onclick = () => {
+      const open = subList.classList.toggle("is-open");
       parent.querySelector("span:last-child").textContent = open ? "▾" : "▸";
-    });
+    };
 
     drawerCats.appendChild(parent);
     drawerCats.appendChild(subList);
   });
 }
 
-// ----------------------------------------
-// Initialize
-// ----------------------------------------
+/* ===============================
+   INIT
+=============================== */
 
 (async function init() {
   try {

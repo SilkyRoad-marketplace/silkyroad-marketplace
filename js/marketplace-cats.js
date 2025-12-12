@@ -1,223 +1,224 @@
 // /js/marketplace-cats.js
-// Builds desktop category bar + mobile drawer from Supabase "products" table
+// Builds desktop category bar + mobile drawer using sr-* classes
 
-import { supabase } from "./auth.js"; // reuse same client as auth
+import { supabase } from "./auth.js";
 
-const desktopBar = document.getElementById("mp-cat-bar-inner");
-const drawerBody = document.getElementById("mp-cat-drawer-body");
-const drawer = document.getElementById("mp-cat-drawer");
-const backdrop = document.getElementById("mp-cat-backdrop");
-const btnToggle = document.getElementById("mp-cat-toggle");
-const btnClose = document.getElementById("mp-cat-close");
+// Desktop bar
+const desktopBar = document.getElementById("srDesktopCategoryBar");
 
-// ---------- Drawer open / close ----------
+// Drawer
+const drawer = document.getElementById("srDrawer");
+const drawerCats = document.getElementById("srDrawerCategories");
+const overlay = document.getElementById("srOverlay");
+
+// Buttons
+const btnOpen = document.getElementById("srHamburgerBtn");
+const btnClose = document.getElementById("srCloseDrawerBtn");
+
+// ----------------------------------------
+// Drawer Logic
+// ----------------------------------------
 
 function openDrawer() {
-  if (!drawer || !backdrop) return;
   drawer.classList.add("is-open");
-  backdrop.classList.add("is-open");
+  overlay.classList.add("is-active");
 }
-
 function closeDrawer() {
-  if (!drawer || !backdrop) return;
   drawer.classList.remove("is-open");
-  backdrop.classList.remove("is-open");
+  overlay.classList.remove("is-active");
 }
 
-if (btnToggle) {
-  btnToggle.addEventListener("click", openDrawer);
-}
-if (btnClose) {
-  btnClose.addEventListener("click", closeDrawer);
-}
-if (backdrop) {
-  backdrop.addEventListener("click", closeDrawer);
-}
+if (btnOpen) btnOpen.addEventListener("click", openDrawer);
+if (btnClose) btnClose.addEventListener("click", closeDrawer);
+if (overlay) overlay.addEventListener("click", closeDrawer);
 
-// ---------- Build category map from Supabase ----------
+// ----------------------------------------
+// Fetch categories + subcategories
+// ----------------------------------------
 
-async function fetchCategoryMap() {
-  // assumes table "products" with columns "category" and "subcategory"
+async function fetchCategoryData() {
   const { data, error } = await supabase
     .from("products")
     .select("category, subcategory");
 
   if (error) {
-    console.error("Failed to load categories:", error);
+    console.error("Category load failed:", error);
     return new Map();
   }
 
-  const map = new Map(); // category -> Set(subcats)
+  const catMap = new Map();
 
   data.forEach((row) => {
-    const cat = row.category ? String(row.category).trim() : "";
-    const sub = row.subcategory ? String(row.subcategory).trim() : "";
+    const cat = row.category?.trim() || "";
+    const sub = row.subcategory?.trim() || "";
+
     if (!cat) return;
 
-    if (!map.has(cat)) map.set(cat, new Set());
-    if (sub) map.get(cat).add(sub);
+    if (!catMap.has(cat)) catMap.set(cat, new Set());
+    if (sub) catMap.get(cat).add(sub);
   });
 
-  return map;
+  return catMap;
 }
 
-// ---------- Handle click (desktop & mobile) ----------
+// ----------------------------------------
+// Handle Click
+// ----------------------------------------
 
 function handleCategoryClick(category, subcategory = null) {
-  // Update active state in desktop pills
+  // Update Pills Active State
   if (desktopBar) {
-    desktopBar.querySelectorAll(".mp-cat-pill").forEach((btn) => {
-      const cat = btn.dataset.cat || "";
-      const sub = btn.dataset.sub || "";
-      const isActive =
-        (category === null && cat === "all") ||
-        (category && !subcategory && cat === category && !sub) ||
-        (category && subcategory && cat === category && sub === subcategory);
+    desktopBar.querySelectorAll(".sr-cat-pill").forEach((pill) => {
+      const cat = pill.dataset.cat || "";
+      const sub = pill.dataset.sub || "";
 
-      btn.classList.toggle("is-active", isActive);
+      let active = false;
+
+      if (!category && cat === "all") active = true;
+      if (category && !subcategory && cat === category && !sub) active = true;
+      if (category && subcategory && cat === category && sub === subcategory)
+        active = true;
+
+      pill.classList.toggle("active", active);
     });
   }
 
-  // Notify main code to filter products
+  // Notify page
   if (typeof window.handleCategoryChange === "function") {
     window.handleCategoryChange({ category, subcategory });
-  } else {
-    console.log("Category selected:", category, subcategory);
   }
 
-  // On mobile, close drawer after selection
-  if (window.innerWidth <= 900) {
-    closeDrawer();
-  }
+  // Mobile closes drawer
+  if (window.innerWidth <= 900) closeDrawer();
 }
 
-// ---------- Render desktop bar + mobile drawer ----------
+// ----------------------------------------
+// Build UI
+// ----------------------------------------
 
-function buildUI(categoryMap) {
+function buildUI(catMap) {
   if (desktopBar) desktopBar.innerHTML = "";
-  if (drawerBody) drawerBody.innerHTML = "";
+  if (drawerCats) drawerCats.innerHTML = "";
 
-  // ---- DESKTOP "ALL" pill ----
+  // -----------------------------
+  // DESKTOP: "All"
+  // -----------------------------
   if (desktopBar) {
-    const wrap = document.createElement("div");
-    wrap.className = "mp-cat-pill-wrap";
-
-    const allBtn = document.createElement("button");
-    allBtn.className = "mp-cat-pill is-active";
-    allBtn.textContent = "All";
-    allBtn.dataset.cat = "all";
-    allBtn.addEventListener("click", () => handleCategoryClick(null, null));
-
-    wrap.appendChild(allBtn);
-    desktopBar.appendChild(wrap);
+    const all = document.createElement("button");
+    all.className = "sr-cat-pill active";
+    all.dataset.cat = "all";
+    all.textContent = "All";
+    all.addEventListener("click", () => handleCategoryClick(null, null));
+    desktopBar.appendChild(all);
   }
 
-  // ---- MOBILE drawer top section title + "All" ----
-  if (drawerBody) {
-    const title = document.createElement("div");
-    title.className = "mp-cat-section-title";
-    title.textContent = "Browse";
-    drawerBody.appendChild(title);
-
-    const allBtnMobile = document.createElement("button");
-    allBtnMobile.className = "mp-cat-parent";
-    allBtnMobile.innerHTML = `<span>All products</span>`;
-    allBtnMobile.addEventListener("click", () => handleCategoryClick(null, null));
-    drawerBody.appendChild(allBtnMobile);
+  // -----------------------------
+  // MOBILE: All
+  // -----------------------------
+  if (drawerCats) {
+    const allMobile = document.createElement("div");
+    allMobile.className = "sr-drawer-item sr-cat-parent";
+    allMobile.innerHTML = `<span>All products</span>`;
+    allMobile.addEventListener("click", () => handleCategoryClick(null, null));
+    drawerCats.appendChild(allMobile);
   }
 
-  // Convert map to array so we can loop in a stable order
-  const entries = Array.from(categoryMap.entries()).sort((a, b) =>
+  // Sort categories alphabetically
+  const entries = Array.from(catMap.entries()).sort((a, b) =>
     a[0].localeCompare(b[0])
   );
 
   for (const [category, subSet] of entries) {
-    // ---- DESKTOP pill + dropdown ----
+    // -----------------------------
+    // DESKTOP CATEGORY PILL
+    // -----------------------------
     if (desktopBar) {
-      const wrap = document.createElement("div");
-      wrap.className = "mp-cat-pill-wrap";
+      const pillWrap = document.createElement("div");
+      pillWrap.className = "sr-cat-pill-wrap";
 
       const pill = document.createElement("button");
-      pill.className = "mp-cat-pill";
+      pill.className = "sr-cat-pill";
       pill.dataset.cat = category;
       pill.textContent = category;
+
       pill.addEventListener("click", () => handleCategoryClick(category, null));
-      wrap.appendChild(pill);
+      pillWrap.appendChild(pill);
 
-      if (subSet.size) {
-        const dropdown = document.createElement("div");
-        dropdown.className = "mp-cat-dropdown";
+      // Dropdown
+      if (subSet.size > 0) {
+        const drop = document.createElement("div");
+        drop.className = "sr-cat-dropdown";
 
-        // First item: All in this category
-        const allSub = document.createElement("button");
-        allSub.className = "mp-cat-drop-item";
-        allSub.textContent = `All in ${category}`;
-        allSub.dataset.cat = category;
-        allSub.addEventListener("click", () =>
+        // All in Category
+        const allBtn = document.createElement("button");
+        allBtn.className = "sr-cat-drop-item";
+        allBtn.textContent = `All in ${category}`;
+        allBtn.addEventListener("click", () =>
           handleCategoryClick(category, null)
         );
-        dropdown.appendChild(allSub);
+        drop.appendChild(allBtn);
 
-        // Then each subcategory
         subSet.forEach((sub) => {
-          const subBtn = document.createElement("button");
-          subBtn.className = "mp-cat-drop-item";
-          subBtn.textContent = sub;
-          subBtn.dataset.cat = category;
-          subBtn.dataset.sub = sub;
-          subBtn.addEventListener("click", () =>
+          const btn = document.createElement("button");
+          btn.className = "sr-cat-drop-item";
+          btn.textContent = sub;
+          btn.dataset.sub = sub;
+
+          btn.addEventListener("click", () =>
             handleCategoryClick(category, sub)
           );
-          dropdown.appendChild(subBtn);
+
+          drop.appendChild(btn);
         });
 
-        wrap.appendChild(dropdown);
+        pillWrap.appendChild(drop);
       }
 
-      desktopBar.appendChild(wrap);
+      desktopBar.appendChild(pillWrap);
     }
 
-    // ---- MOBILE accordion ----
-    if (!drawerBody) continue;
+    // -----------------------------
+    // MOBILE DRAWER CATEGORY LIST
+    // -----------------------------
+    if (drawerCats) {
+      const parent = document.createElement("div");
+      parent.className = "sr-drawer-item sr-cat-parent";
+      parent.innerHTML = `<span>${category}</span><span>▸</span>`;
 
-    const parentBtn = document.createElement("button");
-    parentBtn.className = "mp-cat-parent";
-    parentBtn.innerHTML = `<span>${category}</span><span>▸</span>`;
+      const subList = document.createElement("div");
+      subList.className = "sr-sublist";
 
-    const sublist = document.createElement("div");
-    sublist.className = "mp-cat-sublist";
-
-    if (subSet.size) {
       subSet.forEach((sub) => {
-        const sbtn = document.createElement("button");
-        sbtn.className = "mp-cat-sub";
-        sbtn.textContent = sub;
-        sbtn.addEventListener("click", () =>
-          handleCategoryClick(category, sub)
-        );
-        sublist.appendChild(sbtn);
+        const s = document.createElement("div");
+        s.className = "sr-drawer-item sr-cat-sub";
+        s.textContent = sub;
+        s.addEventListener("click", () => handleCategoryClick(category, sub));
+        subList.appendChild(s);
       });
+
+      // Expand/Collapse
+      parent.addEventListener("click", () => {
+        const open = subList.classList.toggle("open");
+        parent.querySelector("span:last-child").textContent = open
+          ? "▾"
+          : "▸";
+      });
+
+      drawerCats.appendChild(parent);
+      drawerCats.appendChild(subList);
     }
-
-    // expand / collapse
-    parentBtn.addEventListener("click", () => {
-      const open = sublist.classList.toggle("is-open");
-      const arrow = parentBtn.querySelector("span:last-child");
-      if (arrow) arrow.textContent = open ? "▾" : "▸";
-    });
-
-    drawerBody.appendChild(parentBtn);
-    drawerBody.appendChild(sublist);
   }
 }
 
-// ---------- Init ----------
+// ----------------------------------------
+// Init
+// ----------------------------------------
 
-(async function initCategories() {
+(async function init() {
   try {
-    const map = await fetchCategoryMap();
+    const map = await fetchCategoryData();
     buildUI(map);
   } catch (e) {
-    console.error("Error initialising categories:", e);
+    console.error("Category init failed:", e);
   }
 })();

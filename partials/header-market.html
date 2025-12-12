@@ -1,91 +1,69 @@
-<header class="sr-header sr-header-market">
-  <div class="sr-container sr-header-inner">
+<header class="mp-market-header">
+  <div class="mp-header-top">
+    <a class="mp-logo-link" href="/index.html">
+      <img src="/logo.png" alt="Silky Road" class="mp-logo-img">
+    </a>
 
-    <!-- ================= LEFT SIDE (LOGO) ================= -->
-    <div class="sr-header-left">
-      <!-- Hamburger (mobile only) -->
-      <button class="sr-hamburger" id="srHamburgerBtn" aria-label="Open menu">
-        &#9776;
-      </button>
+    <form class="mp-search mp-search-desktop" id="mp-search-form" role="search">
+      <span class="mp-search-icon">🔍</span>
+      <input type="text" id="mp-search-input" placeholder="Search products" autocomplete="off" />
+      <button type="button" id="mp-search-clear" class="mp-search-clear" aria-label="Clear search">✕</button>
+    </form>
 
-      <!-- Logo -->
-      <a href="/index.html" class="logo-link">
-        <img src="/logo.png" alt="Silky Road" class="logo-img">
+    <div class="mp-header-actions">
+      <div class="mp-auth-inline">
+        <div data-when="logged-out">
+          <a href="/login.html" class="mp-link">Log in</a>
+          <a href="/sign_up.html" class="mp-btn mp-btn-gold">Start selling</a>
+        </div>
+        <div data-when="logged-in" style="display:none;">
+          <a href="/library.html" class="mp-link">Library</a>
+          <a href="/dashboard.html" class="mp-btn mp-btn-gold">Dashboard</a>
+        </div>
+      </div>
+      <a href="/checkout.html" class="mp-icon-btn" data-role="cart-button" aria-label="Cart">
+        🛒
+        <span class="mp-cart-count" data-role="cart-count" style="display:none;"></span>
       </a>
+      <button type="button" class="mp-cat-toggle" id="mp-cat-toggle" aria-label="Browse categories">☰</button>
     </div>
-
-    <!-- ================= RIGHT SIDE (AUTH + CART) ================= -->
-    <div class="sr-header-right" id="srHeaderAuthLinks">
-
-      <!-- Logged OUT -->
-      <a href="/login.html" class="sr-auth-link sr-logged-out">Login</a>
-      <a href="/start-selling.html" class="sr-auth-link sr-logged-out sr-start-selling">Start Selling</a>
-
-      <!-- Logged IN -->
-      <a href="/library.html" class="sr-auth-link sr-logged-in">Library</a>
-      <a href="/dashboard.html" class="sr-auth-link sr-logged-in">Dashboard</a>
-      <a href="#" class="sr-auth-link sr-logged-in" id="srLogoutBtn">Log out</a>
-
-      <!-- Cart icon (always visible) -->
-      <a href="/checkout.html" class="sr-cart-link" aria-label="View cart">
-        🛒 <span id="srCartCount">0</span>
-      </a>
-    </div>
-
-    <!-- ================= SEARCH BAR (CENTER, MOBILE = 2ND ROW) ================= -->
-    <div class="sr-header-center">
-      <form class="sr-search" id="srSearchForm" action="/search.html" method="GET">
-        <input
-          type="text"
-          class="sr-search-input"
-          name="q"
-          id="srSearchInput"
-          placeholder="Search products"
-          autocomplete="off"
-        >
-        <button type="submit" class="sr-search-btn">Search</button>
-      </form>
-    </div>
-
   </div>
 
-  <!-- ================= DESKTOP CATEGORY BAR ================= -->
-  <div class="sr-header-bottom">
-    <nav class="sr-category-bar" id="srDesktopCategoryBar">
-      <!-- Filled by marketplace-categories.js -->
+  <div class="mp-header-row2">
+    <form class="mp-search mp-search-mobile" id="mp-search-form-mobile" role="search">
+      <span class="mp-search-icon">🔍</span>
+      <input type="text" id="mp-search-input-mobile" placeholder="Search products" autocomplete="off" />
+      <button type="button" id="mp-search-clear-mobile" class="mp-search-clear" aria-label="Clear search">✕</button>
+    </form>
+    <button type="button" class="mp-cat-toggle mp-cat-toggle-inline" id="mp-cat-toggle-inline" aria-label="Browse categories">☰</button>
+    <nav class="mp-cat-bar" id="mp-cat-bar">
+      <div class="mp-cat-bar-inner" id="mp-cat-bar-inner"></div>
     </nav>
   </div>
 </header>
 
-<!-- ================= MOBILE DRAWER ================= -->
-<div class="sr-drawer" id="srDrawer">
-
-  <div class="sr-drawer-header">
-    <span class="sr-drawer-title">Menu</span>
-    <button class="sr-drawer-close" id="srCloseDrawerBtn" aria-label="Close menu">✖</button>
+<div class="mp-cat-backdrop" id="mp-cat-backdrop"></div>
+<aside class="mp-cat-drawer" id="mp-cat-drawer">
+  <div class="mp-cat-drawer-header">
+    <span>Browse</span>
+    <button class="mp-cat-close" id="mp-cat-close" aria-label="Close drawer">✕</button>
   </div>
 
-  <!-- Drawer Auth Links -->
-  <div class="sr-drawer-auth" id="srDrawerAuthLinks">
-
-    <!-- Logged OUT -->
-    <a href="/login.html" class="sr-auth-link sr-logged-out">Login</a>
-    <a href="/start-selling.html" class="sr-auth-link sr-logged-out sr-start-selling">Start Selling</a>
-
-    <!-- Logged IN -->
-    <a href="/library.html" class="sr-auth-link sr-logged-in">Library</a>
-    <a href="/dashboard.html" class="sr-auth-link sr-logged-in">Dashboard</a>
-    <a href="#" class="sr-auth-link sr-logged-in" id="srDrawerLogoutBtn">Log out</a>
+  <div class="mp-cat-drawer-auth">
+    <div data-when="logged-out">
+      <a href="/login.html" class="mp-link">Log in</a>
+      <a href="/sign_up.html" class="mp-btn mp-btn-gold">Start selling</a>
+    </div>
+    <div data-when="logged-in" style="display:none;">
+      <a href="/library.html" class="mp-link">Library</a>
+      <a href="/dashboard.html" class="mp-btn mp-btn-gold">Dashboard</a>
+    </div>
   </div>
 
-  <hr class="sr-drawer-divider">
-
-  <!-- Drawer Categories -->
-  <div class="sr-drawer-categories" id="srDrawerCategories">
-    <!-- Filled dynamically by marketplace-categories.js -->
+  <div class="mp-cat-drawer-main" id="mp-cat-drawer-main"></div>
+  <div class="mp-cat-drawer-sub" id="mp-cat-drawer-sub" hidden>
+    <button class="mp-cat-back" id="mp-cat-back">‹ Back</button>
+    <div class="mp-cat-subtitle" id="mp-cat-subtitle"></div>
+    <div class="mp-cat-drawer-sublist" id="mp-cat-drawer-sublist"></div>
   </div>
-
-</div>
-
-<!-- ================= OVERLAY ================= -->
-<div class="sr-overlay" id="srOverlay"></div>
+</aside>

@@ -76,6 +76,7 @@ function initCartCount() {
 let allProducts = [];
 let filteredProducts = [];
 let featuredProducts = [];
+let filteredFeatured = [];
 
 const state = {
   category: null,
@@ -86,7 +87,17 @@ const state = {
   priceMin: null,
   priceMax: null,
   ratingMin: null,
+  featuredPage: 1,
+  productsPage: 1,
 };
+
+const PRODUCTS_PER_PAGE = 54;
+
+function featuredPerPage() {
+  if (window.innerWidth < 768) return 2;
+  if (window.innerWidth < 1024) return 3;
+  return 4;
+}
 
 /* =========================================
    FETCH PRODUCTS
@@ -96,6 +107,7 @@ async function loadProducts() {
   const { data, error } = await supabase
     .from("products")
     .select("*")
+    .eq("is_active", true)
     .order("created_at", { ascending: false });
 
   if (error) {
@@ -105,8 +117,7 @@ async function loadProducts() {
     allProducts = data || [];
   }
 
-  // Featured = first 10 (or those flagged later)
-  featuredProducts = allProducts.slice(0, 10);
+  featuredProducts = allProducts.filter((p) => p.is_featured);
   applyFilters();
 }
 
@@ -114,57 +125,58 @@ async function loadProducts() {
    FILTERS
 ========================================= */
 
+function matchesFilters(p, search) {
+  const title = (p.title || p.name || "").toLowerCase();
+  const desc = (p.description || "").toLowerCase();
+  const catSlug = (p.category_slug || "").toLowerCase();
+  const subSlug = (p.subcategory_slug || "").toLowerCase();
+  const catName = (p.category || "").toLowerCase();
+  const subName = (p.subcategory || "").toLowerCase();
+  const tags = (Array.isArray(p.tags) ? p.tags.join(" ") : (p.tags || "")).toLowerCase();
+  const type = (p.file_type || p.type || "").toLowerCase();
+
+  if (state.category) {
+    const target = state.category.toLowerCase();
+    if (catSlug !== target && catName !== target) return false;
+  }
+  if (state.subcategory) {
+    const targetSub = state.subcategory.toLowerCase();
+    if (subSlug !== targetSub && subName !== targetSub) return false;
+  }
+
+  if (search) {
+    const hay = `${title} ${desc} ${catSlug} ${catName} ${subSlug} ${subName} ${tags}`;
+    if (!hay.includes(search)) return false;
+  }
+
+  if (state.tags.size) {
+    let matchTag = false;
+    state.tags.forEach((t) => {
+      if (tags.includes(t.toLowerCase())) matchTag = true;
+    });
+    if (!matchTag) return false;
+  }
+
+  if (state.types.size) {
+    if (!state.types.has(type)) return false;
+  }
+
+  const priceCents = p.price_cents ?? p.priceCents ?? 0;
+  const price = priceCents / 100;
+  if (state.priceMin != null && price < state.priceMin) return false;
+  if (state.priceMax != null && price > state.priceMax) return false;
+
+  const rating = p.average_rating ?? p.rating ?? 0;
+  if (state.ratingMin != null && rating < state.ratingMin) return false;
+
+  return true;
+}
+
 function applyFilters() {
   const search = state.search.toLowerCase();
 
-  filteredProducts = allProducts.filter((p) => {
-    const title = (p.title || p.name || "").toLowerCase();
-    const desc = (p.description || "").toLowerCase();
-    const cat = (p.category || "").toLowerCase();
-    const sub = (p.subcategory || "").toLowerCase();
-    const tags = (Array.isArray(p.tags) ? p.tags.join(" ") : (p.tags || "")).toLowerCase();
-    const type = (p.file_type || p.type || "").toLowerCase();
-
-    // category / subcategory
-    if (state.category && cat !== state.category.toLowerCase()) return false;
-    if (state.subcategory && sub !== state.subcategory.toLowerCase()) return false;
-
-    // search
-    if (search) {
-      const hay = title + " " + desc + " " + cat + " " + sub + " " + tags;
-      if (!hay.includes(search)) return false;
-    }
-
-    // tags
-    if (state.tags.size) {
-      let matchTag = false;
-      state.tags.forEach((t) => {
-        if (tags.includes(t.toLowerCase())) matchTag = true;
-      });
-      if (!matchTag) return false;
-    }
-
-    // file types
-    if (state.types.size) {
-      if (!state.types.has(type)) return false;
-    }
-
-    // price
-    const priceCents = p.price_cents ?? p.priceCents ?? 0;
-    const price = priceCents / 100;
-    if (state.priceMin != null && price < state.priceMin) return false;
-    if (state.priceMax != null && price > state.priceMax) return false;
-
-    // rating
-    const rating =
-      p.average_rating ??
-      p.rating ??
-      0;
-    if (state.ratingMin != null && rating < state.ratingMin) return false;
-
-    return true;
-  });
-
+  filteredProducts = allProducts.filter((p) => matchesFilters(p, search));
+  filteredFeatured = featuredProducts.filter((p) => matchesFilters(p, search));
   renderFeatured();
   renderProducts();
 }
@@ -231,62 +243,117 @@ function renderCard(p) {
 function renderFeatured() {
   const grid = document.getElementById("mp-featured-grid");
   const empty = document.getElementById("mp-featured-empty");
+  const pagination = document.getElementById("mp-featured-pagination");
   if (!grid || !empty) return;
 
   grid.innerHTML = "";
-  const list = (state.category || state.subcategory)
-    ? filteredProducts.slice(0, 10)
-    : featuredProducts.slice(0, 10);
+  const base = (state.category || state.subcategory) ? filteredFeatured : featuredProducts;
+  const perPage = featuredPerPage();
+  const pages = Math.max(1, Math.ceil(base.length / perPage));
+  state.featuredPage = Math.min(state.featuredPage, pages);
+  const start = (state.featuredPage - 1) * perPage;
+  const list = base.slice(start, start + perPage);
 
   if (!list.length) {
     empty.style.display = "block";
+    pagination && (pagination.innerHTML = "");
     return;
   }
   empty.style.display = "none";
 
   list.forEach((p) => grid.appendChild(renderCard(p)));
+  renderPagination(pagination, pages, state.featuredPage, (page) => {
+    state.featuredPage = page;
+    renderFeatured();
+  });
 }
 
 function renderProducts() {
   const grid = document.getElementById("mp-products-grid");
   const empty = document.getElementById("mp-products-empty");
+  const pagination = document.getElementById("mp-products-pagination");
   if (!grid || !empty) return;
 
   grid.innerHTML = "";
 
   if (!filteredProducts.length) {
     empty.style.display = "block";
+    pagination && (pagination.innerHTML = "");
     return;
   }
   empty.style.display = "none";
 
-  filteredProducts.forEach((p) => grid.appendChild(renderCard(p)));
+  const pages = Math.max(1, Math.ceil(filteredProducts.length / PRODUCTS_PER_PAGE));
+  state.productsPage = Math.min(state.productsPage, pages);
+  const start = (state.productsPage - 1) * PRODUCTS_PER_PAGE;
+  filteredProducts
+    .slice(start, start + PRODUCTS_PER_PAGE)
+    .forEach((p) => grid.appendChild(renderCard(p)));
+
+  renderPagination(pagination, pages, state.productsPage, (page) => {
+    state.productsPage = page;
+    renderProducts();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+}
+
+function renderPagination(container, pages, current, onChange) {
+  if (!container) return;
+  container.innerHTML = "";
+  if (pages <= 1) return;
+
+  for (let i = 1; i <= pages; i += 1) {
+    const btn = document.createElement("button");
+    btn.className = "mp-page-btn";
+    btn.textContent = String(i);
+    if (i === current) btn.classList.add("is-active");
+    btn.addEventListener("click", () => onChange(i));
+    container.appendChild(btn);
+  }
 }
 
 /* =========================================
    FILTER UI HANDLERS
 ========================================= */
 
-function initFilterUI() {
+async function initFilterUI() {
+  if (window.srHeaderReady) await window.srHeaderReady;
+
   const searchInput = document.getElementById("mp-search-input");
+  const searchInputMobile = document.getElementById("mp-search-input-mobile");
   const searchClear = document.getElementById("mp-search-clear");
+  const searchClearMobile = document.getElementById("mp-search-clear-mobile");
   const filterToggle = document.getElementById("mp-filters-toggle");
   const filtersPanel = document.getElementById("mp-filters");
   const filtersOverlay = document.getElementById("mp-filters-overlay");
   const clearFiltersBtn = document.getElementById("mp-filters-clear");
 
   // Search
+  function handleSearchInput(value) {
+    state.search = value.trim();
+    state.featuredPage = 1;
+    state.productsPage = 1;
+    applyFilters();
+  }
+
   if (searchInput) {
-    searchInput.addEventListener("input", () => {
-      state.search = searchInput.value.trim();
-      applyFilters();
-    });
+    searchInput.addEventListener("input", () => handleSearchInput(searchInput.value));
+  }
+  if (searchInputMobile) {
+    searchInputMobile.addEventListener("input", () => handleSearchInput(searchInputMobile.value));
   }
   if (searchClear && searchInput) {
     searchClear.addEventListener("click", () => {
       searchInput.value = "";
-      state.search = "";
-      applyFilters();
+      if (searchInputMobile) searchInputMobile.value = "";
+      handleSearchInput("");
+    });
+  }
+  if (searchClearMobile && searchInputMobile) {
+    searchClearMobile.addEventListener("click", () => {
+      searchInputMobile.value = "";
+      if (searchInput) searchInput.value = "";
+      handleSearchInput("");
     });
   }
 
@@ -400,18 +467,20 @@ function initFilterUI() {
    CATEGORY HANDLER (used by marketplace-cats.js)
 ========================================= */
 
-window.handleCategoryChange = function ({ category, subcategory }) {
+window.handleCategoryChange = function ({ category, subcategory, categoryName, subcategoryName }) {
   state.category = category || null;
   state.subcategory = subcategory || null;
+  state.featuredPage = 1;
+  state.productsPage = 1;
 
   const label = document.getElementById("mp-current-cat-label");
   if (label) {
     if (!category && !subcategory) {
       label.textContent = "Showing: All categories";
     } else if (category && !subcategory) {
-      label.textContent = `Showing: ${category}`;
+      label.textContent = `Showing: ${categoryName || category}`;
     } else {
-      label.textContent = `Showing: ${category} › ${subcategory}`;
+      label.textContent = `Showing: ${categoryName || category} › ${subcategoryName || subcategory}`;
     }
   }
 
@@ -422,9 +491,23 @@ window.handleCategoryChange = function ({ category, subcategory }) {
    INIT
 ========================================= */
 
+function initFromQuery() {
+  const params = new URLSearchParams(window.location.search);
+  state.category = params.get("category") || null;
+  state.subcategory = params.get("sub") || params.get("subcategory") || null;
+  state.search = params.get("q") || "";
+}
+
 (async function initMarketplace() {
+  initFromQuery();
   await initAuthUI();
   initCartCount();
-  initFilterUI();
+  await initFilterUI();
+
+  const searchInput = document.getElementById("mp-search-input");
+  const searchInputMobile = document.getElementById("mp-search-input-mobile");
+  if (searchInput && state.search) searchInput.value = state.search;
+  if (searchInputMobile && state.search) searchInputMobile.value = state.search;
+
   await loadProducts();
 })();

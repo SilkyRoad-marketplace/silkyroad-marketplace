@@ -233,4 +233,61 @@ body.mp-body {
   width: 100%;
 }
   
+}/* ==================================================
+   FINAL VISIBILITY & LAYOUT LOCK (MP ONLY)
+   DO NOT MODIFY AFTER THIS
+================================================== */
+
+/* DESKTOP */
+@media (min-width: 901px) {
+  .mp-cat-bar {
+    display: block;
+  }
+
+  .mp-cat-toggle {
+    display: none;
+  }
+
+  .mp-filters-toggle {
+    display: none;
+  }
+
+  .mp-filters {
+    display: block;
+    border: 1px solid rgba(244,197,106,.55);
+    border-radius: 18px;
+  }
+}
+
+/* MOBILE */
+@media (max-width: 900px) {
+  .mp-cat-bar {
+    display: none;
+  }
+
+  .mp-filters {
+    display: none;
+  }
+
+  .mp-cat-toggle {
+    display: inline-flex;
+  }
+
+  .mp-filters-toggle {
+    display: inline-flex;
+  }
+}
+
+/* FILTER ALIGNMENT */
+.mp-filter-block h3 {
+  text-align: left;
+}
+
+.mp-rating-row {
+  justify-content: flex-start;
+}
+
+.mp-field input {
+  width: 100%;
+}
 }

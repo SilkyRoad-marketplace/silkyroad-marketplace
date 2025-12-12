@@ -192,4 +192,23 @@ body.mp-body {
   .mp-cat-bar {
     display: none;
   }
+
+/* ===============================
+   VISIBILITY RULES (CRITICAL)
+=============================== */
+
+/* Desktop only */
+@media (min-width: 901px) {
+  .mp-cat-toggle { display: none !important; }
+  .mp-filters-toggle { display: none !important; }
+  .mp-cat-bar { display: block !important; }
+  .mp-filters { display: block !important; }
+}
+
+/* Mobile only */
+@media (max-width: 900px) {
+  .mp-cat-bar { display: none !important; }
+  .mp-filters { display: none !important; }
+}
+
 }

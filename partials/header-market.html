@@ -1,39 +1,19 @@
 <header class="sr-header sr-header-market">
+
+  <!-- ============ ROW 1 ============ -->
   <div class="sr-container sr-header-inner">
 
-    <!-- ================= LEFT SIDE (LOGO) ================= -->
+    <!-- LEFT: Logo + Hamburger -->
     <div class="sr-header-left">
-      <!-- Hamburger (mobile only) -->
-      <button class="sr-hamburger" id="srHamburgerBtn" aria-label="Open menu">
-        &#9776;
-      </button>
+      <button class="sr-hamburger" id="srHamburgerBtn" aria-label="Open menu">&#9776;</button>
 
-      <!-- Logo -->
       <a href="/index.html" class="logo-link">
         <img src="/logo.png" alt="Silky Road" class="logo-img">
       </a>
     </div>
 
-    <!-- ================= RIGHT SIDE (AUTH + CART) ================= -->
-    <div class="sr-header-right" id="srHeaderAuthLinks">
-
-      <!-- Logged OUT -->
-      <a href="/login.html" class="sr-auth-link sr-logged-out">Login</a>
-      <a href="/start-selling.html" class="sr-auth-link sr-logged-out sr-start-selling">Start Selling</a>
-
-      <!-- Logged IN -->
-      <a href="/library.html" class="sr-auth-link sr-logged-in">Library</a>
-      <a href="/dashboard.html" class="sr-auth-link sr-logged-in">Dashboard</a>
-      <a href="#" class="sr-auth-link sr-logged-in" id="srLogoutBtn">Log out</a>
-
-      <!-- Cart icon (always visible) -->
-      <a href="/checkout.html" class="sr-cart-link" aria-label="View cart">
-        🛒 <span id="srCartCount">0</span>
-      </a>
-    </div>
-
-    <!-- ================= SEARCH BAR (CENTER, MOBILE = 2ND ROW) ================= -->
-    <div class="sr-header-center">
+    <!-- CENTER: Search (desktop only) -->
+    <div class="sr-header-center sr-desktop-only">
       <form class="sr-search" id="srSearchForm" action="/search.html" method="GET">
         <input
           type="text"
@@ -47,21 +27,50 @@
       </form>
     </div>
 
+    <!-- RIGHT: Auth buttons + cart -->
+    <div class="sr-header-right" id="srHeaderAuthLinks">
+
+      <!-- Logged OUT -->
+      <a href="/login.html" class="sr-auth-link sr-logged-out">Login</a>
+      <a href="/start-selling.html" class="sr-auth-link sr-logged-out sr-start-selling">Start Selling</a>
+
+      <!-- Logged IN -->
+      <a href="/library.html" class="sr-auth-link sr-logged-in">Library</a>
+      <a href="/dashboard.html" class="sr-auth-link sr-logged-in">Dashboard</a>
+      <a href="#" class="sr-auth-link sr-logged-in" id="srLogoutBtn">Log out</a>
+
+      <!-- Cart icon -->
+      <a href="/checkout.html" class="sr-cart-link" aria-label="View cart">
+        🛒 <span id="srCartCount">0</span>
+      </a>
+    </div>
+
   </div>
 
-  <!-- ================= DESKTOP CATEGORY BAR ================= -->
-  <div class="sr-header-bottom">
+  <!-- ============ ROW 2 (Desktop Category Bar) ============ -->
+  <div class="sr-header-bottom sr-desktop-only">
     <nav class="sr-category-bar" id="srDesktopCategoryBar">
       <!-- Filled by marketplace-categories.js -->
     </nav>
   </div>
+
+
+  <!-- ============ ROW 2 (Tablet/Mobile Search + Hamburger) ============ -->
+  <div class="sr-mobile-row sr-mobile-only">
+    <form class="sr-search sr-mobile-search" id="srSearchFormMobile">
+      <input type="text" id="srSearchInputMobile" placeholder="Search products" autocomplete="off">
+      <button type="submit">🔍</button>
+    </form>
+  </div>
+
 </header>
 
-<!-- ================= MOBILE DRAWER ================= -->
+
+<!-- ============ MOBILE CATEGORY DRAWER ============ -->
 <div class="sr-drawer" id="srDrawer">
 
   <div class="sr-drawer-header">
-    <span class="sr-drawer-title">Menu</span>
+    <span class="sr-drawer-title">Browse Categories</span>
     <button class="sr-drawer-close" id="srCloseDrawerBtn" aria-label="Close menu">✖</button>
   </div>
 
@@ -87,5 +96,6 @@
 
 </div>
 
-<!-- ================= OVERLAY ================= -->
+
+<!-- ============ OVERLAY ============ -->
 <div class="sr-overlay" id="srOverlay"></div>

@@ -1,0 +1,6 @@
+{
+  "rewrites": [
+    { "source": "/c/:category/:subcat", "destination": "/marketplace.html" },
+    { "source": "/p/:slug", "destination": "/marketplace.html" }
+  ]
+}

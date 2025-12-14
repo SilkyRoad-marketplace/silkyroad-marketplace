@@ -1,242 +1,200 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>Marketplace – Silky Road</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <link rel="icon" href="/favicon.png">
-  <link rel="stylesheet" href="/css/marketplace.css">
+  <meta charset="utf-8" />
+  <title>Silky Road Marketplace</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="icon" href="/favicon.png" />
+
+  <style>
+    :root{
+      --bg:#0b0b0b;
+      --bg-2:#121212;
+      --text:#ffffff;
+      --muted:#b5b5b5;
+      --accent:#d4af37; /* gold */
+      --border:#222;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,Arial,sans-serif;background:#0b0b0b;color:var(--text)}
+    a{text-decoration:none;color:inherit}
+
+    /* ================= HEADER ================= */
+    header{position:sticky;top:0;z-index:1000;background:var(--bg);border-bottom:1px solid var(--border)}
+
+    /* ----- ROW 1 ----- */
+    .header-top{
+      display:flex;align-items:center;gap:14px;
+      padding:10px 16px;
+    }
+    .logo img{height:36px;width:auto;display:block}
+
+    .search-desktop{flex:1}
+    .search-desktop input{
+      width:100%;padding:10px 12px;border-radius:6px;border:1px solid var(--border);
+      background:var(--bg-2);color:#fff
+    }
+
+    .header-actions{display:flex;align-items:center;gap:10px}
+    .btn{
+      padding:8px 12px;border-radius:6px;font-size:14px;cursor:pointer;
+      border:1px solid var(--border);background:var(--bg-2);color:#fff
+    }
+    .btn.primary{background:var(--accent);border-color:var(--accent);color:#000;font-weight:600}
+    .icon-btn{font-size:20px;padding:6px}
+
+    /* ----- ROW 2 (CATEGORIES) ----- */
+    .cat-bar{background:#000;border-top:1px solid var(--border)}
+    .cat-list{display:flex;gap:18px;padding:10px 16px;overflow:hidden}
+    .cat-item{position:relative;font-size:14px;white-space:nowrap}
+    .cat-item>a{color:#ddd}
+    .cat-item:hover>a{color:var(--accent)}
+
+    .dropdown{
+      display:none;position:absolute;top:100%;left:0;min-width:220px;
+      background:#000;border:1px solid var(--border);border-radius:8px;padding:8px 0
+    }
+    .dropdown a{display:block;padding:8px 14px;font-size:14px;color:#ccc}
+    .dropdown a:hover{background:#111;color:var(--accent)}
+
+    .cat-item:hover>.dropdown{display:block}
+
+    /* MORE MENU */
+    .more-menu>.dropdown{right:0;left:auto}
+
+    /* ================= MOBILE ================= */
+    .hamburger{display:none;font-size:22px}
+    .mobile-search{display:none;padding:10px 16px;border-bottom:1px solid var(--border)}
+    .mobile-search input{width:100%;padding:10px;border-radius:6px;border:1px solid var(--border);background:var(--bg-2);color:#fff}
+
+    /* SIDE DRAWER */
+    .drawer{
+      position:fixed;top:0;left:-280px;width:280px;height:100%;
+      background:#000;border-right:1px solid var(--border);transition:.25s;z-index:2000;
+      display:flex;flex-direction:column
+    }
+    .drawer.open{left:0}
+    .drawer-header,.drawer-footer{padding:14px;border-bottom:1px solid var(--border)}
+    .drawer-footer{margin-top:auto;border-top:1px solid var(--border);border-bottom:0}
+    .drawer a{display:block;padding:10px 14px;color:#ddd}
+    .drawer a:hover{background:#111;color:var(--accent)}
+
+    /* ================= PRODUCTS ================= */
+    .container{padding:24px 16px;max-width:1200px;margin:auto}
+    h2{margin:0 0 16px}
+
+    .grid{display:grid;gap:16px}
+    .grid-4{grid-template-columns:repeat(4,1fr)}
+
+    .product{
+      background:#111;border:1px solid var(--border);border-radius:12px;padding:12px
+    }
+    .product img{width:100%;border-radius:8px}
+    .product h3{font-size:15px;margin:8px 0 4px}
+    .product p{font-size:13px;color:#aaa;margin:0}
+
+    /* ================= RESPONSIVE ================= */
+    @media(max-width:1024px){
+      .search-desktop{display:none}
+      .cat-bar{display:none}
+      .hamburger{display:block}
+      .mobile-search{display:block}
+    }
+    @media(max-width:768px){
+      .grid-4{grid-template-columns:1fr}
+    }
+  </style>
 </head>
-<body class="mp-body">
+<body>
 
-  <!-- HEADER -->
-  <header class="mp-header">
-    <div class="mp-header-inner">
+<header>
+  <!-- ROW 1 -->
+  <div class="header-top">
+    <button class="hamburger icon-btn" onclick="toggleDrawer()">☰</button>
 
-      <!-- LOGO -->
-      <a href="/index.html" class="mp-logo-link">
-        <img src="/logo.png" alt="Silky Road" class="mp-logo-img">
-      </a>
+    <a class="logo" href="index.html">
+      <img src="logo.png" alt="Silky Road" />
+    </a>
 
-      <!-- SEARCH BAR -->
-      <form class="mp-search" id="mp-search-form">
-        <span class="mp-search-icon">🔍</span>
-        <input
-          type="text"
-          id="mp-search-input"
-          placeholder="Search products…"
-          autocomplete="off"
-        >
-        <button
-          type="button"
-          id="mp-search-clear"
-          class="mp-search-clear"
-          aria-label="Clear search"
-        >
-          ✕
-        </button>
-      </form>
-
-      <!-- RIGHT SIDE: AUTH + CART + CAT TOGGLE -->
-      <div class="mp-header-actions">
-
-        <!-- INLINE AUTH (DESKTOP ONLY) -->
-        <div class="mp-auth-inline">
-          <!-- Logged OUT -->
-          <div data-when="logged-out">
-            <a href="/login.html" class="mp-link">Log in</a>
-            <a href="/sign_up.html" class="mp-btn mp-btn-gold">Start selling</a>
-          </div>
-
-          <!-- Logged IN -->
-          <div data-when="logged-in" style="display:none;">
-            <a href="/library.html" class="mp-link">Library</a>
-            <a href="/dashboard.html" class="mp-btn mp-btn-gold">Dashboard</a>
-          </div>
-        </div>
-
-        <!-- CART (ALWAYS VISIBLE) -->
-        <a
-          href="/checkout.html"
-          class="mp-icon-btn"
-          data-role="cart-button"
-          aria-label="Cart"
-        >
-          🛒
-          <span class="mp-cart-count" data-role="cart-count" style="display:none;"></span>
-        </a>
-
-        <!-- CATEGORY DRAWER TOGGLE (MOBILE ONLY) -->
-        <button
-          type="button"
-          class="mp-cat-toggle"
-          id="mp-cat-toggle"
-          aria-label="Browse categories"
-        >
-          ☰
-        </button>
-      </div>
+    <div class="search-desktop">
+      <input type="search" placeholder="Search products…" />
     </div>
 
-    <!-- DESKTOP HORIZONTAL CATEGORY BAR -->
-    <nav class="mp-cat-bar" id="mp-cat-bar">
-      <div class="mp-cat-bar-inner" id="mp-cat-bar-inner">
-        <!-- JS will inject category pills here -->
-      </div>
-    </nav>
-  </header>
-<!-- DESKTOP CATEGORY BAR -->
-<nav class="mp-cat-bar">
-  <div class="mp-cat-bar-inner" id="mpDesktopCategoryBar">
-    <!-- mp-categories.js injects categories here -->
+    <div class="header-actions">
+      <!-- LOGGED OUT -->
+      <a class="btn" href="login.html">Login</a>
+      <a class="btn primary" href="sell.html">Start Selling</a>
+
+      <!-- LOGGED IN (toggle via JS later) -->
+      <!-- <a class="btn" href="library.html">Library</a>
+      <a class="btn" href="dashboard.html">Dashboard</a> -->
+
+      <a class="icon-btn" href="checkout.html">🛒</a>
+    </div>
   </div>
-</nav>
-  <!-- CATEGORY DRAWER + BACKDROP (MOBILE) -->
-  <div class="mp-cat-backdrop" id="mp-cat-backdrop"></div>
 
-  <aside class="mp-cat-drawer" id="mp-cat-drawer">
-    <div class="mp-cat-drawer-header">
-      <span>Browse</span>
-      <button class="mp-cat-close" id="mp-cat-close" aria-label="Close drawer">✕</button>
-    </div>
+  <!-- MOBILE SEARCH -->
+  <div class="mobile-search">
+    <input type="search" placeholder="Search products…" />
+  </div>
 
-    <!-- MOBILE AUTH BLOCK (only shown on mobile by CSS) -->
-    <div class="mp-cat-drawer-auth">
-      <!-- Logged OUT -->
-      <div data-when="logged-out">
-        <a href="/login.html" class="mp-link">Log in</a>
-        <a href="/sign_up.html" class="mp-btn mp-btn-gold">Start selling</a>
+  <!-- ROW 2 CATEGORIES -->
+  <nav class="cat-bar">
+    <div class="cat-list">
+      <!-- FIRST 8 -->
+      <div class="cat-item"><a href="#">Ebooks</a><div class="dropdown"><a href="#">Business</a><a href="#">Self‑Help</a></div></div>
+      <div class="cat-item"><a href="#">Courses</a><div class="dropdown"><a href="#">Marketing</a><a href="#">Tech</a></div></div>
+      <div class="cat-item"><a href="#">Design</a><div class="dropdown"><a href="#">UI</a><a href="#">Logos</a></div></div>
+      <div class="cat-item"><a href="#">Software</a><div class="dropdown"><a href="#">Scripts</a><a href="#">Apps</a></div></div>
+      <div class="cat-item"><a href="#">Templates</a><div class="dropdown"><a href="#">Notion</a><a href="#">Web</a></div></div>
+      <div class="cat-item"><a href="#">Audio</a><div class="dropdown"><a href="#">Music</a><a href="#">SFX</a></div></div>
+      <div class="cat-item"><a href="#">Video</a><div class="dropdown"><a href="#">Stock</a><a href="#">Reels</a></div></div>
+      <div class="cat-item"><a href="#">Graphics</a><div class="dropdown"><a href="#">Icons</a><a href="#">Illustrations</a></div></div>
+
+      <!-- MORE -->
+      <div class="cat-item more-menu"><a href="#">More</a>
+        <div class="dropdown">
+          <a href="#">AI Tools</a>
+          <a href="#">Plugins</a>
+          <a href="#">Bundles</a>
+        </div>
       </div>
-
-      <!-- Logged IN -->
-      <div data-when="logged-in" style="display:none;">
-        <a href="/library.html" class="mp-link">Library</a>
-        <a href="/dashboard.html" class="mp-btn mp-btn-gold">Dashboard</a>
-      </div>
     </div>
+  </nav>
+</header>
 
-    <!-- CATEGORY LIST (AUTO FROM SUPABASE) -->
-    <div class="mp-cat-drawer-body" id="mp-cat-drawer-body">
-      <!-- JS injects All + categories + subcategories here -->
-    </div>
-  </aside>
+<!-- SIDE DRAWER -->
+<div class="drawer" id="drawer">
+  <div class="drawer-header">
+    <a href="login.html">Login</a>
+    <a href="sell.html">Start Selling</a>
+  </div>
+  <a href="#">ALL</a>
+  <a href="#">Ebooks ></a>
+  <a href="#">Courses ></a>
+  <a href="#">Design ></a>
+  <div class="drawer-footer">
+    <a href="library.html">Library</a>
+    <a href="dashboard.html">Dashboard</a>
+  </div>
+</div>
 
-  <!-- MAIN LAYOUT -->
-  <main class="mp-main">
-    <div class="mp-layout">
+<!-- FEATURED PRODUCTS -->
+<section class="container">
+  <h2>Featured Products</h2>
+  <div class="grid grid-4">
+    <div class="product"><img src="https://via.placeholder.com/300x200" /><h3>Product 1</h3><p>$19</p></div>
+    <div class="product"><img src="https://via.placeholder.com/300x200" /><h3>Product 2</h3><p>$29</p></div>
+    <div class="product"><img src="https://via.placeholder.com/300x200" /><h3>Product 3</h3><p>$9</p></div>
+    <div class="product"><img src="https://via.placeholder.com/300x200" /><h3>Product 4</h3><p>$49</p></div>
+  </div>
+</section>
 
-      <!-- FILTERS (LEFT ON DESKTOP, SLIDE-IN ON MOBILE) -->
-      <aside class="mp-filters" id="mp-filters">
-        <h2 class="mp-filters-title">Filters</h2>
+<script>
+  function toggleDrawer(){
+    document.getElementById('drawer').classList.toggle('open');
+  }
+</script>
 
-        <section class="mp-filter-block" id="mp-filter-tags">
-          <h3>Tags</h3>
-          <button class="mp-chip mp-chip-tag" data-tag="ebook">ebook</button>
-          <button class="mp-chip mp-chip-tag" data-tag="template">template</button>
-          <button class="mp-chip mp-chip-tag" data-tag="music">music</button>
-          <button class="mp-chip mp-chip-tag" data-tag="3d">3d</button>
-          <button class="mp-chip mp-chip-tag" data-tag="free">free</button>
-        </section>
-
-        <section class="mp-filter-block" id="mp-filter-types">
-          <h3>Contains</h3>
-          <button class="mp-chip mp-chip-type" data-type="pdf">pdf</button>
-          <button class="mp-chip mp-chip-type" data-type="zip">zip</button>
-          <button class="mp-chip mp-chip-type" data-type="mp4">mp4</button>
-          <button class="mp-chip mp-chip-type" data-type="mp3">mp3</button>
-          <button class="mp-chip mp-chip-type" data-type="rar">rar</button>
-        </section>
-
-        <section class="mp-filter-block">
-          <h3>Price</h3>
-          <label class="mp-field">
-            <span>Min</span>
-            <input id="mp-price-min" type="number" min="0" step="1" inputmode="numeric" pattern="[0-9]*" placeholder="0">
-          </label>
-          <label class="mp-field">
-            <span>Max</span>
-            <input id="mp-price-max" type="number" min="0" step="1" inputmode="numeric" pattern="[0-9]*" placeholder="∞">
-          </label>
-        </section>
-
-        <section class="mp-filter-block">
-          <h3>Rating</h3>
-          <label class="mp-rating-row">
-            <input type="radio" name="mp-rating-min" value="4">
-            <span>★★★★☆ and up</span>
-          </label>
-          <label class="mp-rating-row">
-            <input type="radio" name="mp-rating-min" value="3">
-            <span>★★★☆☆ and up</span>
-          </label>
-          <label class="mp-rating-row">
-            <input type="radio" name="mp-rating-min" value="2">
-            <span>★★☆☆☆ and up</span>
-          </label>
-          <label class="mp-rating-row">
-            <input type="radio" name="mp-rating-min" value="1">
-            <span>★☆☆☆☆ and up</span>
-          </label>
-          <label class="mp-rating-row">
-            <input type="radio" name="mp-rating-min" value="">
-            <span>Any rating</span>
-          </label>
-        </section>
-
-        <button class="mp-btn mp-btn-ghost mp-filters-clear" id="mp-filters-clear">
-          Clear filters
-        </button>
-      </aside>
-
-      <!-- CONTENT (RIGHT) -->
-      <section class="mp-content">
-
-        <!-- MOBILE FILTERS TOGGLE -->
-        <button class="mp-filters-toggle" id="mp-filters-toggle">Filters</button>
-
-        <!-- FEATURED PRODUCTS (MAX 10) -->
-        <section class="mp-featured">
-          <div class="mp-section-header">
-            <h2 id="mp-featured-title">Featured products</h2>
-            <p class="mp-section-subtitle" id="mp-current-cat-label">
-              Showing: All categories
-            </p>
-          </div>
-
-          <div class="mp-products-grid mp-products-featured" id="mp-featured-grid">
-            <!-- JS will render up to 10 featured products -->
-          </div>
-
-          <p class="mp-empty" id="mp-featured-empty" style="display:none;">
-            No products found in this category yet.
-          </p>
-        </section>
-
-        <!-- ALL PRODUCTS -->
-        <section class="mp-products-section">
-          <div class="mp-section-header">
-            <h2>All products</h2>
-          </div>
-
-          <div class="mp-products-grid mp-products-main" id="mp-products-grid">
-            <!-- JS will render all products here -->
-          </div>
-
-          <p class="mp-empty" id="mp-products-empty" style="display:none;">
-            No products match your filters.
-          </p>
-        </section>
-
-      </section>
-    </div>
-  </main>
-
-  <!-- FILTER OVERLAY (MOBILE) -->
-  <div class="mp-filters-overlay" id="mp-filters-overlay"></div>
-
-  <!-- MAIN SCRIPTS -->
-<script type="module" src="/js/marketplace.js"></script>
-<script src="/js/mp-categories.js"></script>
-
-  </body>
+</body>
 </html>

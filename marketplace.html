@@ -117,17 +117,19 @@
     </a>
 
     <div class="search-desktop">
-      <input type="search" placeholder="Search products…" />
+      <div style="position:relative">
+        <input id="searchInputDesktop" type="search" placeholder="Search products…" oninput="handleSearch(this.value)" />
+        <span class="clear-x" onclick="clearSearch('desktop')">✕</span>
+      </div>
     </div>
 
     <div class="header-actions">
-      <!-- LOGGED OUT -->
-      <a class="btn" href="login.html">Login</a>
-      <a class="btn primary" href="sell.html">Start Selling</a>
+      <!-- AUTH BUTTONS (AUTO VIA JS) -->
+      <a class="btn auth-logged-out" href="login.html">Login</a>
+      <a class="btn primary auth-logged-out" href="sell.html">Start Selling</a>
 
-      <!-- LOGGED IN (toggle via JS later) -->
-      <!-- <a class="btn" href="library.html">Library</a>
-      <a class="btn" href="dashboard.html">Dashboard</a> -->
+      <a class="btn auth-logged-in" href="library.html" style="display:none">Library</a>
+      <a class="btn auth-logged-in" href="dashboard.html" style="display:none">Dashboard</a>
 
       <a class="icon-btn" href="checkout.html">🛒</a>
     </div>
@@ -135,7 +137,10 @@
 
   <!-- MOBILE SEARCH -->
   <div class="mobile-search">
-    <input type="search" placeholder="Search products…" />
+    <div style="position:relative">
+      <input id="searchInputMobile" type="search" placeholder="Search products…" oninput="handleSearch(this.value)" />
+      <span class="clear-x" onclick="clearSearch('mobile')">✕</span>
+    </div>
   </div>
 
   <!-- ROW 2 CATEGORIES -->
@@ -166,9 +171,15 @@
 <!-- SIDE DRAWER -->
 <div class="drawer" id="drawer">
   <div class="drawer-header">
-    <a href="login.html">Login</a>
-    <a href="sell.html">Start Selling</a>
+    <span class="drawer-close" onclick="toggleDrawer()">✕</span>
+    <a class="auth-logged-out" href="login.html">Login</a>
+    <a class="auth-logged-out" href="sell.html">Start Selling</a>
+
+    <a class="auth-logged-in" href="library.html" style="display:none">Library</a>
+    <a class="auth-logged-in" href="dashboard.html" style="display:none">Dashboard</a>
   </div>
+  <div id="drawerCategories"></div>
+</div>
   <a href="#">ALL</a>
   <a href="#">Ebooks ></a>
   <a href="#">Courses ></a>
@@ -190,10 +201,42 @@
   </div>
 </section>
 
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <script>
-  function toggleDrawer(){
-    document.getElementById('drawer').classList.toggle('open');
+  /* ================= SUPABASE ================= */
+  const supabase = supabaseJs.createClient('YOUR_SUPABASE_URL','YOUR_PUBLIC_ANON_KEY');
+
+  async function checkAuth(){
+    const { data:{ session } } = await supabase.auth.getSession();
+    document.querySelectorAll('.auth-logged-out').forEach(el=>el.style.display = session? 'none':'inline-flex');
+    document.querySelectorAll('.auth-logged-in').forEach(el=>el.style.display = session? 'inline-flex':'none');
   }
+  checkAuth();
+
+  /* ================= SEARCH ================= */
+  function clearSearch(type){
+    const el = type==='desktop'?searchInputDesktop:searchInputMobile;
+    el.value='';handleSearch('');
+  }
+  function handleSearch(q){
+    console.log('Filter products:',q);
+    // hook to Supabase product search
+  }
+
+  /* ================= DRAWER ================= */
+  function toggleDrawer(){document.getElementById('drawer').classList.toggle('open')}
+
+  /* ================= CATEGORIES ================= */
+  async function loadCategories(){
+    const { data } = await supabase.from('categories').select('id,name,slug,subcategories(id,name,slug)');
+
+    const drawer = document.getElementById('drawerCategories');
+    drawer.innerHTML = '<a href="#">ALL</a>';
+    data.forEach(cat=>{
+      drawer.innerHTML += `<a href="/category.html?c=${cat.slug}">${cat.name} ></a>`;
+    });
+  }
+  loadCategories();
 </script>
 
 </body>

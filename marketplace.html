@@ -46,21 +46,19 @@
     /* ----- ROW 2 (CATEGORIES) ----- */
     .cat-bar{background:#000;border-top:1px solid var(--border)}
     .cat-list{display:flex;gap:18px;padding:10px 16px;overflow:hidden}
-    .cat-item{position:relative;font-size:14px;white-space:nowrap}
-    .cat-item>a{color:#ddd}
-    .cat-item:hover>a{color:var(--accent)}
+    .cat-item {
+  position: relative;
+}
 
-    .dropdown{
-      display:none;position:absolute;top:100%;left:0;min-width:220px;
-      background:#000;border:1px solid var(--border);border-radius:8px;padding:8px 0
-    }
-    .dropdown a{display:block;padding:8px 14px;font-size:14px;color:#ccc}
-    .dropdown a:hover{background:#111;color:var(--accent)}
+.cat-item > a {
+  padding: 6px 2px;
+  display: inline-block;
+}
 
-    .cat-item:hover>.dropdown{display:block}
+.more-menu {
+  margin-left: auto;
+}
 
-    /* MORE MENU */
-    .more-menu>.dropdown{right:0;left:auto}
 
     /* ================= MOBILE ================= */
     .hamburger{display:none;font-size:22px}
@@ -181,9 +179,8 @@
 
   <!-- ROW 2 -->
   <nav class="cat-bar">
-    <div class="cat-list">
-      <!-- categories unchanged -->
-    </div>
+    <div class="cat-list" id="desktopCategories"></div>
+ </div>
   </nav>
 </header>
 
@@ -260,8 +257,14 @@ async function loadCategories() {
   }
 
   CATEGORIES_CACHE = data;
+
+  /* Mobile drawer */
   renderCategoryList();
+
+  /* Desktop hover bar */
+  renderDesktopCategories(data);
 }
+
 
 /* ---------- MAIN CATEGORY VIEW ---------- */
 function renderCategoryList() {

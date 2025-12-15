@@ -1045,3 +1045,10 @@ body{
   cursor: pointer;
   margin-bottom: 10px;
 }
+
+/* Hide Library & Dashboard in tablet/mobile header */
+@media (max-width: 1024px) {
+  .header-actions [data-when="logged-in"] {
+    display: none !important;
+  }
+}

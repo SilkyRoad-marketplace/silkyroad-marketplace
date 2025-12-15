@@ -1199,3 +1199,9 @@ body{
 .sr-btn-outline:hover {
   background: rgba(255,215,122,0.1);
 }
+/* Hide logged-in buttons on tablet/mobile header */
+@media (max-width: 1024px) {
+  .header-actions [data-when="logged-in"] {
+    display: none !important;
+  }
+}

@@ -1147,3 +1147,22 @@ body{
   width: 100%;
   margin-bottom: 10px;
 }
+/* ===== DESKTOP: disable drawer/sidebar ===== */
+@media (min-width: 1025px) {
+  .category-drawer,
+  .mobile-drawer,
+  .sidebar,
+  .subcat-drawer {
+    display: none !important;
+  }
+
+  .main-content {
+    margin-left: 0 !important;
+  }
+}
+/* ===== MOBILE ONLY drawer ===== */
+@media (max-width: 1024px) {
+  .category-drawer {
+    display: block;
+  }
+}

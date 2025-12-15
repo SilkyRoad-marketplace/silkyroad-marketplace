@@ -167,11 +167,21 @@
     </div>
 
     <div class="header-actions">
-      <a data-when="logged-out" href="login.html">Login</a>
-      <a data-when="logged-out" href="sign_up.html">Start Selling</a>
+<a data-when="logged-out"
+   class="auth-btn outline"
+   href="login.html">Log in</a>
 
-      <a data-when="logged-in" href="library.html">Library</a>
-      <a data-when="logged-in" href="dashboard.html">Dashboard</a>
+<a data-when="logged-out"
+   class="auth-btn primary"
+   href="sign_up.html">Start selling</a>
+
+<a data-when="logged-in"
+   class="auth-btn primary"
+   href="library.html">Library</a>
+
+<a data-when="logged-in"
+   class="auth-btn outline"
+   href="dashboard.html">Dashboard</a>
 
       <a class="icon-btn" href="checkout.html">🛒</a>
     </div>
@@ -186,27 +196,26 @@
 
 
 <!-- SIDE DRAWER -->
-<div class="drawer" id="drawer">
-  <div class="drawer-header">
-    <span class="drawer-close" onclick="toggleDrawer()">✕</span>
-<a data-when="logged-out" href="login.html">Login</a>
-<a data-when="logged-out" href="sign_up.html">Start Selling</a>
-
-<a data-when="logged-in" href="library.html">Library</a>
-<a data-when="logged-in" href="dashboard.html">Dashboard</a>
-
-
-  </div>
   <div id="drawerCategories" class="drawer-body"></div>
 <div class="drawer" id="drawer">
   <div class="drawer-header">
     <span class="drawer-close" onclick="toggleDrawer()">✕</span>
 
-    <a data-when="logged-out" href="login.html">Login</a>
-    <a data-when="logged-out" href="sign_up.html">Start Selling</a>
+<a data-when="logged-out"
+   class="auth-btn outline"
+   href="login.html">Log in</a>
 
-    <a data-when="logged-in" href="library.html">Library</a>
-    <a data-when="logged-in" href="dashboard.html">Dashboard</a>
+<a data-when="logged-out"
+   class="auth-btn primary"
+   href="sign_up.html">Start selling</a>
+
+<a data-when="logged-in"
+   class="auth-btn primary"
+   href="library.html">Library</a>
+
+<a data-when="logged-in"
+   class="auth-btn outline"
+   href="dashboard.html">Dashboard</a>
   </div>
 
   <div id="drawerCategories"></div>

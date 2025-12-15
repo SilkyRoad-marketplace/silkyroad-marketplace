@@ -116,35 +116,28 @@
       <img src="logo.png" alt="Silky Road" />
     </a>
 
-    <div class="search-wrap">
-  <input id="searchInputDesktop" type="search"
+    <div class="search-desktop search-wrap">
+  <input id="searchInputDesktop"
+         type="search"
          placeholder="Search products…"
          oninput="handleSearch(this.value)" />
   <button class="clear-x" onclick="clearSearch('desktop')">✕</button>
 </div>
+
  </div>
 
     <div class="header-actions">
-      <!-- AUTH BUTTONS (AUTO VIA JS) -->
-      <a class="btn" data-when="logged-out" href="login.html">Login</a>
-<a class="btn primary" data-when="logged-out" href="sign_up.html">Start Selling</a>
+<a data-when="logged-out" href="login.html">Login</a>
+<a data-when="logged-out" href="sign_up.html">Start Selling</a>
 
-<a class="btn" data-when="logged-in" href="library.html">Library</a>
-<a class="btn" data-when="logged-in" href="dashboard.html">Dashboard</a>
+<a data-when="logged-in" href="library.html">Library</a>
+<a data-when="logged-in" href="dashboard.html">Dashboard</a>
 
 
       <a class="icon-btn" href="checkout.html">🛒</a>
     </div>
   </div>
 
-  <!-- MOBILE SEARCH -->
- <div class="search-wrap">
-  <input id="searchInputMobile" type="search"
-         placeholder="Search products…"
-         oninput="handleSearch(this.value)" />
-  <button class="clear-x" onclick="clearSearch('mobile')">✕</button>
-</div>
-  </div>
 
   <!-- ROW 2 CATEGORIES -->
   <nav class="cat-bar">
@@ -175,11 +168,12 @@
 <div class="drawer" id="drawer">
   <div class="drawer-header">
     <span class="drawer-close" onclick="toggleDrawer()">✕</span>
-    <a class="btn" data-when="logged-out" href="login.html">Login</a>
-<a class="btn primary" data-when="logged-out" href="sign_up.html">Start Selling</a>
+<a data-when="logged-out" href="login.html">Login</a>
+<a data-when="logged-out" href="sign_up.html">Start Selling</a>
 
-<a class="btn" data-when="logged-in" href="library.html">Library</a>
-<a class="btn" data-when="logged-in" href="dashboard.html">Dashboard</a>
+<a data-when="logged-in" href="library.html">Library</a>
+<a data-when="logged-in" href="dashboard.html">Dashboard</a>
+
 
   </div>
   <div id="drawerCategories"></div>

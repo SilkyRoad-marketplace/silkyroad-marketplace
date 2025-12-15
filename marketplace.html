@@ -116,12 +116,13 @@
       <img src="logo.png" alt="Silky Road" />
     </a>
 
-    <div class="search-desktop">
-      <div style="position:relative">
-        <input id="searchInputDesktop" type="search" placeholder="Search products…" oninput="handleSearch(this.value)" />
-        <span class="clear-x" onclick="clearSearch('desktop')">✕</span>
-      </div>
-    </div>
+    <div class="search-wrap">
+  <input id="searchInputDesktop" type="search"
+         placeholder="Search products…"
+         oninput="handleSearch(this.value)" />
+  <button class="clear-x" onclick="clearSearch('desktop')">✕</button>
+</div>
+ </div>
 
     <div class="header-actions">
       <!-- AUTH BUTTONS (AUTO VIA JS) -->
@@ -137,11 +138,12 @@
   </div>
 
   <!-- MOBILE SEARCH -->
-  <div class="mobile-search">
-    <div style="position:relative">
-      <input id="searchInputMobile" type="search" placeholder="Search products…" oninput="handleSearch(this.value)" />
-      <span class="clear-x" onclick="clearSearch('mobile')">✕</span>
-    </div>
+ <div class="search-wrap">
+  <input id="searchInputMobile" type="search"
+         placeholder="Search products…"
+         oninput="handleSearch(this.value)" />
+  <button class="clear-x" onclick="clearSearch('mobile')">✕</button>
+</div>
   </div>
 
   <!-- ROW 2 CATEGORIES -->

@@ -1046,13 +1046,7 @@ body{
   margin-bottom: 10px;
 }
 
-/* Hide Library & Dashboard in tablet/mobile header */
-@media (max-width: 1024px) {
-  .header-actions [data-when="logged-in"] {
-    display: none !important;
-  }
-}
-
+/* ===== Search ===== */
 .search-wrap {
   position: relative;
   flex: 1;
@@ -1072,22 +1066,18 @@ body{
   right: 10px;
   top: 50%;
   transform: translateY(-50%);
-  border: 0;
   background: none;
-  color: #888;
+  border: none;
   cursor: pointer;
+  color: #aaa;
 }
 
+/* ===== Tablet & Mobile Header ===== */
 @media (max-width: 1024px) {
   .header-top {
     display: flex;
     align-items: center;
     gap: 10px;
-  }
-
-  .hamburger {
-    display: block;
-    order: 3;
   }
 
   .logo {
@@ -1096,15 +1086,21 @@ body{
 
   .search-wrap {
     order: 2;
+    flex: 1;
+  }
+
+  .hamburger {
+    display: block;
+    order: 3;
   }
 
   .header-actions {
-    order: 4;
+    display: none;
   }
-}
 
-@media (max-width: 1024px) {
-  header .header-actions [data-when="logged-in"] {
+  /* Hide Library & Dashboard */
+  [data-auth="logged-in"] {
     display: none !important;
   }
 }
+

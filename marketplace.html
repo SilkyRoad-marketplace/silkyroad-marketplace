@@ -125,11 +125,12 @@
 
     <div class="header-actions">
       <!-- AUTH BUTTONS (AUTO VIA JS) -->
-      <a class="btn auth-logged-out" href="login.html">Login</a>
-      <a class="btn primary auth-logged-out" href="sell.html">Start Selling</a>
+      <a class="btn" data-when="logged-out" href="login.html">Login</a>
+<a class="btn primary" data-when="logged-out" href="sign_up.html">Start Selling</a>
 
-      <a class="btn auth-logged-in" href="library.html" style="display:none">Library</a>
-      <a class="btn auth-logged-in" href="dashboard.html" style="display:none">Dashboard</a>
+<a class="btn" data-when="logged-in" href="library.html">Library</a>
+<a class="btn" data-when="logged-in" href="dashboard.html">Dashboard</a>
+
 
       <a class="icon-btn" href="checkout.html">🛒</a>
     </div>
@@ -172,23 +173,33 @@
 <div class="drawer" id="drawer">
   <div class="drawer-header">
     <span class="drawer-close" onclick="toggleDrawer()">✕</span>
-    <a class="auth-logged-out" href="login.html">Login</a>
-    <a class="auth-logged-out" href="sell.html">Start Selling</a>
+    <a class="btn" data-when="logged-out" href="login.html">Login</a>
+<a class="btn primary" data-when="logged-out" href="sign_up.html">Start Selling</a>
 
-    <a class="auth-logged-in" href="library.html" style="display:none">Library</a>
-    <a class="auth-logged-in" href="dashboard.html" style="display:none">Dashboard</a>
+<a class="btn" data-when="logged-in" href="library.html">Library</a>
+<a class="btn" data-when="logged-in" href="dashboard.html">Dashboard</a>
+
   </div>
   <div id="drawerCategories"></div>
-</div>
-  <a href="#">ALL</a>
-  <a href="#">Ebooks ></a>
-  <a href="#">Courses ></a>
-  <a href="#">Design ></a>
+<div class="drawer" id="drawer">
+  <div class="drawer-header">
+    <span class="drawer-close" onclick="toggleDrawer()">✕</span>
+
+    <a data-when="logged-out" href="login.html">Login</a>
+    <a data-when="logged-out" href="sign_up.html">Start Selling</a>
+
+    <a data-when="logged-in" href="library.html">Library</a>
+    <a data-when="logged-in" href="dashboard.html">Dashboard</a>
+  </div>
+
+  <div id="drawerCategories"></div>
+
   <div class="drawer-footer">
     <a href="library.html">Library</a>
     <a href="dashboard.html">Dashboard</a>
   </div>
 </div>
+
 
 <!-- FEATURED PRODUCTS -->
 <section class="container">
@@ -201,41 +212,46 @@
   </div>
 </section>
 
-<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-<script>
-  /* ================= SUPABASE ================= */
-  const supabase = supabaseJs.createClient('YOUR_SUPABASE_URL','YOUR_PUBLIC_ANON_KEY');
+<script type="module">
+  import { supabase, initAuthUI } from "/js/auth.js";
 
-  async function checkAuth(){
-    const { data:{ session } } = await supabase.auth.getSession();
-    document.querySelectorAll('.auth-logged-out').forEach(el=>el.style.display = session? 'none':'inline-flex');
-    document.querySelectorAll('.auth-logged-in').forEach(el=>el.style.display = session? 'inline-flex':'none');
-  }
-  checkAuth();
+  initAuthUI();
 
-  /* ================= SEARCH ================= */
-  function clearSearch(type){
-    const el = type==='desktop'?searchInputDesktop:searchInputMobile;
-    el.value='';handleSearch('');
-  }
-  function handleSearch(q){
-    console.log('Filter products:',q);
-    // hook to Supabase product search
-  }
+  /* DRAWER */
+  window.toggleDrawer = function () {
+    document.getElementById("drawer").classList.toggle("open");
+  };
 
-  /* ================= DRAWER ================= */
-  function toggleDrawer(){document.getElementById('drawer').classList.toggle('open')}
+  /* SEARCH */
+  window.clearSearch = function (type) {
+    const el = type === "desktop"
+      ? document.getElementById("searchInputDesktop")
+      : document.getElementById("searchInputMobile");
 
-  /* ================= CATEGORIES ================= */
-  async function loadCategories(){
-    const { data } = await supabase.from('categories').select('id,name,slug,subcategories(id,name,slug)');
+    el.value = "";
+    console.log("Clear search");
+  };
 
-    const drawer = document.getElementById('drawerCategories');
-    drawer.innerHTML = '<a href="#">ALL</a>';
-    data.forEach(cat=>{
-      drawer.innerHTML += `<a href="/category.html?c=${cat.slug}">${cat.name} ></a>`;
+  window.handleSearch = function (q) {
+    console.log("Filter products:", q);
+  };
+
+  /* CATEGORIES */
+  async function loadCategories() {
+    const { data } = await supabase
+      .from("categories")
+      .select("id,name,slug,subcategories(id,name,slug)");
+
+    const drawer = document.getElementById("drawerCategories");
+    drawer.innerHTML = `<a href="/marketplace.html">ALL</a>`;
+
+    data.forEach(cat => {
+      drawer.innerHTML += `
+        <a href="/c/${cat.slug}">${cat.name} ></a>
+      `;
     });
   }
+
   loadCategories();
 </script>
 

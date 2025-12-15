@@ -1166,3 +1166,36 @@ body{
     display: block;
   }
 }
+/* ===== Silky Road Buttons ===== */
+.sr-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  padding: 0 18px;
+  border-radius: 999px;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.sr-btn-gold {
+  background: linear-gradient(180deg, #ffd77a, #f3b84b);
+  color: #111;
+  box-shadow: 0 0 0 1px rgba(255,215,122,0.4);
+}
+
+.sr-btn-gold:hover {
+  filter: brightness(1.05);
+}
+
+.sr-btn-outline {
+  background: transparent;
+  color: #ffd77a;
+  border: 1px solid rgba(255,215,122,0.4);
+}
+
+.sr-btn-outline:hover {
+  background: rgba(255,215,122,0.1);
+}

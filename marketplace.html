@@ -78,6 +78,28 @@
     .drawer-footer{margin-top:auto;border-top:1px solid var(--border);border-bottom:0}
     .drawer a{display:block;padding:10px 14px;color:#ddd}
     .drawer a:hover{background:#111;color:var(--accent)}
+.drawer-body {
+  padding: 6px 0;
+}
+
+.drawer-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 14px;
+  cursor: pointer;
+  color: #ddd;
+}
+
+.drawer-item:hover {
+  background: #111;
+  color: var(--accent);
+}
+
+.drawer-back {
+  font-weight: 600;
+  color: var(--accent);
+}
 
     /* ================= PRODUCTS ================= */
     .container{padding:24px 16px;max-width:1200px;margin:auto}
@@ -178,7 +200,7 @@
 
 
   </div>
-  <div id="drawerCategories"></div>
+  <div id="drawerCategories" class="drawer-body"></div>
 <div class="drawer" id="drawer">
   <div class="drawer-header">
     <span class="drawer-close" onclick="toggleDrawer()">✕</span>
@@ -224,21 +246,67 @@
 };
 
 
-  /* CATEGORIES */
-  async function loadCategories() {
-    const { data } = await supabase
-      .from("categories")
-      .select("id,name,slug,subcategories(id,name,slug)");
+ let CATEGORIES_CACHE = [];
 
-    const drawer = document.getElementById("drawerCategories");
-    drawer.innerHTML = `<a href="/marketplace.html">ALL</a>`;
+async function loadCategories() {
+  const { data, error } = await supabase
+    .from("categories")
+    .select("id, name, slug, subcategories(id, name, slug)")
+    .order("name");
 
-    data.forEach(cat => {
-      drawer.innerHTML += `
-        <a href="/c/${cat.slug}">${cat.name} ></a>
-      `;
-    });
+  if (error) {
+    console.error(error);
+    return;
   }
+
+  CATEGORIES_CACHE = data;
+  renderCategoryList();
+}
+
+/* ---------- MAIN CATEGORY VIEW ---------- */
+function renderCategoryList() {
+  const drawer = document.getElementById("drawerCategories");
+
+  drawer.innerHTML = `
+    <a class="drawer-item" href="/marketplace.html">ALL</a>
+  `;
+
+  CATEGORIES_CACHE.forEach(cat => {
+    drawer.innerHTML += `
+      <div class="drawer-item" onclick="openSubcategories('${cat.id}')">
+        <span>${cat.name}</span>
+        <span>›</span>
+      </div>
+    `;
+  });
+}
+
+/* ---------- SUBCATEGORY VIEW ---------- */
+window.openSubcategories = function (categoryId) {
+  const cat = CATEGORIES_CACHE.find(c => c.id === categoryId);
+  if (!cat) return;
+
+  const drawer = document.getElementById("drawerCategories");
+
+  drawer.innerHTML = `
+    <div class="drawer-item drawer-back" onclick="renderCategoryList()">
+      ← Back
+    </div>
+    <a class="drawer-item" href="/c/${cat.slug}">
+      All ${cat.name}
+    </a>
+  `;
+
+  cat.subcategories.forEach(sub => {
+    drawer.innerHTML += `
+      <a class="drawer-item"
+         href="/c/${cat.slug}/${sub.slug}">
+        ${sub.name}
+      </a>
+    `;
+  });
+};
+
 
   loadCategories();
 </script>

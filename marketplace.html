@@ -153,7 +153,7 @@
     <button class="hamburger icon-btn" onclick="toggleDrawer()">☰</button>
 
     <a class="logo" href="index.html">
-      <img src="logo.png" alt="Silky Road" />
+      <img src="/logo.png" alt="Silky Road" />
     </a>
 
     <div class="search-desktop search-wrap">
@@ -167,22 +167,14 @@
     </div>
 
     <div class="header-actions">
-<a data-when="logged-out"
-   class="auth-btn outline"
-   href="login.html">Log in</a>
+  <!-- logged out -->
+  <a href="/login" class="sr-btn sr-btn-outline" data-when="logged-out">Log in</a>
+  <a href="/sign_up" class="sr-btn sr-btn-gold" data-when="logged-out">Start selling</a>
 
-<a data-when="logged-out"
-   class="auth-btn primary"
-   href="sign_up.html">Start selling</a>
-
-<a data-when="logged-in"
-   class="auth-btn primary"
-   href="library.html">Library</a>
-
-<a data-when="logged-in"
-   class="auth-btn outline"
-   href="dashboard.html">Dashboard</a>
-
+  <!-- logged in -->
+  <a href="/library" class="sr-btn sr-btn-gold" data-when="logged-in">Library</a>
+  <a href="/dashboard" class="sr-btn sr-btn-outline" data-when="logged-in">Dashboard</a>
+</div>
       <a class="icon-btn" href="checkout.html">🛒</a>
     </div>
   </div>

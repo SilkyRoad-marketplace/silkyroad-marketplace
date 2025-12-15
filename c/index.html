@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Silky Road Marketplace</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+  <link rel="stylesheet" href="/styles.css" />
+
+  <!-- SEO -->
+  <meta name="description" content="Browse digital products on Silky Road Marketplace" />
+</head>
+
+<body>
+
+<header id="site-header"></header>
+
+<main class="container">
+  <h1 id="pageTitle">Loading...</h1>
+
+  <div id="productGrid" class="grid grid-4"></div>
+
+  <div id="emptyState" style="display:none;color:#888;margin-top:40px">
+    No products found.
+  </div>
+</main>
+
+<script type="module">
+  import { supabase } from "/js/auth.js";
+
+  /* ===============================
+     READ CLEAN URL
+     =============================== */
+
+  function getRouteParams() {
+    const parts = window.location.pathname
+      .replace("/c/", "")
+      .split("/")
+      .filter(Boolean);
+
+    return {
+      category: parts[0] || null,
+      subcategory: parts[1] || null
+    };
+  }
+
+  const { category, subcategory } = getRouteParams();
+
+  /* ===============================
+     PAGE TITLE
+     =============================== */
+
+  const title = document.getElementById("pageTitle");
+
+  if (subcategory) {
+    title.textContent = `${subcategory.replace("-", " ")} products`;
+  } else if (category) {
+    title.textContent = `${category.replace("-", " ")} products`;
+  }
+
+  /* ===============================
+     LOAD PRODUCTS
+     =============================== */
+
+  async function loadProducts() {
+    let query = supabase
+      .from("products")
+      .select(`
+        id,
+        title,
+        price,
+        thumbnail,
+        slug,
+        categories!inner(slug),
+        subcategories(slug)
+      `)
+      .eq("status", "published");
+
+    if (category) {
+      query = query.eq("categories.slug", category);
+    }
+
+    if (subcategory) {
+      query = query.eq("subcategories.slug", subcategory);
+    }
+
+    const { data, error } = await query;
+
+    if (error) {
+      console.error(error);
+      return;
+    }
+
+    renderProducts(data);
+  }
+
+  /* ===============================
+     RENDER
+     =============================== */
+
+  function renderProducts(products) {
+    const grid = document.getElementById("productGrid");
+    const empty = document.getElementById("emptyState");
+
+    grid.innerHTML = "";
+
+    if (!products.length) {
+      empty.style.display = "block";
+      return;
+    }
+
+    empty.style.display = "none";
+
+    products.forEach(p => {
+      grid.innerHTML += `
+        <a class="product" href="/p/${p.slug}">
+          <img src="${p.thumbnail}" alt="${p.title}" />
+          <h3>${p.title}</h3>
+          <p>$${p.price}</p>
+        </a>
+      `;
+    });
+  }
+
+  loadProducts();
+</script>
+
+</body>
+</html>

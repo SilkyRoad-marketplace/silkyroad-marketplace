@@ -291,3 +291,33 @@ body.mp-body {
   width: 100%;
 }
 }
+.cat-item {
+  position: relative;
+}
+
+.cat-dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: #111;
+  border: 1px solid #222;
+  min-width: 180px;
+  z-index: 1000;
+}
+
+.cat-item:hover .cat-dropdown {
+  display: block;
+}
+
+.cat-dropdown a {
+  display: block;
+  padding: 8px 12px;
+  font-size: 13px;
+  color: #ccc;
+}
+
+.cat-dropdown a:hover {
+  background: #222;
+  color: gold;
+}

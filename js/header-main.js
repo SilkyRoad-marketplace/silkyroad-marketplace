@@ -1,118 +1,48 @@
-// /js/header-main.js
-import { supabase } from "./auth.js";
+// ===============================
+// SILKY ROAD HEADER MAIN JS
+// ===============================
 
-// Load header HTML
-async function loadHeaderMain() {
-  const root = document.getElementById("header-root");
-  if (!root) return;
+document.addEventListener("DOMContentLoaded", () => {
+  const headerRoot = document.getElementById("header-root");
 
-  try {
-    const res = await fetch("/partials/header-main.html");
-    const html = await res.text();
-    root.innerHTML = html;
+  // Sample login state (replace with real check from Supabase)
+  const isLoggedIn = false;
 
-    initHeaderMain();
-  } catch (err) {
-    console.error("Error loading main header:", err);
-  }
-}
+  headerRoot.innerHTML = `
+    <div class="header-container">
+      <div class="header-logo">
+        <a href="/"><img src="/favicon.png" alt="Silky Road Logo"></a>
+      </div>
 
-// Initialize header logic
-async function initHeaderMain() {
-  const header = document.querySelector(".sr-header");
-  if (!header) return;
+      <nav class="nav-menu" id="nav-menu">
+        <a href="/marketplace.html">Marketplace</a>
+        <a href="/category.html?category=Ebooks">Ebooks</a>
+        <a href="/category.html?category=Design">Design</a>
+        <a href="/category.html?category=Music">Music</a>
+      </nav>
 
-  // ==========================
-  // MOBILE DRAWER CONTROL
-  // ==========================
-  const navToggle = header.querySelector(".nav-toggle");
-  const navPanel = header.querySelector("[data-nav-panel]");
-  const navBackdrop = header.querySelector("[data-nav-backdrop]");
-  const closeBtn = header.querySelector(".mobile-close-btn");
-  const mobileLinks = header.querySelectorAll(".nav-mobile-panel a");
+      <div class="header-buttons">
+        ${isLoggedIn ? 
+          `<a href="/dashboard.html" class="btn btn-ghost">Dashboard</a>
+           <a href="/logout.html" class="btn btn-ghost">Log Out</a>` :
+          `<a href="/login.html" class="btn btn-ghost">Log In</a>
+           <a href="/sign_up.html" class="btn btn-primary">Start Selling</a>`
+        }
+      </div>
 
-  function openMobile() {
-    navPanel?.classList.add("open");
-    navBackdrop?.classList.add("visible");
-    navToggle?.setAttribute("aria-expanded", "true");
-  }
-
-  function closeMobile() {
-    navPanel?.classList.remove("open");
-    navBackdrop?.classList.remove("visible");
-    navToggle?.setAttribute("aria-expanded", "false");
-  }
+      <div class="hamburger" id="hamburger-btn">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+  `;
 
   // Hamburger toggle
-  navToggle?.addEventListener("click", () => {
-    navPanel.classList.contains("open") ? closeMobile() : openMobile();
+  const hamburger = document.getElementById("hamburger-btn");
+  const navMenu = document.getElementById("nav-menu");
+
+  hamburger.addEventListener("click", () => {
+    navMenu.classList.toggle("active");
   });
-
-  // Backdrop closes drawer
-  navBackdrop?.addEventListener("click", closeMobile);
-
-  // Close when clicking any mobile link
-  mobileLinks.forEach((link) => {
-    link.addEventListener("click", closeMobile);
-  });
-
-  // Close button "X"
-  closeBtn?.addEventListener("click", closeMobile);
-
-  // ==========================
-  // AUTH UI STATE HANDLING
-  // ==========================
-  const loggedOutBlocks = header.querySelectorAll('[data-when="logged-out"]');
-  const loggedInBlocks = header.querySelectorAll('[data-when="logged-in"]');
-
-  function showLoggedOut() {
-    loggedOutBlocks.forEach((el) => (el.style.display = ""));
-    loggedInBlocks.forEach((el) => (el.style.display = "none"));
-  }
-
-  function showLoggedIn() {
-    loggedOutBlocks.forEach((el) => (el.style.display = "none"));
-    loggedInBlocks.forEach((el) => (el.style.display = ""));
-  }
-
-  // Check login state
-  try {
-    const { data } = await supabase.auth.getSession();
-
-    if (data?.session) {
-      showLoggedIn();
-    } else {
-      showLoggedOut();
-    }
-  } catch (err) {
-    console.error("Auth session error:", err);
-    showLoggedOut();
-  }
-
-  // ==========================
-  // LOGOUT BUTTONS — FULL FIX
-  // ==========================
-  const logoutButtons = header.querySelectorAll(
-    "#btn-logout-main, #btn-logout-main-mobile"
-  );
-
-  logoutButtons.forEach((btn) => {
-    btn.addEventListener("click", async () => {
-      try {
-        await supabase.auth.signOut();
-      } catch (err) {
-        console.error("Logout error:", err);
-      }
-
-      // Clear stale cached UI
-      localStorage.clear();
-      sessionStorage.clear();
-
-      // Force fresh reload so mobile drawer updates instantly
-      window.location.replace("/");
-    });
-  });
-}
-
-// Run on load
-loadHeaderMain();
+});

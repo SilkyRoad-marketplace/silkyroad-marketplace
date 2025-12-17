@@ -193,3 +193,85 @@ body {
     padding-top:88px;
   }
 }
+/* =================================================
+   HEADER RESPONSIVE LOCK (header-main.js)
+================================================= */
+
+/* DESKTOP DEFAULT */
+.nav-main {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.mobile-toggle {
+  display: none;
+}
+
+.mobile-menu {
+  display: none;
+}
+
+/* CTA button (Start selling) */
+.nav-cta {
+  display: inline-flex;
+}
+
+/* =================================================
+   MOBILE VIEW
+================================================= */
+
+@media (max-width: 768px) {
+
+  /* Hide desktop nav & CTA */
+  .nav-main {
+    display: none !important;
+  }
+
+  .nav-cta {
+    display: none !important;
+  }
+
+  /* Show hamburger */
+  .mobile-toggle {
+    display: inline-flex !important;
+    font-size: 22px;
+    background: none;
+    border: none;
+    color: var(--accent-gold);
+    cursor: pointer;
+  }
+
+  /* Mobile dropdown */
+  .mobile-menu {
+    position: absolute;
+    top: 100%;
+    right: 16px;
+    width: 220px;
+    background: #050509;
+    border: 1px solid rgba(244,197,106,.45);
+    border-radius: 16px;
+    box-shadow: var(--shadow-soft);
+    padding: 12px;
+    z-index: 999;
+  }
+
+  .mobile-menu a {
+    display: block;
+    padding: 10px 12px;
+    text-decoration: none;
+    color: var(--text-main);
+    border-radius: 10px;
+  }
+
+  .mobile-menu a:hover {
+    background: rgba(244,197,106,.15);
+    color: var(--accent-gold);
+  }
+
+  .mobile-menu .btn-primary {
+    margin-top: 10px;
+    width: 100%;
+    justify-content: center;
+  }
+}
